@@ -1,0 +1,5 @@
+{
+  "redirects": [
+    { "source": "/(.*)", "has": [{ "type": "host", "value": "www.borealis.cool" }], "destination": "https://borealis.cool/$1", "permanent": true }
+  ]
+}
