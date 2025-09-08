@@ -1,0 +1,51 @@
+document.addEventListener("DOMContentLoaded", function () {
+  const navbar = document.getElementById("mainNavbar");
+  const navLinks = document.getElementById("navLinks");
+  const navToggle = document.getElementById("navToggle");
+
+  if (navbar) {
+    window.addEventListener("scroll", () => {
+      navbar.style.backgroundColor =
+        window.scrollY > 50 ? "rgba(0, 0, 0, 0.8)" : "transparent";
+    });
+  }
+
+  if (navToggle && navLinks) {
+    navToggle.addEventListener("click", () => {
+      navLinks.classList.toggle("show");
+    });
+  }
+});
+
+// Counter animation
+  function animateCounter(el) {
+    const target = parseFloat(el.dataset.target);
+    const decimals = parseInt(el.dataset.decimals || "0", 10);
+    const duration = parseInt(el.dataset.duration || "1000", 10);
+
+    const start = performance.now();
+    const startVal = 0;
+
+    function tick(now) {
+      const p = Math.min(1, (now - start) / duration);
+      const val = startVal + (target - startVal) * p;
+      el.textContent = val.toFixed(decimals).replace(/\.0+$/,''); // trim .0
+      if (p < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  // Trigger once when #learnMore is visible
+  const section = document.getElementById('learnMore');
+  if (section) {
+    const counters = section.querySelectorAll('.counter');
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          counters.forEach(c => animateCounter(c));
+          io.disconnect(); // run once
+        }
+      });
+    }, { threshold: 0.25 });
+    io.observe(section);
+  }

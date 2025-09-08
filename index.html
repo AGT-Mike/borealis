@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Borealis</title>
+</head>
+<body>
+
+  <!-- Nav bar -->
+
+  <nav id="mainNavbar" class="fixed top-0 left-0 right-0 z-50 h-20 bg-transparent text-white transition-colors duration-300">
+  <div class="mx-10 flex h-full items-center justify-between px-6">
+    <!-- Logo -->
+    <div class="text-4xl font-bold">
+      <a href="/">BOREALIS</a>
+    </div>
+
+    <!-- Links (hidden on mobile) -->
+    <div id="navLinks" class="hidden gap-10 font-semibold md:flex">
+      <a href="#facility-to-chip" class="hover:text-gray-300">Facility-to-Chip</a>
+      <a href="#features" class="hover:text-gray-300">Key Features</a>
+      <a href="#applications" class="hover:text-gray-300">Applications</a>
+      <a href="#benefits" class="hover:text-gray-300">Benefits</a>
+      <!-- <a href="/about-borealis/" class="hover:text-gray-300">About Borealis</a>
+      <a href="/thermapod/" class="hover:text-gray-300">Thermapod</a> -->
+    </div>
+
+    <!-- Right side -->
+    <div class="flex items-center gap-3">
+      <!-- Hamburger for mobile -->
+      <button id="navToggle" class="text-2xl md:hidden">☰</button>
+      <!-- Contact button -->
+      <a href="mailto:sbarberi@agt-usa.com?&subject=Information%20about%20Borealis"
+         class="whitespace-nowrap border rounded-xl border-black px-4 py-2 font-bold transition bg-white text-black hover:bg-gray-300">
+        Contact us
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero section -->
+<header> 
+  <div class="grid min-h-[calc(100vh-5rem)] grid-cols-1 md:grid-cols-2 lg:[grid-template-columns:1fr_1.1fr]">
+    <!-- Left: text on black -->
+    <section class="flex items-center bg-black text-white">
+      <div class="w-full max-w-[780px] px-8 py-12 md:p-12 lg:p-20">
+        <h1 class="font-extrabold leading-tight text-[clamp(2rem,5vw,3.25rem)]">
+          Introducing
+          <span class="relative inline-block pb-1 after:absolute after:inset-x-0 after:bottom-0 after:h-[2px] after:bg-current">
+            Borealis™
+          </span>
+          — A new way to get cool
+        </h1>
+
+        <p class="mt-4 text-[clamp(1rem,2.1vw,1.15rem)] leading-7 opacity-90">
+          Borealis™ is a revolutionary, modular <span class="font-extrabold italic text-xl">facility-to-chip</span> cooling platform designed for high-density computing. It delivers unparalleled efficiency and scalability, ensuring optimal performance for AI, HPC, and hyperscale data centers. Experience the future of thermal management with Borealis.
+        </p>
+
+        <div class="mt-6 flex flex-wrap gap-3">
+          <a href="#learnMore"
+             class="inline-block rounded-full border-2 border-white bg-white px-5 py-2 font-bold text-black transition hover:-translate-y-0.5">
+            Learn More
+          </a>
+          <a href="mailto:sbarberi@agt-usa.com?&subject=Information%20about%20Borealis"
+             class="inline-block rounded-full border-2 border-white px-5 py-2 font-bold text-white transition hover:-translate-y-0.5">
+            Contact Us
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right: image with Ken Burns -->
+    <section class="relative min-h-[50vh] md:min-h-[calc(100vh-5rem)] overflow-hidden">
+      <img
+        src="/img/hero.webp"
+        alt="Borealis Hero"
+        class="h-full w-full object-cover will-change-transform animate-[kenburns_22s_ease-in-out_infinite]"
+      />
+    </section>
+  </div>
+</header>
+
+<section id="learnMore" class="scroll-mt-[80px] bg-[#f5f6f9] py-10 md:py-14">
+  <div class="mx-auto max-w-[1200px] px-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 items-center gap-8">
+      <!-- Left: copy + metrics -->
+      <div>
+        <h1 class="text-balance text-[clamp(1.75rem,3vw,2.75rem)] font-bold mb-10">
+          Why Borealis? Why Now?
+        </h1>
+        <p class="mt-3 max-w-[70ch] text-[1.05rem] leading-7 opacity-90 mb-10">
+          AI/HPC and high-density CPU racks are outpacing traditional facility–water cooling.
+          Operators need row-scale capacity, fast transient stability, and a path from glycol
+          today to dielectric two-phase tomorrow—without ripping and replacing infrastructure.
+        </p>
+
+        <!-- Metrics -->
+        <div class="mt-6 grid grid-cols-2 gap-x-10 gap-y-6 sm:gap-x-14">
+          <!-- Water -->
+          <div class="space-y-4">
+            <h4 class="m-0 text-[1.1rem]">Water</h4>
+            <div class="mb-10">
+              <div class="flex items-baseline gap-1.5 font-extrabold leading-none text-[clamp(1.6rem,4.5vw,2.25rem)]">
+                <span class="counter" data-target="276" data-decimals="0" data-duration="1000">0</span>
+                <span class="font-bold opacity-90">kW</span>
+              </div>
+              <p class="m-0 text-[0.95rem] opacity-85">single module cooling capacity</p>
+            </div>
+            <div>
+              <div class="flex items-baseline gap-1.5 font-extrabold leading-none text-[clamp(1.6rem,4.5vw,2.25rem)]">
+                <span class="counter" data-target="2.486" data-decimals="3" data-duration="1000">0</span>
+                <span class="font-bold opacity-90">MW</span>
+              </div>
+              <p class="m-0 text-[0.95rem] opacity-85">scalable cooling capacity (6 modules)</p>
+            </div>
+          </div>
+
+          <!-- Glycol -->
+          <div class="space-y-4">
+            <h4 class="m-0 text-[1.1rem]">Glycol</h4>
+            <div class="mb-10">
+              <div class="flex items-baseline gap-1.5 font-extrabold leading-none text-[clamp(1.6rem,4.5vw,2.25rem)]">
+                <span class="counter" data-target="256" data-decimals="0" data-duration="1000">0</span>
+                <span class="font-bold opacity-90">kW</span>
+              </div>
+              <p class="m-0 text-[0.95rem] opacity-85">single module cooling capacity</p>
+            </div>
+            <div>
+              <div class="flex items-baseline gap-1.5 font-extrabold leading-none text-[clamp(1.6rem,4.5vw,2.25rem)]">
+                <span class="counter" data-target="2.301" data-decimals="3" data-duration="1000">0</span>
+                <span class="font-bold opacity-90">MW</span>
+              </div>
+              <p class="m-0 text-[0.95rem] opacity-85">scalable cooling capacity (6 modules)</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: image -->
+      <div class="relative">
+        <img
+          src="/img/learnMore.webp"
+          alt="Row-scale cooling test line"
+          class="w-full h-auto rounded-2xl shadow-xl object-contain md:h-[55vh] md:object-cover"
+        />
+      </div>
+    </div>
+  </div>
+</section>
+
+<section
+  id="facility-to-chip" 
+  class="scroll-mt-[80px] bg-black text-white relative min-h-[60vh] md:min-h-[70vh] lg:min-h-[80vh] flex items-center py-16 md:py-20"
+>
+  <div class="mx-auto grid max-w-[1400px] px-6 gap-8 md:grid-cols-2 items-center">
+    <!-- Left: copy -->
+    <div>
+      <h2 class="text-balance text-[clamp(1.75rem,3.25rem,4rem)] font-extrabold italic">
+        Facility-to-Chip™ Cooling Ecosystem
+      </h2>
+
+      <p class="mt-3 max-w-[70ch] text-[1.25rem] leading-7 opacity-90">
+        The Borealis&trade; Facility-to-Chip&trade; Cooling Ecosystem addresses the escalating thermal, efficiency, and scalability demands of high-density AI/HPC deployments by linking the data
+        center’s facility-level cooling infrastructure directly to the chip-level heat removal hardware. This end-to-end integration enables precise thermal management, maximized efficiency, and simplified scalability — all from a single intelligent platform.
+      </p>
+
+      <!-- Highlights -->
+      <ul class="mt-6 space-y-3 text-[1.02rem] leading-7">
+        <li class="flex items-start gap-3">
+          <span class="mt-2 inline-block h-2 w-2 shrink-0 rounded-full bg-white/80"></span>
+          <span>
+            <strong>Facility Side:</strong>Chillers, fluid coolers, and mechanical refrigeration assets form the primary loop.
+          </span>
+        </li>
+        <li class="flex items-start gap-3">
+          <span class="mt-2 inline-block h-2 w-2 shrink-0 rounded-full bg-white/80"></span>
+          <span>
+            <strong>Core Intelligence:</strong> The Borealis™ CDU serves as the “brain” of the system, dynamically managing both the facility and chip loops, optimizing thermal envelopes, and integrating AI-driven predictive maintenance.
+          </span>
+        </li>
+        <li class="flex items-start gap-3">
+          <span class="mt-2 inline-block h-2 w-2 shrink-0 rounded-full bg-white/80"></span>
+          <span>
+            <strong>Chip Side:</strong> ThermaPod™ modules provide rack-level immersion, spray, or direct-to-chip cooling tailored to workload density.
+          </span>
+        </li>
+
+      </ul>
+      <div class="mt-6">
+                This architecture delivers closed-loop coordination, enabling real-time optimization across the entire cooling chain.
+      </div>
+
+      <!-- <div class="mt-7 flex flex-wrap gap-3">
+        <a
+          href="#features"
+          class="inline-block rounded-full border-2 border-white bg-white px-5 py-2 font-bold text-black transition hover:-translate-y-0.5"
+        >
+          Explore Key Features
+        </a>
+        <a
+          href="#applications"
+          class="inline-block rounded-full border-2 border-white px-5 py-2 font-bold text-white transition hover:-translate-y-0.5"
+        >
+          See Applications
+        </a>
+      </div> -->
+    </div>
+
+    <!-- Right: image -->
+    <div class="relative">
+      <img
+        src="/img/facilityToChip.webp"
+        alt="Facility-to-Chip system"
+        class="w-full h-auto max-h-[60vh] md:max-h-[65vh] lg:max-h-[70vh]
+               rounded-2xl shadow-xl object-contain"
+      />
+      <!-- If you prefer crop-to-fill on desktop, swap object-contain -> md:object-cover -->
+    </div>
+  </div>
+</section>
+
+
+<section id="features" class="scroll-mt-[80px] bg-[#0b0d16] py-12 md:py-16 text-white">
+  <div class="mx-auto max-w-[1200px] px-6">
+    <!-- Top: Heading + Intro side by side -->
+    <div class="grid grid-cols-1 md:grid-cols-2 items-start gap-8 mb-10">
+      <!-- Left: Title -->
+      <h2 class="text-balance text-[clamp(1.75rem,2.35vw,3rem)] font-bold">
+        Explore the <em class="italic font-semibold">Key Features</em><br/>
+        of the Borealis™ CDU Platform
+      </h2>
+      
+      <!-- Right: Intro -->
+      <p class="text-[1.15rem] leading-7 opacity-90 max-w-[65ch] font-medium">
+        Discover the innovative features that make Borealis™ CDU Platform and ThermaPod™ the ideal solutions for high-density computing environments. Our modular and scalable designs ensure efficient thermal management, reducing energy consumption and enhancing the reliability of critical electronic components.
+      </p>
+    </div>
+
+    <!-- Cards -->
+    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <!-- Card 1 -->
+      <article class="reveal opacity-0 translate-y-6 group rounded-2xl bg-white/5 ring-1 ring-white/10 transition hover:-translate-y-1 hover:bg-white/10">
+        <div class="aspect-[16/9] overflow-hidden rounded-xl bg-white/5 ring-1 ring-white/10">
+          <!-- Optional image -->
+          <img src="/img/tenweb_media_SXKNQLLDK.webp" alt="ThermaPod module"
+               class="h-full w-full object-cover opacity-90 transition group-hover:scale-[1.03]" />
+        </div>
+        <h3 class="mt-4 text-xl font-bold text-center">High-Efficiency Cooling</h3>
+        <p class="leading-7 opacity-90 p-5">
+          Borealis™ provides efficient cooling tailored for power-dense computing environments, ensuring optimal performance and reliability. It reduces energy consumption compared to traditional cooling methods, making it an eco-friendly solution.
+        </p>
+      </article>
+
+      <!-- Card 2 -->
+      <article class="reveal opacity-0 translate-y-6 group rounded-2xl bg-white/5 ring-1 ring-white/10 transition hover:-translate-y-1 hover:bg-white/10">
+        <div class="aspect-[16/9] overflow-hidden rounded-xl bg-white/5 ring-1 ring-white/10">
+          <img src="/img/dual-loop.webp" alt="Borealis CDU diagram"
+               class="h-full w-full object-cover opacity-90 transition group-hover:scale-[1.03]" />
+        </div>
+        <h3 class="mt-4 text-xl font-bold text-center">Dual-Loop Flexibility</h3>
+        <p class="mt-1.5 leading-7 opacity-90 p-5">
+          Unlike conventional CDUs, Borealis™ supports both single-phase glycol loops and two-phase dielectric refrigerant loops in the same chassis. Switching between modes requires only a heat exchanger and control logic swap — not a full hardware replacement. This flexibility eliminates the need for parallel infrastructure and future-proof facilities for emerging two-phase deployments.
+        </p>
+      </article>
+
+      <!-- Card 3 -->
+      <article class="reveal opacity-0 translate-y-6 group rounded-2xl bg-white/5 ring-1 ring-white/10 transition hover:-translate-y-1 hover:bg-white/10">
+        <div class="aspect-[16/9] overflow-hidden rounded-xl bg-white/5 ring-1 ring-white/10">
+          <img src="/img/tenweb_media_seavodjyf.webp" alt="Integrated rack and CDU"
+               class="h-full w-full object-cover opacity-90 transition group-hover:scale-[1.03]" />
+        </div>
+        <h3 class="mt-4 text-xl font-bold text-center">Modular &amp; Scalable</h3>
+        <p class="mt-1.5 leading-7 opacity-90 p-5">
+          Our modular design allows for easy integration and scalability, adapting to your specific needs. The flexible operation modes support both single-phase and two-phase cooling, ensuring optimal thermal management for various applications.
+        </p>
+      </article>
+
+      <!-- Card 4 -->
+      <article class="reveal opacity-0 translate-y-6 group rounded-2xl bg-white/5 ring-1 ring-white/10 transition hover:-translate-y-1 hover:bg-white/10">
+        <div class="aspect-[16/9] overflow-hidden rounded-xl bg-white/5 ring-1 ring-white/10">
+          <img src="/img/tenweb_media_skm2t3q3y.webp" alt="Telemetry and controls"
+               class="h-full w-full object-cover opacity-90 transition group-hover:scale-[1.03]" />
+        </div>
+        <h3 class="mt-4 text-xl font-bold text-center">Telemetry &amp; Control</h3>
+        <p class="mt-1.5 leading-7 opacity-90 p-5">
+              Borealis™ integrates advanced telemetry and intelligent control at the row scale, delivering <strong>fast transient stability</strong> during workload spikes and <strong>real-time observability</strong> across both facility and IT cooling loops. Operators gain actionable insights through unified dashboards and APIs, enabling predictive maintenance, proactive anomaly detection, and seamless orchestration with data center infrastructure management (DCIM) systems.
+
+        </p>
+      </article>
+
+      <!-- Card 5 -->
+      <article class="reveal opacity-0 translate-y-6 group rounded-2xl bg-white/5 ring-1 ring-white/10 transition hover:-translate-y-1 hover:bg-white/10">
+        <div class="aspect-[16/9] overflow-hidden rounded-xl bg-white/5 ring-1 ring-white/10">
+          <img src="/img/high-efficiencyPumping.webp" alt="Serviceable modules"
+               class="h-full w-full object-cover opacity-90 transition group-hover:scale-[1.03]" />
+        </div>
+        <h3 class="mt-4 text-xl font-bold text-center">High-Efficiency Pumping</h3>
+        <p class="mt-1.5 leading-7 opacity-90 p-5">
+          Industry-leading motor efficiency (>92%), built-in VFDs, and
+          peer-to-peer load sharing for up to six units without an external PLC. This design: 1. Maintains operation near the best efficiency point (BEP) for minimal parasitic load
+          2. Reduces system complexity by removing the need for separate staging controllers 3. Increases reliability with fewer failure points
+        </p>
+      </article>
+
+      <!-- Card 6 -->
+      <article class="reveal opacity-0 translate-y-6 group rounded-2xl bg-white/5 ring-1 ring-white/10 transition hover:-translate-y-1 hover:bg-white/10">
+        <div class="aspect-[16/9] overflow-hidden rounded-xl bg-white/5 ring-1 ring-white/10">
+          <img src="/img/tenweb_media_sqfkdxwwc.webp" alt="Future-ready architecture"
+               class="h-full w-full object-cover opacity-90 transition group-hover:scale-[1.03]" />
+        </div>
+        <h3 class="mt-4 text-xl font-bold text-center">Future-Ready</h3>
+        <p class="mt-1.5 leading-7 opacity-90 p-5">
+          Borealis™ provides a <strong>clean migration path</strong> from today’s single-phase glycol systems to tomorrow’s two-phase dielectric solutions — without the need for parallel infrastructure or disruptive retrofits.
+        </p>
+      </article>
+    </div>
+
+    <!-- CTA row -->
+    <!-- <div class="mt-10 flex flex-wrap items-center gap-3">
+      <a href="#applications" class="inline-block rounded-full border-2 border-white px-5 py-2 font-bold transition hover:-translate-y-0.5">
+        See Applications
+      </a>
+      <a href="mailto:sbarberi@agt-usa.com?&subject=Information%20about%20Borealis"
+         class="inline-block rounded-full border-2 border-white bg-white px-5 py-2 font-bold text-black transition hover:-translate-y-0.5">
+        Contact Us
+      </a>
+    </div> -->
+  </div>
+</section>
+
+<section id="applications" class="scroll-mt-[80px] bg-[#f1f1f1] py-12 md:py-16">
+  <div class="mx-auto max-w-[1200px] px-6">
+
+    <!-- Top: Title (L) + Intro (R) -->
+    <div class="grid grid-cols-1 md:grid-cols-2 items-start gap-8 mb-10">
+      <h2 class="text-balance text-[clamp(1.9rem,2.5vw,3rem)] font-extrabold leading-tight">
+        Explore the <span class="italic font-extrabold">Diverse Applications</span><br>
+        of the Borealis™ CDU Technology
+      </h2>
+
+      <p class="text-[1.15rem] leading-7 opacity-90 max-w-[70ch] font-medium">
+        Borealis™ is revolutionizing thermal management across various high-density computing environments. From AI and HPC to hyperscale data centers, our solutions ensure optimal performance and reliability. Discover how Borealis™ can enhance your infrastructure and drive innovation in your specific application.
+      </p>
+    </div>
+
+    <!-- Cards -->
+    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <!-- Card 1 -->
+      <article class="reveal opacity-0 translate-y-6 rounded-2xl bg-white ring-1 ring-black/10 transition hover:-translate-y-1 hover:shadow-lg">
+        <div class="aspect-[4/3] overflow-hidden rounded-xl ring-1 ring-black/10">
+          <img src="/img/aiAndML.webp" alt="AI training cluster"
+               class="h-full w-full object-cover"/>
+        </div>
+        <h3 class="mt-4 text-xl font-bold text-center">
+          AI and Machine Learning
+        </h3>
+        <p class="mt-2 leading-6 opacity-90 p-5">
+          Optimize AI and machine learning workloads with Borealis's superior cooling capabilities, ensuring peak performance and preventing thermal throttling. Experience unparalleled efficiency and reliability.
+        </p>
+      </article>
+
+      <!-- Card 2 -->
+      <article class="reveal opacity-0 translate-y-6 rounded-2xl bg-white ring-1 ring-black/10 transition hover:-translate-y-1 hover:shadow-lg">
+        <div class="aspect-[4/3] overflow-hidden rounded-xl ring-1 ring-black/10">
+          <img src="/img/hpc.webp" alt="Dual-loop CDU schematic"
+               class="h-full w-full object-cover"/>
+        </div>
+        <h3 class="mt-4 text-xl font-bold text-center">High-Performance Computing</h3>
+        <p class="mt-2 leading-6 opacity-90 p-5 mb-14">
+          Enhance HPC cluster performance with ThermaPod™, designed to handle the most demanding computational tasks. Benefit from reduced energy consumption and increased processing power.
+        </p>
+      </article>
+
+      <!-- Card 3 -->
+      <article class="reveal opacity-0 translate-y-6 rounded-2xl bg-white ring-1 ring-black/10 transition hover:-translate-y-1 hover:shadow-lg">
+        <div class="aspect-[4/3] overflow-hidden rounded-xl ring-1 ring-black/10">
+          <img src="/img/dataCenter.webp" alt="Edge/MEC deployment"
+               class="h-full w-full object-cover"/>
+        </div>
+        <h3 class="mt-4 text-xl font-bold text-center">Hyperscale Data Centers
+        </h3>
+        <p class="mt-2 leading-6 opacity-90 p-5">
+          Scale your data center operations with confidence using Borealis™. Our modular and scalable solutions provide efficient thermal management for hyperscale environments, ensuring maximum uptime and cost savings.
+        </p>
+      </article>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- BENEFITS -->
+<section id="benefits"
+  class="scroll-mt-[80px] bg-black text-white relative
+         min-h-[70vh] lg:min-h-[80vh] flex items-center py-16 md:py-20">
+  <div class="mx-auto grid max-w-[1300px] w-full px-2 gap-10 md:grid-cols-[1.2fr_1.2fr] items-center">
+
+    <!-- Left: copy -->
+    <div class="reveal opacity-0 translate-y-6">
+      <h2 class="text-balance font-extrabold leading-tight
+                 text-[clamp(2rem,2.25vw,3.5rem)]">
+        Discover the <em class="italic font-bold">Borealis™</em><br/>
+        CDU Platform benefits<br/>
+        and impact
+      </h2>
+
+      <p class="mt-5 max-w-[62ch] text-[1.rem] leading-7 opacity-90">
+        The Borealis™ CDU platform Facility-to-Chip™ Cooling Ecosystem delivers
+        measurable benefits that extend beyond thermal performance, impacting
+        operational efficiency, capital planning, and sustainability metrics.
+      </p>
+
+      <!-- Bullets -->
+      <ul class="mt-6 space-y-4 text-[1.2rem] leading-7">
+        <li class="flex gap-3">
+          <span class="mt-2 inline-block h-2.5 w-2.5 rounded-full bg-white/80"></span>
+          <span><strong>Operational Efficiency:</strong> Optimized energy use, dynamic loop
+            balancing, and reduced downtime.</span>
+        </li>
+        <li class="flex gap-3">
+          <span class="mt-2 inline-block h-2.5 w-2.5 rounded-full bg-white/80"></span>
+          <span><strong>Scalability Without Overhaul:</strong> Modular growth, dual-mode
+            readiness, and linear scaling.</span>
+        </li>
+        <li class="flex gap-3">
+          <span class="mt-2 inline-block h-2.5 w-2.5 rounded-full bg-white/80"></span>
+          <span><strong>CAPEX &amp; OPEX Savings:</strong> Elimination of parallel systems and
+            reduced controls infrastructure.</span>
+        </li>
+        <li class="flex gap-3">
+          <span class="mt-2 inline-block h-2.5 w-2.5 rounded-full bg-white/80"></span>
+          <span><strong>Sustainability &amp; Compliance:</strong> Low-GWP refrigerants, standards
+            alignment (ASHRAE &amp; ISO 50001), and water/energy savings.</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Right: image -->
+<div class="reveal opacity-0 translate-y-6">
+  <div
+    class="flex justify-center items-center overflow-hidden rounded-xl
+            ring-white/10 shadow-[0_40px_80px_-20px_rgba(0,0,0,0.6)]">
+    <img
+      src="/img/borealis.webp"
+      alt="Borealis CDU and ThermaPod racks"
+      class="h-[70vh] md:h-[76vh] lg:h-[50vh] w-auto object-cover"
+      />
+  </div>
+</div>
+
+  </div>
+</section>
+
+
+<section id="contact" class="scroll-mt-[80px] bg-white py-12 md:py-16">
+  <div class="mx-auto max-w-[1200px] px-6">
+      <h1 class="text-balance text-[clamp(1.75rem,3vw,3.5rem)] font-bold mb-10 text-center">
+      Get in Touch
+    </h1>
+    <!-- 3-up contact options -->
+    <div class="grid grid-cols-1 gap-10 text-center md:grid-cols-3">
+      <!-- Email -->
+      <div class="reveal opacity-0 translate-y-6 transition duration-700 ease-out">
+        <img src="/img/icons/mail.svg" alt="Email icon" class="mx-auto mb-3 h-10 w-10" />
+        <h3 class="text-xl font-bold">Email Us</h3>
+        <p class="mx-auto mt-1 max-w-[36ch] text-[0.98rem] leading-7 opacity-80">
+          For inquiries, support, or collaborations, reach out via email.
+        </p>
+        <a href="mailto:info@borealis.com" class="mt-2 inline-block font-semibold text-indigo-600 hover:underline">
+          info@borealis.com
+        </a>
+      </div>
+
+      <!-- Call -->
+      <div class="reveal opacity-0 translate-y-6 transition duration-700 ease-out">
+        <img src="/img/icons/phone.svg" alt="Phone icon" class="mx-auto mb-3 h-10 w-10" />
+        <h3 class="text-xl font-bold">Call Us</h3>
+        <p class="mx-auto mt-1 max-w-[36ch] text-[0.98rem] leading-7 opacity-80">
+          Speak directly with our team or schedule a consultation.
+        </p>
+        <a href="tel:+19099730634" class="mt-2 inline-block font-semibold text-indigo-600 hover:underline">
+          +1 (909) 973-0634
+        </a>
+      </div>
+
+      <!-- Visit -->
+      <div class="reveal opacity-0 translate-y-6 transition duration-700 ease-out">
+        <img src="/img/icons/location.svg" alt="Location icon" class="mx-auto mb-3 h-10 w-10" />
+        <h3 class="text-xl font-bold">Visit Us</h3>
+        <p class="mx-auto mt-1 max-w-[36ch] text-[0.98rem] leading-7 opacity-80">
+          Come see our headquarters and meet the team in Corona.
+        </p>
+        <div class="mt-2 font-semibold">235 Jason Ct, Corona, CA 92879</div>
+      </div>
+    </div>
+
+    <!-- Map -->
+    <div class="reveal opacity-0 translate-y-6 mt-10 overflow-hidden rounded-2xl shadow-xl ring-1 ring-black/10 transition duration-700 ease-out">
+      <iframe
+        title="Borealis HQ – 235 Jason Ct, Corona, CA 92879"
+        class="h-[60vh] w-full"
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        src="https://www.google.com/maps?q=235%20Jason%20Ct,%20Corona,%20CA%2092879&output=embed">
+      </iframe>
+    </div>
+  </div>
+</section>
+
+<footer class="bg-[#0b0d16] text-white py-12">
+  <div class="mx-auto max-w-[1200px] px-6 grid grid-cols-1 md:grid-cols-4 gap-10">
+
+    <!-- Column 1: Logo + short text -->
+    <div>
+      <h3 class="text-2xl font-bold">BOREALIS</h3>
+      <p class="mt-3 text-sm leading-6 opacity-80">
+        A new way to get cool.
+      </p>
+    </div>
+
+    <!-- Column 2: Quick Links -->
+    <div>
+      <h4 class="text-lg font-semibold mb-3">Quick Links</h4>
+      <ul class="space-y-2 text-sm opacity-90">
+        <li>
+          <a href="#features" class="hover:underline">Key Features</a>
+        </li>
+        <li>
+          <a href="#applications" class="hover:underline">Applications</a>
+        </li>
+        <li>
+          <a href="#benefits" class="hover:underline">Benefits</a>
+        </li>
+        <li>
+          <a href="#contact" class="hover:underline">Contact Us</a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Column 3: Contact -->
+    <div>
+      <h4 class="text-lg font-semibold mb-3">Contact</h4>
+      <ul class="space-y-2 text-sm opacity-90">
+        <li>Email: <a href="mailto:info@borealis.com" class="hover:underline">info@borealis.com</a></li>
+        <li>Phone: <a href="tel:+19099730634" class="hover:underline">+1 (909) 973-0634</a></li>
+        <li>Address: 235 Jason Ct<br/>Corona, CA 92879</li>
+      </ul>
+    </div>
+
+    <!-- Column 4: Social -->
+    <div>
+      <h4 class="text-lg font-semibold mb-3">Follow Us</h4>
+      <div class="flex gap-4">
+        <a href="#" class="hover:text-indigo-400">
+          <img src="/img/icons/logo-linkedin.svg" alt="">
+        </a>
+        <a href="#" class="hover:text-indigo-400">Twitter</a>
+        <a href="#" class="hover:text-indigo-400">YouTube</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom bar -->
+  <div class="mt-10 border-t border-white/10 pt-6 text-center text-sm opacity-70">
+    © <span id="year"></span> Borealis. All rights reserved.
+  </div>
+</footer>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
