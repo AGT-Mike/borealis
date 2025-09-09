@@ -99,3 +99,64 @@ function revealOnScroll() {
 }
 
 revealOnScroll();
+
+async function setupDownloadsMenu() {
+  const btn = document.getElementById("downloadsBtn");
+  const menu = document.getElementById("downloadsMenu");
+  const list = document.getElementById("pdfMenuList");
+  if (!btn || !menu || !list) return;
+
+  // Load manifest
+  try {
+    const res = await fetch("/pdfs.json", { cache: "no-store" });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const items = await res.json();
+
+    if (!Array.isArray(items) || items.length === 0) {
+      list.innerHTML = `<div class="px-4 py-3 text-sm opacity-70">No downloads available.</div>`;
+    } else {
+      list.innerHTML = items
+        .map(
+          ({ name, url }) => `
+          <a href="${url}" class="block px-4 py-2.5 text-sm hover:bg-white/10">
+            ${escapeHtml(name)}
+          </a>`
+        )
+        .join("");
+    }
+  } catch (e) {
+    console.error("Failed to load /pdfs.json", e);
+    list.innerHTML = `<div class="px-4 py-3 text-sm text-red-300">Failed to load downloads.</div>`;
+  }
+
+  // Toggle open/close
+  const toggle = (open) => {
+    menu.classList.toggle("open", open);
+    btn.setAttribute("aria-expanded", open ? "true" : "false");
+  };
+
+  btn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    toggle(!menu.classList.contains("open"));
+  });
+
+  // Close on outside click / Escape
+  document.addEventListener("click", (e) => {
+    if (!menu.classList.contains("open")) return;
+    const root = document.getElementById("downloadsRoot");
+    if (root && !root.contains(e.target)) toggle(false);
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") toggle(false);
+  });
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, (ch) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+  })[ch]);
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  setupDownloadsMenu();
+});

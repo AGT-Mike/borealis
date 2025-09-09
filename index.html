@@ -22,6 +22,30 @@
       <a href="#features" class="hover:text-gray-300">Key Features</a>
       <a href="#applications" class="hover:text-gray-300">Applications</a>
       <a href="#benefits" class="hover:text-gray-300">Benefits</a>
+
+      <!-- Downloads dropdown -->
+<div class="relative" id="downloadsRoot">
+  <button id="downloadsBtn"
+          class="flex items-center gap-2 font-semibold hover:opacity-80"
+          type="button" aria-haspopup="true" aria-expanded="false">
+    Downloads
+    <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+      <path fill-rule="evenodd"
+            d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.24 4.5a.75.75 0 01-1.08 0l-4.24-4.5a.75.75 0 01.02-1.06z"
+            clip-rule="evenodd" />
+    </svg>
+  </button>
+
+  <!-- Panel -->
+  <div id="downloadsMenu"
+       class="invisible absolute left-0 mt-2 w-64 translate-y-1 rounded-xl border border-white/10 bg-black/90 text-white shadow-xl opacity-0 transition
+              [&.open]:visible [&.open]:opacity-100 [&.open]:translate-y-0 z-50">
+    <div class="max-h-[60vh] overflow-auto py-2" id="pdfMenuList">
+      <!-- links injected here -->
+      <div class="px-4 py-3 text-sm opacity-70">Loading…</div>
+    </div>
+  </div>
+</div>
       <!-- <a href="/about-borealis/" class="hover:text-gray-300">About Borealis</a>
       <a href="/thermapod/" class="hover:text-gray-300">Thermapod</a> -->
     </div>
