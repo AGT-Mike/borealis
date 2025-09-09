@@ -39,45 +39,44 @@
   </div>
 </nav>
 
-<!-- Hero section -->
-<header> 
-  <div class="grid min-h-[calc(100vh-5rem)] grid-cols-1 md:grid-cols-2 lg:[grid-template-columns:1fr_1.1fr]">
-    <!-- Left: text on black -->
-    <section class="flex items-center bg-black text-white">
-      <div class="w-full max-w-[780px] px-8 py-12 md:p-12 lg:p-20">
-        <h1 class="font-extrabold leading-tight text-[clamp(2rem,5vw,3.25rem)]">
-          Introducing
-          <span class="relative inline-block pb-1 after:absolute after:inset-x-0 after:bottom-0 after:h-[2px] after:bg-current">
-            Borealis™
-          </span>
-          — A new way to get cool
-        </h1>
+<!-- Hero section with video background -->
+<header class="relative h-screen w-full overflow-hidden">
+  <!-- Background video -->
+  <video autoplay muted loop playsinline
+         class="absolute inset-0 h-full w-full object-cover">
+    <source src="/hero.mp4" type="video/mp4" />
+    Your browser does not support the video tag.
+  </video>
 
-        <p class="mt-4 text-[clamp(1rem,2.1vw,1.15rem)] leading-7 opacity-90">
-          Borealis™ is a revolutionary, modular <span class="font-extrabold italic text-xl">facility-to-chip</span> cooling platform designed for high-density computing. It delivers unparalleled efficiency and scalability, ensuring optimal performance for AI, HPC, and hyperscale data centers. Experience the future of thermal management with Borealis.
-        </p>
+  <!-- Overlay -->
+  <div class="absolute inset-0 bg-black/50"></div>
 
-        <div class="mt-6 flex flex-wrap gap-3">
-          <a href="#learnMore"
-             class="inline-block rounded-full border-2 border-white bg-white px-5 py-2 font-bold text-black transition hover:-translate-y-0.5">
-            Learn More
-          </a>
-          <a href="mailto:thomas.l@aeonstech.com?&subject=Information%20about%20Borealis"
-             class="inline-block rounded-full border-2 border-white px-5 py-2 font-bold text-white transition hover:-translate-y-0.5">
-            Contact Us
-          </a>
-        </div>
+  <!-- Content -->
+  <div class="relative z-10 flex h-full items-end justify-start px-6 pb-12 text-white">
+    <div class="max-w-3xl text-left">
+      <!-- <h1 class="font-extrabold leading-tight text-[clamp(2rem,5vw,3.25rem)]">
+        Introducing
+        <span class="relative inline-block pb-1 after:absolute after:inset-x-0 after:bottom-0 after:h-[2px] after:bg-current">
+          Borealis™
+        </span>
+        — A new way to get cool
+      </h1>
+
+      <p class="mt-4 text-[clamp(1rem,2.1vw,1.15rem)] leading-7 opacity-90">
+        Borealis™ is a revolutionary, modular <span class="font-extrabold italic text-xl">facility-to-chip</span> cooling platform designed for high-density computing. It delivers unparalleled efficiency and scalability, ensuring optimal performance for AI, HPC, and hyperscale data centers. Experience the future of thermal management with Borealis.
+      </p> -->
+
+      <div class="mt-6 flex flex-wrap gap-3">
+        <a href="#learnMore"
+           class="inline-block rounded-full border-2 border-white bg-white px-5 py-2 font-bold text-black transition hover:-translate-y-0.5">
+          Learn More
+        </a>
+        <!-- <a href="mailto:thomas.l@aeonstech.com?&subject=Information%20about%20Borealis"
+           class="inline-block rounded-full border-2 border-white px-5 py-2 font-bold text-white transition hover:-translate-y-0.5">
+          Contact Us
+        </a> -->
       </div>
-    </section>
-
-    <!-- Right: image with Ken Burns -->
-    <section class="relative min-h-[50vh] md:min-h-[calc(100vh-5rem)] overflow-hidden">
-      <img
-        src="/img/hero.webp"
-        alt="Borealis Hero"
-        class="h-full w-full object-cover will-change-transform animate-[kenburns_22s_ease-in-out_infinite]"
-      />
-    </section>
+    </div>
   </div>
 </header>
 
@@ -149,8 +148,7 @@
   </div>
 </section>
 
-<section
-  id="facility-to-chip" 
+<section id="facility-to-chip" 
   class="scroll-mt-[80px] bg-black text-white relative min-h-[60vh] md:min-h-[70vh] lg:min-h-[80vh] flex items-center py-16 md:py-20"
 >
   <div class="mx-auto grid max-w-[1400px] px-6 gap-8 md:grid-cols-2 items-center">
@@ -208,12 +206,11 @@
     </div>
 
     <!-- Right: image -->
-    <div class="relative">
+    <div class="relative overflow-hidden rounded-2xl ring-1 ring-black">
       <img
         src="/img/facilityToChip.webp"
         alt="Facility-to-Chip system"
-        class="w-full h-auto max-h-[60vh] md:max-h-[65vh] lg:max-h-[70vh]
-               rounded-2xl shadow-xl object-contain"
+        class="w-full h-auto max-h-[60vh] md:max-h-[65vh] lg:max-h-[70vh] object-cover"
       />
       <!-- If you prefer crop-to-fill on desktop, swap object-contain -> md:object-cover -->
     </div>
@@ -243,7 +240,7 @@
       <article class="reveal opacity-0 translate-y-6 group rounded-2xl bg-white/5 ring-1 ring-white/10 transition hover:-translate-y-1 hover:bg-white/10">
         <div class="aspect-[16/9] overflow-hidden rounded-xl bg-white/5 ring-1 ring-white/10">
           <!-- Optional image -->
-          <img src="/img/tenweb_media_SXKNQLLDK.webp" alt="ThermaPod module"
+          <img src="/img/thermaPod.webp" alt="ThermaPod module"
                class="h-full w-full object-cover opacity-90 transition group-hover:scale-[1.03]" />
         </div>
         <h3 class="mt-4 text-xl font-bold text-center">High-Efficiency Cooling</h3>
@@ -267,7 +264,7 @@
       <!-- Card 3 -->
       <article class="reveal opacity-0 translate-y-6 group rounded-2xl bg-white/5 ring-1 ring-white/10 transition hover:-translate-y-1 hover:bg-white/10">
         <div class="aspect-[16/9] overflow-hidden rounded-xl bg-white/5 ring-1 ring-white/10">
-          <img src="/img/tenweb_media_seavodjyf.webp" alt="Integrated rack and CDU"
+          <img src="/img/scalable.webp" alt="Integrated rack and CDU"
                class="h-full w-full object-cover opacity-90 transition group-hover:scale-[1.03]" />
         </div>
         <h3 class="mt-4 text-xl font-bold text-center">Modular &amp; Scalable</h3>
@@ -377,7 +374,6 @@
 
   </div>
 </section>
-
 
 <!-- BENEFITS -->
 <section id="benefits"
