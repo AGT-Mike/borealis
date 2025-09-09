@@ -1,8 +1,20 @@
 {
   "redirects": [
-    { 
-      "source": "/(.*)", "has": [{ "type": "host", "value": "www.borealis.cool" }], "destination": "https://borealis.cool/$1", 
-      "permanent": true 
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "www.borealis.cool" }],
+      "destination": "https://borealis.cool/$1",
+      "permanent": true
+    },
+    { "source": "/", "destination": "/displayBoard.pdf", "permanent": true }
+  ],
+  "headers": [
+    {
+      "source": "/displayBoard.pdf",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" },
+        { "key": "Content-Disposition", "value": "inline" }
+      ]
     }
   ]
 }
