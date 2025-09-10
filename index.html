@@ -9,15 +9,16 @@
 
   <!-- Nav bar -->
 
-  <nav id="mainNavbar" class="fixed top-0 left-0 right-0 z-50 h-20 bg-transparent text-white transition-colors duration-300">
-  <div class="mx-10 flex h-full items-center justify-between px-6">
+<!-- NAVBAR -->
+  <nav id="mainNavbar" class="fixed top-0 left-0 right-0 z-50 h-16 md:h-20 bg-black/80 md:bg-transparent text-white transition-colors duration-300">
+  <div class="md:mx-10 flex h-full items-center justify-between px-6">
     <!-- Logo -->
-    <div class="text-4xl font-bold">
+    <div class="text-2xl md:text-4xl font-bold">
       <a href="/">BOREALIS</a>
     </div>
 
     <!-- Links (hidden on mobile) -->
-    <div id="navLinks" class="hidden gap-10 font-semibold md:flex">
+    <div id="navLinks" class="hidden gap-10 md:flex text-xl font-bold">
       <a href="#facility-to-chip" class="hover:text-gray-300">Facility-to-Chip</a>
       <a href="#features" class="hover:text-gray-300">Key Features</a>
       <a href="#applications" class="hover:text-gray-300">Applications</a>
@@ -49,58 +50,68 @@
       <!-- <a href="/about-borealis/" class="hover:text-gray-300">About Borealis</a>
       <a href="/thermapod/" class="hover:text-gray-300">Thermapod</a> -->
     </div>
-
-    <!-- Right side -->
-    <div class="flex items-center gap-3">
       <!-- Hamburger for mobile -->
       <button id="navToggle" class="text-2xl md:hidden">☰</button>
+    <!-- Right side -->
+    <div class="flex items-center gap-3">
       <!-- Contact button -->
       <a href="mailto:thomas.l@aeonstech.com?&subject=Information%20about%20Borealis"
-         class="whitespace-nowrap border rounded-xl border-black px-4 py-2 font-bold transition bg-white text-black hover:bg-gray-300">
+         class="whitespace-nowrap border rounded-xl border-black text-xs md:text-xl px-2 py-2 md:px-4 md:py-2 font-bold transition bg-white text-black hover:bg-gray-300">
         Contact us
       </a>
     </div>
   </div>
 </nav>
 
-<!-- Hero section with video background -->
-<header class="relative h-screen w-full overflow-hidden">
+<!-- MOBILE OVERLAY MENU (separate from desktop links) -->
+<div id="mobileMenu"
+     class="fixed top-16 inset-x-0 z-40 hidden bg-black/95 backdrop-blur-md border-t border-white/10">
+  <nav class="flex flex-col gap-1 p-4 text-base font-semibold">
+    <a class="block py-2" href="#facility-to-chip">Facility-to-Chip</a>
+    <a class="block py-2" href="#features">Key Features</a>
+    <a class="block py-2" href="#applications">Applications</a>
+    <a class="block py-2" href="#benefits">Benefits</a>
+
+    <!-- Mobile Downloads: inline accordion (no absolute positioning) -->
+    <details class="group">
+      <summary class="cursor-pointer list-none py-2 flex items-center justify-between">
+        <span>Downloads</span>
+        <svg class="h-4 w-4 transition-transform group-open:rotate-180" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.24 4.5a.75.75 0 01-1.08 0l-4.24-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+        </svg>
+      </summary>
+      <div id="pdfMenuListM" data-pdfs-list class="pl-3 pb-2 text-sm/6 opacity-90 space-y-1">
+        <!-- items injected -->
+      </div>
+    </details>
+  </nav>
+</div>
+
+<!-- HERO: video background + single CTA -->
+<header class="relative w-full md:h-screen overflow-hidden mt-16 md:mt-0">
   <!-- Background video -->
-  <video autoplay muted loop playsinline
-         class="absolute inset-0 h-full w-full object-cover">
+  <video
+    autoplay
+    muted
+    loop
+    playsinline
+    class="block w-full h-auto md:absolute md:inset-0 md:h-full md:w-full md:object-cover"
+  >
     <source src="/hero.mp4" type="video/mp4" />
     Your browser does not support the video tag.
   </video>
 
   <!-- Overlay -->
-  <div class="absolute inset-0 bg-black/50"></div>
+  <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent md:bg-black/40"></div>
 
-  <!-- Content -->
-  <div class="relative z-10 flex h-full items-end justify-start px-6 pb-12 text-white">
-    <div class="max-w-3xl text-left">
-      <!-- <h1 class="font-extrabold leading-tight text-[clamp(2rem,5vw,3.25rem)]">
-        Introducing
-        <span class="relative inline-block pb-1 after:absolute after:inset-x-0 after:bottom-0 after:h-[2px] after:bg-current">
-          Borealis™
-        </span>
-        — A new way to get cool
-      </h1>
-
-      <p class="mt-4 text-[clamp(1rem,2.1vw,1.15rem)] leading-7 opacity-90">
-        Borealis™ is a revolutionary, modular <span class="font-extrabold italic text-xl">facility-to-chip</span> cooling platform designed for high-density computing. It delivers unparalleled efficiency and scalability, ensuring optimal performance for AI, HPC, and hyperscale data centers. Experience the future of thermal management with Borealis.
-      </p> -->
-
-      <div class="mt-6 flex flex-wrap gap-3">
-        <a href="#learnMore"
-           class="inline-block rounded-full border-2 border-white bg-white px-5 py-2 font-bold text-black transition hover:-translate-y-0.5">
-          Learn More
-        </a>
-        <!-- <a href="mailto:thomas.l@aeonstech.com?&subject=Information%20about%20Borealis"
-           class="inline-block rounded-full border-2 border-white px-5 py-2 font-bold text-white transition hover:-translate-y-0.5">
-          Contact Us
-        </a> -->
-      </div>
-    </div>
+  <!-- Bottom-left CTA (desktop only) -->
+  <div
+    class="hidden md:absolute md:inset-0 md:flex md:items-end md:justify-start md:px-12 md:pb-12 z-10"
+  >
+    <a href="#learnMore"
+       class="inline-block rounded-full border-2 border-white bg-white px-5 py-2 font-bold text-black transition hover:-translate-y-0.5">
+      Learn More
+    </a>
   </div>
 </header>
 
