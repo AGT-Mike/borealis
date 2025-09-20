@@ -1,11 +1,12 @@
 import "/css/style.css";
 
 /* ───────────────────────────────────────────
-   NAV: mobile toggle + desktop scroll styles
+   NAV: desktop scroll styles
    ─────────────────────────────────────────── */
-const nav    = document.getElementById("mainNavbar");
-const toggle = document.getElementById("navToggle");
-const links  = document.getElementById("navLinks");
+const nav         = document.getElementById("mainNavbar");
+const navToggle   = document.getElementById("navToggle");
+const navLinks    = document.getElementById("navLinks"); // desktop links (md+)
+const mobileMenu  = document.getElementById("mobileMenu"); // mobile overlay
 
 function isDesktop() {
   return window.innerWidth >= 768; // Tailwind md
@@ -16,73 +17,67 @@ function lockBodyScroll(lock) {
   document.body.style.overflow = lock ? "hidden" : "";
 }
 
-function openMobileMenu() {
-  if (!links) return;
-  links.classList.remove("hidden");
-  links.classList.add("flex");
-
-  // Overlay panel directly under h-20 (5rem) navbar
-  links.classList.add(
-    "fixed", "top-20", "left-0", "right-0", "z-[60]",
-    "flex-col", "bg-black/95", "p-4", "space-y-4",
-    "max-h-[calc(100vh-5rem)]", "overflow-y-auto"
-  );
-
-  lockBodyScroll(true);
-  // Re-position dropdown for mobile overlay
-  placeDownloadsMenu();
-}
-
-function closeMobileMenu() {
-  if (!links) return;
-  links.classList.add("hidden");
-  links.classList.remove("flex");
-
-  // Strip overlay-specific utilities so desktop layout isn’t affected
-  links.classList.remove(
-    "fixed","top-20","left-0","right-0","z-[60]",
-    "flex-col","bg-black/95","p-4","space-y-4",
-    "max-h-[calc(100vh-5rem)]","overflow-y-auto"
-  );
-
-  lockBodyScroll(false);
-  placeDownloadsMenu(); // reset dropdown positioning
-}
-
-toggle?.addEventListener("click", () => {
-  if (!links) return;
-  const opening = links.classList.contains("hidden");
-  opening ? openMobileMenu() : closeMobileMenu();
-});
-
 function setNavBg() {
   if (!nav) return;
 
   if (isDesktop()) {
     // Desktop: transparent at top, dark on scroll
     if (window.scrollY > 50) {
-      nav.classList.add("md:bg-black/80","md:shadow-sm","md:backdrop-blur-sm");
+      nav.classList.add("md:bg-black/80", "md:shadow-sm", "md:backdrop-blur-sm");
       nav.classList.remove("md:bg-transparent");
     } else {
-      nav.classList.remove("md:bg-black/80","md:shadow-sm","md:backdrop-blur-sm");
-      nav.classList.add("md:bg-transparent");
+      nav.classList.remove("md:bg-black/80", "md:shadow-sm", "md:backdrop-blur-sm");
+      // nav.classList.add("md:bg-transparent");
     }
   } else {
     // Mobile: always solid dark
-    nav.classList.remove("md:bg-black/80","md:shadow-sm","md:backdrop-blur-sm","md:bg-transparent");
+    nav.classList.remove("md:bg-black/90", "md:shadow-sm", "md:backdrop-blur-sm", "md:bg-transparent");
     nav.classList.add("bg-black/80");
   }
 }
 setNavBg();
 window.addEventListener("scroll", setNavBg, { passive: true });
-window.addEventListener("resize", () => { setNavBg(); placeDownloadsMenu(); });
+window.addEventListener("resize", () => {
+  setNavBg();
+  // If we resize up to desktop, make sure the mobile overlay is closed
+  if (isDesktop()) closeMobileOverlay();
+});
 
-/* Close mobile overlay when clicking an in-page link */
-document.querySelectorAll('#navLinks a[href^="#"]').forEach(a => {
-  a.addEventListener("click", () => {
-    if (!links) return;
-    if (links.classList.contains("fixed")) closeMobileMenu();
-  });
+/* ───────────────────────────────────────────
+   MOBILE OVERLAY MENU (hamburger)
+   ─────────────────────────────────────────── */
+function openMobileOverlay() {
+  if (!mobileMenu) return;
+  mobileMenu.classList.remove("hidden");
+  lockBodyScroll(true);
+}
+function closeMobileOverlay() {
+  if (!mobileMenu) return;
+  mobileMenu.classList.add("hidden");
+  lockBodyScroll(false);
+}
+
+navToggle?.addEventListener("click", () => {
+  if (!mobileMenu) return;
+  const isHidden = mobileMenu.classList.contains("hidden");
+  isHidden ? openMobileOverlay() : closeMobileOverlay();
+});
+
+// Close overlay when a link is clicked (anchors only)
+mobileMenu?.querySelectorAll("a[href]").forEach(a => {
+  a.addEventListener("click", () => closeMobileOverlay());
+});
+
+// Close on Esc
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && mobileMenu && !mobileMenu.classList.contains("hidden")) {
+    closeMobileOverlay();
+  }
+});
+
+// Close when tapping the backdrop (outside inner <nav>)
+mobileMenu?.addEventListener("click", (e) => {
+  if (e.target === mobileMenu) closeMobileOverlay();
 });
 
 /* ───────────────────────────────────────────
@@ -125,7 +120,7 @@ function revealOnScroll() {
   if (!els.length) return;
 
   if (prefersReduced) {
-    els.forEach(el => el.classList.remove("opacity-0","translate-y-6"));
+    els.forEach(el => el.classList.remove("opacity-0", "translate-y-6"));
     return;
   }
 
@@ -135,8 +130,8 @@ function revealOnScroll() {
       const el = entry.target;
       const idx = Array.from(el.parentElement.children).indexOf(el);
       el.style.transitionDelay = `${Math.min(idx * 80, 400)}ms`;
-      el.classList.add("opacity-100","translate-y-0","duration-700","ease-out","will-change-transform","will-change-opacity");
-      el.classList.remove("opacity-0","translate-y-6");
+      el.classList.add("opacity-100", "translate-y-0", "duration-700", "ease-out", "will-change-transform", "will-change-opacity");
+      el.classList.remove("opacity-0", "translate-y-6");
       obs.unobserve(el);
     });
   }, { threshold: 0.18 });
@@ -146,83 +141,45 @@ function revealOnScroll() {
 revealOnScroll();
 
 /* ───────────────────────────────────────────
-   DOWNLOADS DROPDOWN (desktop + mobile overlay)
+   HERO VIDEO MODAL
    ─────────────────────────────────────────── */
-const downloadsBtn  = document.getElementById("downloadsBtn");
-const downloadsMenu = document.getElementById("downloadsMenu");
-const pdfMenuList   = document.getElementById("pdfMenuList");
+const modal      = document.getElementById("videoModal");
+const modalBtn   = document.getElementById("videoModalBtn");
+const closeBtn   = document.getElementById("closeModalBtn");
+const modalVideo = document.getElementById("modalVideo");
 
-function placeDownloadsMenu() {
-  if (!downloadsMenu) return;
+function openModal() {
+  if (!modal) return;
+  modal.classList.remove("hidden");
+  modal.classList.add("grid", "place-items-center");
+  try { modalVideo?.play?.(); } catch {}
+  document.documentElement.style.overflow = "hidden";
+  document.body.style.overflow = "hidden";
+}
 
-  // Reset to desktop defaults first
-  downloadsMenu.classList.remove(
-    "fixed","top-[calc(5rem+2.5rem)]","left-4","right-4","mt-0"
-  );
-  downloadsMenu.classList.add("absolute","top-full","left-0","mt-1");
-
-  // If mobile overlay is open, pin the dropdown as a fixed panel below the bar
-  if (!isDesktop() && links?.classList.contains("fixed")) {
-    downloadsMenu.classList.remove("absolute","top-full","left-0","mt-1");
-    downloadsMenu.classList.add(
-      "fixed",
-      "top-[calc(5rem+2.5rem)]", // navbar 5rem + ~button height
-      "left-4","right-4","mt-0",
-      "z-[70]" // above the overlay list items
-    );
+function closeModal() {
+  if (!modal) return;
+  modal.classList.add("hidden");
+  modal.classList.remove("grid", "place-items-center");
+  if (modalVideo) {
+    try { modalVideo.pause(); } catch {}
+    modalVideo.currentTime = 0;
   }
+  document.documentElement.style.overflow = "";
+  document.body.style.overflow = "";
 }
 
-async function setupDownloadsMenu() {
-  if (!downloadsBtn || !downloadsMenu || !pdfMenuList) return;
+modalBtn?.addEventListener("click", openModal);
+closeBtn?.addEventListener("click", closeModal);
 
-  // Load manifest
-  try {
-    const res = await fetch("/pdfs.json", { cache: "no-store" });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const items = await res.json();
+// Close on backdrop click
+modal?.addEventListener("click", (e) => {
+  if (e.target === modal) closeModal();
+});
 
-    pdfMenuList.innerHTML = Array.isArray(items) && items.length
-      ? items.map(({ name, url }) =>
-          `<a href="${url}" class="block px-4 py-2.5 text-sm hover:bg-white/10">${escapeHtml(name)}</a>`
-        ).join("")
-      : `<div class="px-4 py-3 text-sm opacity-70">No downloads available.</div>`;
-  } catch (e) {
-    console.error("Failed to load /pdfs.json", e);
-    pdfMenuList.innerHTML = `<div class="px-4 py-3 text-sm text-red-300">Failed to load downloads.</div>`;
+// Close on Esc
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && modal && !modal.classList.contains("hidden")) {
+    closeModal();
   }
-
-  // Toggle
-  const toggleOpen = open => {
-    downloadsMenu.classList.toggle("open", open);
-    downloadsBtn.setAttribute("aria-expanded", open ? "true" : "false");
-    placeDownloadsMenu();
-  };
-
-  downloadsBtn.addEventListener("click", e => {
-    e.stopPropagation();
-    toggleOpen(!downloadsMenu.classList.contains("open"));
-  });
-
-  // Close on outside click / Esc
-  document.addEventListener("click", e => {
-    if (!downloadsMenu.classList.contains("open")) return;
-    const root = document.getElementById("downloadsRoot");
-    if (root && !root.contains(e.target)) toggleOpen(false);
-  });
-  document.addEventListener("keydown", e => {
-    if (e.key === "Escape") toggleOpen(false);
-  });
-
-  placeDownloadsMenu();
-}
-
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, ch => ({
-    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-  })[ch]);
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  setupDownloadsMenu();
 });
