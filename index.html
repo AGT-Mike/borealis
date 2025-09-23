@@ -22,7 +22,13 @@
       <!-- Links (hidden on mobile) -->
       <div id="navLinks" class="hidden gap-10 md:flex text-xl font-bold">
         <div class="relative group pb-3">
-          <button class="hover:text-gray-300 md:text-xl">More Information</button>
+          <button 
+          type="button"
+          class="hover:text-gray-300 md:text-xl"
+          aria-haspopup="true"
+          aria-expanded="false"
+          >More Information</button>
+          
           <div
             class="absolute left-0 hidden group-hover:block bg-black/90 border border-white/10 rounded-xl w-52 shadow-xl text-sm z-50 top-full">
             <a href="#learnMore" class="block px-4 py-2 hover:bg-white/10">Why Now</a>
