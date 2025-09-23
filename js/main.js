@@ -23,25 +23,25 @@ function setNavBg() {
   if (isDesktop()) {
     // Desktop: transparent at top, dark on scroll
     if (window.scrollY > 50) {
-      nav.classList.add("md:bg-black/80", "md:shadow-sm", "md:backdrop-blur-sm");
-      nav.classList.remove("md:bg-transparent");
+      // nav.classList.add("md:bg-black/80", "md:shadow-sm", "md:backdrop-blur-sm");
+      // nav.classList.remove("md:bg-transparent");
     } else {
-      nav.classList.remove("md:bg-black/80", "md:shadow-sm", "md:backdrop-blur-sm");
+      // nav.classList.remove("md:bg-black/80", "md:shadow-sm", "md:backdrop-blur-sm");
       // nav.classList.add("md:bg-transparent");
     }
   } else {
     // Mobile: always solid dark
-    nav.classList.remove("md:bg-black/90", "md:shadow-sm", "md:backdrop-blur-sm", "md:bg-transparent");
-    nav.classList.add("bg-black/90");
+    // nav.classList.remove("md:bg-black/90", "md:shadow-sm", "md:backdrop-blur-sm", "md:bg-transparent");
+    // nav.classList.add("bg-black/90");
   }
 }
-setNavBg();
-window.addEventListener("scroll", setNavBg, { passive: true });
-window.addEventListener("resize", () => {
-  setNavBg();
-  // If we resize up to desktop, make sure the mobile overlay is closed
-  if (isDesktop()) closeMobileOverlay();
-});
+// setNavBg();
+// window.addEventListener("scroll", setNavBg, { passive: true });
+// window.addEventListener("resize", () => {
+//   setNavBg();
+//   // If we resize up to desktop, make sure the mobile overlay is closed
+//   if (isDesktop()) closeMobileOverlay();
+// });
 
 /* ───────────────────────────────────────────
    MOBILE OVERLAY MENU (hamburger)
