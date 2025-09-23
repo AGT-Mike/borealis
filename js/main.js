@@ -32,7 +32,7 @@ function setNavBg() {
   } else {
     // Mobile: always solid dark
     nav.classList.remove("md:bg-black/90", "md:shadow-sm", "md:backdrop-blur-sm", "md:bg-transparent");
-    nav.classList.add("bg-black/80");
+    nav.classList.add("bg-black/90");
   }
 }
 setNavBg();
