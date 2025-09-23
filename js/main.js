@@ -183,3 +183,51 @@ document.addEventListener("keydown", (e) => {
     closeModal();
   }
 });
+
+// ─────────────────────────────
+// Desktop dropdown: tap/keyboard support (iPad, touch laptops)
+// ─────────────────────────────
+document.querySelectorAll('[data-dropdown]').forEach(drop => {
+  const btn  = drop.querySelector('button');
+  const menu = drop.querySelector('[data-menu]');
+  if (!btn || !menu) return;
+
+  // Toggle on click/tap
+  btn.addEventListener('click', (e) => {
+    // If already open via click, close; otherwise open.
+    const willOpen = !menu.classList.contains('open');
+    // Close other open dropdowns at this level
+    document.querySelectorAll('[data-dropdown] [data-menu].open').forEach(m => {
+      if (m !== menu) m.classList.remove('open');
+    });
+    menu.classList.toggle('open', willOpen);
+    btn.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+    e.stopPropagation();
+  });
+
+  // Close when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!menu.classList.contains('open')) return;
+    if (!drop.contains(e.target)) {
+      menu.classList.remove('open');
+      btn.setAttribute('aria-expanded', 'false');
+    }
+  });
+
+  // Close on Esc
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && menu.classList.contains('open')) {
+      menu.classList.remove('open');
+      btn.setAttribute('aria-expanded', 'false');
+      btn.focus();
+    }
+  });
+
+  // Close when a menu link is chosen
+  menu.querySelectorAll('a[href]').forEach(a => {
+    a.addEventListener('click', () => {
+      menu.classList.remove('open');
+      btn.setAttribute('aria-expanded', 'false');
+    });
+  });
+});
