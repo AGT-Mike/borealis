@@ -141,18 +141,24 @@ function revealOnScroll() {
 revealOnScroll();
 
 /* ───────────────────────────────────────────
-   HERO VIDEO MODAL
+   HERO VIDEO MODAL (YouTube)
    ─────────────────────────────────────────── */
 const modal      = document.getElementById("videoModal");
 const modalBtn   = document.getElementById("videoModalBtn");
 const closeBtn   = document.getElementById("closeModalBtn");
-const modalVideo = document.getElementById("modalVideo");
+const ytPlayer   = document.getElementById("ytPlayer");
+
+// Use & between params (NOT a second ?)
+const VIDEO_ID = "9UZBnVevPKU";
+const YT_URL =
+  `https://www.youtube.com/embed/${VIDEO_ID}` +
+  `?autoplay=1&mute=0&playsinline=1&rel=0&modestbranding=1&origin=${location.origin}`;
 
 function openModal() {
   if (!modal) return;
   modal.classList.remove("hidden");
   modal.classList.add("grid", "place-items-center");
-  try { modalVideo?.play?.(); } catch {}
+  ytPlayer.src = YT_URL; // load + autoplay (muted) after user click
   document.documentElement.style.overflow = "hidden";
   document.body.style.overflow = "hidden";
 }
@@ -161,27 +167,16 @@ function closeModal() {
   if (!modal) return;
   modal.classList.add("hidden");
   modal.classList.remove("grid", "place-items-center");
-  if (modalVideo) {
-    try { modalVideo.pause(); } catch {}
-    modalVideo.currentTime = 0;
-  }
+  ytPlayer.src = ""; // clear to stop playback fully
   document.documentElement.style.overflow = "";
   document.body.style.overflow = "";
 }
 
 modalBtn?.addEventListener("click", openModal);
 closeBtn?.addEventListener("click", closeModal);
-
-// Close on backdrop click
-modal?.addEventListener("click", (e) => {
-  if (e.target === modal) closeModal();
-});
-
-// Close on Esc
+modal?.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
 document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape" && modal && !modal.classList.contains("hidden")) {
-    closeModal();
-  }
+  if (e.key === "Escape" && !modal.classList.contains("hidden")) closeModal();
 });
 
 // ─────────────────────────────

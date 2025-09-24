@@ -632,22 +632,30 @@
   </footer>
 
   <script type="module" src="js/main.js"></script>
-  <!-- VIDEO MODAL -->
-  <div id="videoModal" class="fixed inset-0 z-[9999] hidden bg-black/80 backdrop-blur-sm p-4">
-    <!-- use grid only when opened (JS will add .grid + .place-items-center) -->
-    <div class="mx-auto w-full max-w-4xl relative bg-black rounded-xl shadow-2xl ring-1 ring-white/10">
-      <!-- Large, easy close button -->
-      <button id="closeModalBtn" type="button" aria-label="Close video"
-        class="absolute -top-3 -right-3 z-10 md:top-3 md:right-3 h-12 w-12 rounded-full  text-black text-2xl leading-none grid place-items-center shadow-lg hover:text-red-500 focus:outline-none focus:ring-4 focus:ring-white/60">
-        ×
-      </button>
+<!-- VIDEO MODAL -->
+<div id="videoModal"
+     class="fixed inset-0 z-[9999] hidden bg-black/80 backdrop-blur-sm p-4">
+  <div class="relative mx-auto w-full max-w-4xl">
+    <!-- Close button -->
+    <button id="closeModalBtn"
+            class="absolute top-3 right-3 z-10 h-12 w-12 rounded-full bg-white/90 text-black text-2xl leading-none
+                   grid place-items-center shadow-lg hover:bg-white focus:outline-none focus:ring-4 focus:ring-white/60">
+      ×
+    </button>
 
-      <video id="modalVideo" controls playsinline class="block w-full h-auto rounded-xl object-cover">
-        <source src="/hero.mp4" type="video/mp4" />
-        Your browser does not support the video tag.
-      </video>
+    <!-- YouTube iframe -->
+    <div class="aspect-video">
+      <iframe id="ytPlayer"
+              class="w-full h-full rounded-xl"
+              src=""
+              title="Borealis video"
+              frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen>
+      </iframe>
     </div>
   </div>
+</div>
 </body>
 
 </html>
