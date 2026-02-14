@@ -145,6 +145,7 @@ revealOnScroll();
    ─────────────────────────────────────────── */
 const modal      = document.getElementById("videoModal");
 const modalBtn   = document.getElementById("videoModalBtn");
+const modalBtnMobile = document.getElementById("videoModalBtnMobile");
 const closeBtn   = document.getElementById("closeModalBtn");
 const ytPlayer   = document.getElementById("ytPlayer");
 
@@ -173,6 +174,10 @@ function closeModal() {
 }
 
 modalBtn?.addEventListener("click", openModal);
+modalBtnMobile?.addEventListener("click", () => {
+  closeMobileOverlay();
+  openModal();
+});
 closeBtn?.addEventListener("click", closeModal);
 modal?.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
 document.addEventListener("keydown", (e) => {
