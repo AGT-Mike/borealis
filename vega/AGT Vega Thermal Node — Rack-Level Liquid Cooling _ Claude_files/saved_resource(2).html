@@ -1,0 +1,1639 @@
+<!DOCTYPE html>
+<!-- saved from url=(0012)about:srcdoc -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.13/html-to-image.min.js" integrity="sha512-iZ2ORl595Wx6miw+GuadDet4WQbdSWS3JLMoNfY8cRGoEFy6oT3G9IbcrBeL6AfkgpA51ETt/faX6yLV+/gFJg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+      (function() {
+        const originalConsole = window.console;
+        window.console = {
+          log: (...args) => {
+            originalConsole.log(...args);
+            window.parent.postMessage({ type: 'console', message: args.join(' ') }, '*');
+          },
+          error: (...args) => {
+            originalConsole.error(...args);
+            window.parent.postMessage({ type: 'console', message: 'Error: ' + args.join(' ') }, '*');
+          },
+          warn: (...args) => {
+            originalConsole.warn(...args);
+            window.parent.postMessage({ type: 'console', message: 'Warning: ' + args.join(' ') }, '*');
+          }
+        };
+
+        let requestId = 0;
+        let callbacksMap = new Map();
+        let streamControllers = new Map();
+        
+        window.claude = {
+          complete: (prompt) => {
+            return new Promise((resolve, reject) => {
+              const id = requestId++;
+              callbacksMap.set(id, { resolve, reject });
+              window.parent.postMessage({ type: 'claudeComplete', id, prompt }, '*');
+            });
+          }
+        };
+
+        window.storage = {
+          get: (key, shared = false) => {
+            return new Promise((resolve, reject) => {
+              const id = requestId++;
+              callbacksMap.set(id, { resolve, reject });
+              window.parent.postMessage({ type: 'storageGet', id, key, shared }, '*');
+            });
+          },
+          set: (key, value, shared = false) => {
+            return new Promise((resolve, reject) => {
+              const id = requestId++;
+              callbacksMap.set(id, { resolve, reject });
+              window.parent.postMessage({ type: 'storageSet', id, key, value, shared }, '*');
+            });
+          },
+          delete: (key, shared = false) => {
+            return new Promise((resolve, reject) => {
+              const id = requestId++;
+              callbacksMap.set(id, { resolve, reject });
+              window.parent.postMessage({ type: 'storageDelete', id, key, shared }, '*');
+            });
+          },
+          list: (prefix, shared = false) => {
+            return new Promise((resolve, reject) => {
+              const id = requestId++;
+              callbacksMap.set(id, { resolve, reject });
+              window.parent.postMessage({ type: 'storageList', id, prefix, shared }, '*');
+            });
+          }
+        };
+
+        let pendingBlobs = new Map();
+        URL.createObjectURL = (blob) => {
+          // Store the blob and create an ID and URL for it
+          const blobId = `blob-${Date.now()}-${Math.random()}`;
+          pendingBlobs.set(blobId, blob);
+          return `blob-request://${blobId}`;
+        };
+
+        URL.revokeObjectURL = (url) => {
+          // Remove the blob from our store
+          const blobId = url.replace("blob-request://", "");
+          pendingBlobs.delete(blobId);
+        };
+
+        const getBlobFromURL = (url) => {
+          const blobId = url.replace("blob-request://", "");
+          return pendingBlobs.get(blobId);
+        };
+
+        // Override global fetch with streaming support
+        window.fetch = (url, init = {}) => {
+          return new Promise((resolve, reject) => {
+            const id = requestId++;
+            const channelId = `fetch-${id}-${Date.now()}`;
+            
+            callbacksMap.set(id, { 
+              resolve: (response) => {
+                // Create a ReadableStream for the response body
+                const stream = new ReadableStream({
+                  start(controller) {
+                    streamControllers.set(channelId, controller);
+                  },
+                  cancel() {
+                    streamControllers.delete(channelId);
+                  }
+                });
+                
+                // Create and return the Response with the stream
+                resolve(new Response(stream, {
+                  status: response.status,
+                  statusText: response.statusText,
+                  headers: response.headers
+                }));
+              },
+              reject,
+              channelId
+            });
+            
+            window.parent.postMessage({
+              type: 'proxyFetch',
+              id,
+              url,
+              init,
+              channelId
+            }, '*');
+          });
+        };
+
+        window.addEventListener('message', async (event) => {
+          if (event.data.type === 'takeScreenshot') {
+            const rootElement = document.getElementById('artifacts-component-root-html');
+            if (!rootElement) {
+              window.parent.postMessage({
+                type: 'screenshotError',
+                error: new Error('Root element not found'),
+              }, '*');
+            }
+            const screenshot = await htmlToImage.toPng(rootElement, {
+              imagePlaceholder:
+                "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAA1JREFUGFdjePDgwX8ACOQDoNsk0PMAAAAASUVORK5CYII=",
+            });
+            window.parent.postMessage({
+              type: 'screenshotData',
+              data: screenshot,
+            }, '*');
+          } else if (event.data.type === 'claudeComplete') {
+            const callback = callbacksMap.get(event.data.id);
+            if (event.data.error) {
+              callback.reject(new Error(event.data.error));
+            } else {
+              callback.resolve(event.data.completion);
+            }
+            callbacksMap.delete(event.data.id);
+          } else if (event.data.type === 'proxyFetchResponse') {
+            const callback = callbacksMap.get(event.data.id);
+            if (event.data.error) {
+              callback.reject(new Error(event.data.error));
+              callbacksMap.delete(event.data.id);
+            } else {
+              // Initial response with headers, status, etc.
+              callback.resolve({
+                status: event.data.status,
+                statusText: event.data.statusText,
+                headers: event.data.headers
+              });
+              // Don't delete the callback yet if streaming
+              if (!event.data.body) {
+                callbacksMap.delete(event.data.id);
+              }
+            }
+          } else if (event.data.type === 'proxyFetchStream') {
+            // Handle streaming data chunks
+            const controller = streamControllers.get(event.data.channelId);
+            if (controller) {
+              if (event.data.error) {
+                controller.error(new Error(event.data.error));
+                streamControllers.delete(event.data.channelId);
+              } else if (event.data.done) {
+                controller.close();
+                streamControllers.delete(event.data.channelId);
+                // Clean up the callback
+                const callback = Array.from(callbacksMap.entries()).find(
+                  ([_, value]) => value.channelId === event.data.channelId
+                );
+                if (callback) {
+                  callbacksMap.delete(callback[0]);
+                }
+              } else if (event.data.chunk) {
+                controller.enqueue(new Uint8Array(event.data.chunk));
+              }
+            }
+          } else if (event.data.type === 'storageGet') {
+            const callback = callbacksMap.get(event.data.id);
+            if (event.data.error) {
+              callback.reject(new Error(event.data.error));
+            } else {
+              callback.resolve(event.data.result);
+            }
+            callbacksMap.delete(event.data.id);
+          } else if (event.data.type === 'storageSet') {
+            const callback = callbacksMap.get(event.data.id);
+            if (event.data.error) {
+              callback.reject(new Error(event.data.error));
+            } else {
+              callback.resolve(event.data.result);
+            }
+            callbacksMap.delete(event.data.id);
+          } else if (event.data.type === 'storageDelete') {
+            const callback = callbacksMap.get(event.data.id);
+            if (event.data.error) {
+              callback.reject(new Error(event.data.error));
+            } else {
+              callback.resolve(event.data.result);
+            }
+            callbacksMap.delete(event.data.id);
+          } else if (event.data.type === 'storageList') {
+            const callback = callbacksMap.get(event.data.id);
+            if (event.data.error) {
+              callback.reject(new Error(event.data.error));
+            } else {
+              callback.resolve(event.data.result);
+            }
+            callbacksMap.delete(event.data.id);
+          }
+        });
+
+        window.addEventListener('click', (event) => {
+          const isEl = event.target instanceof HTMLElement;
+          if (!isEl) return;
+    
+          // find ancestor links
+          const linkEl = event.target.closest("a");
+          if (!linkEl || !linkEl.href) return;
+    
+          event.preventDefault();
+          event.stopImmediatePropagation();
+    
+          if (linkEl.href.startsWith("blob-request:")) {
+            const blob = getBlobFromURL(linkEl.href);
+            if (!blob) return;
+            void blob.arrayBuffer().then((data) => {
+              window.parent.postMessage({
+                type: "downloadFile",
+                filename: linkEl.download,
+                data,
+                mimeType: blob.type || "application/octet-stream",
+              });
+            });
+          } else if (linkEl.href.startsWith("data:")) {
+            const [header, base64Data] = linkEl.href.split(",");
+            const mimeMatch = header.match(/data:([^;]+)/);
+            const mimeType = mimeMatch ? mimeMatch[1] : "application/octet-stream";
+            const binaryString = atob(base64Data);
+            const data = Uint8Array.from(binaryString, (c) =>
+              c.charCodeAt(0),
+            ).buffer;
+            window.parent.postMessage({
+              type: "downloadFile",
+              filename: linkEl.download,
+              data,
+              mimeType,
+            });
+          } else {
+            let linkUrl;
+            try {
+              linkUrl = new URL(linkEl.href);
+            } catch (error) {
+              return;
+            }
+    
+            if (linkUrl.hostname === window.location.hostname) return;
+      
+            window.parent.postMessage({
+              type: 'openExternal',
+              href: linkEl.href,
+            }, '*');
+          }
+      });
+
+        const originalOpen = window.open;
+        window.open = function (url) {
+          window.parent.postMessage({
+            type: "openExternal",
+            href: url,
+          }, "*");
+        };
+
+        window.addEventListener('error', (event) => {
+          window.parent.postMessage({ type: 'console', message: 'Uncaught Error: ' + event.message }, '*');
+        });
+      })();
+    </script>
+  
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AGT — Vega Thermal Node</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Barlow+Condensed:wght@200;300;400;600&family=DM+Sans:wght@300;400;500&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --base:    #1F2328;
+    --steel:   #3A4048;
+    --teal:    #1A8A8A;
+    --copper:  #B8956E;
+    --white:   #F4F2EE;
+    --dim:     #8A9099;
+    --rule:    rgba(244,242,238,0.08);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--base);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.9s cubic-bezier(.16,1,.3,1), transform 0.9s cubic-bezier(.16,1,.3,1);
+  }
+  .reveal.visible { opacity: 1; transform: none; }
+  .reveal-delay-1 { transition-delay: 0.12s; }
+  .reveal-delay-2 { transition-delay: 0.24s; }
+  .reveal-delay-3 { transition-delay: 0.36s; }
+  .reveal-delay-4 { transition-delay: 0.48s; }
+
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.5rem 4rem;
+    background: linear-gradient(to bottom, rgba(31,35,40,0.95), transparent);
+  }
+  .nav-logo {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 300;
+    letter-spacing: 0.35em;
+    font-size: 0.85rem;
+    color: var(--white);
+    text-decoration: none;
+  }
+  .nav-logo span { color: var(--teal); }
+  .nav-tag {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    color: var(--dim);
+    text-transform: uppercase;
+  }
+
+  #hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    justify-content: center;
+    padding: 10rem 4rem 6rem;
+    position: relative;
+    overflow: hidden;
+  }
+  #hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 60% 40%, rgba(26,138,138,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  #hero::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 4rem; right: 4rem;
+    height: 1px;
+    background: var(--rule);
+  }
+
+  .hero-eyebrow {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 300;
+    font-size: 0.72rem;
+    letter-spacing: 0.35em;
+    color: var(--teal);
+    text-transform: uppercase;
+    margin-bottom: 2.5rem;
+    opacity: 0;
+    animation: fadeUp 1s cubic-bezier(.16,1,.3,1) 0.2s forwards;
+  }
+
+  .hero-h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: clamp(3.2rem, 7vw, 7rem);
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    max-width: 14ch;
+    opacity: 0;
+    animation: fadeUp 1s cubic-bezier(.16,1,.3,1) 0.4s forwards;
+  }
+  .hero-h1 em {
+    font-style: italic;
+    color: var(--copper);
+  }
+
+  .hero-h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: clamp(3.2rem, 7vw, 7rem);
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    max-width: 14ch;
+    color: rgba(244,242,238,0.5);
+    margin-top: 0.1em;
+    opacity: 0;
+    animation: fadeUp 1s cubic-bezier(.16,1,.3,1) 0.55s forwards;
+  }
+
+  .hero-sub {
+    margin-top: 3rem;
+    max-width: 52ch;
+    font-size: 0.92rem;
+    color: var(--dim);
+    line-height: 1.7;
+    opacity: 0;
+    animation: fadeUp 1s cubic-bezier(.16,1,.3,1) 0.75s forwards;
+  }
+  .hero-sub strong {
+    color: var(--white);
+    font-weight: 400;
+  }
+
+  .hero-scroll {
+    position: absolute;
+    bottom: 2.5rem; left: 4rem;
+    display: flex; align-items: center; gap: 0.75rem;
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    color: var(--dim);
+    text-transform: uppercase;
+    opacity: 0;
+    animation: fadeUp 1s ease 1.2s forwards;
+  }
+  .hero-scroll::before {
+    content: '';
+    display: block; width: 2rem; height: 1px;
+    background: var(--dim);
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  #stats {
+    padding: 7rem 4rem;
+    display: grid;
+    grid-template-columns: 1fr 1px 1fr 1px 1fr;
+    gap: 0;
+    position: relative;
+  }
+  #stats::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 4rem; right: 4rem;
+    height: 1px; background: var(--rule);
+  }
+  .stat-divider {
+    background: var(--rule);
+    align-self: stretch;
+  }
+  .stat-item {
+    padding: 2rem 3.5rem;
+    text-align: center;
+  }
+  .stat-number {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 200;
+    font-size: clamp(3.5rem, 6vw, 5.5rem);
+    line-height: 1;
+    color: var(--white);
+    letter-spacing: -0.02em;
+  }
+  .stat-number .unit {
+    font-size: 0.45em;
+    font-weight: 300;
+    color: var(--teal);
+    vertical-align: super;
+    letter-spacing: 0;
+    margin-left: 0.1em;
+  }
+  .stat-label {
+    margin-top: 0.6rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--dim);
+  }
+
+  .section {
+    padding: 7rem 4rem;
+    position: relative;
+  }
+  .section::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 4rem; right: 4rem;
+    height: 1px; background: var(--rule);
+  }
+  .section-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 300;
+    font-size: 0.68rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin-bottom: 3rem;
+  }
+  .section-headline {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    max-width: 22ch;
+    margin-bottom: 1.5rem;
+  }
+  .section-body {
+    font-size: 0.9rem;
+    color: var(--dim);
+    max-width: 52ch;
+    line-height: 1.75;
+  }
+
+  #contrast {
+    padding: 7rem 4rem;
+    position: relative;
+  }
+  #contrast::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 4rem; right: 4rem;
+    height: 1px; background: var(--rule);
+  }
+
+  .contrast-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 4rem;
+    flex-wrap: wrap;
+    gap: 2rem;
+  }
+
+  .toggle-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    padding: 3px;
+    flex-shrink: 0;
+  }
+  .toggle-btn {
+    padding: 0.5rem 1.4rem;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 300;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    border: none;
+    background: transparent;
+    color: var(--dim);
+    cursor: pointer;
+    border-radius: 1px;
+    transition: all 0.3s ease;
+  }
+  .toggle-btn.active {
+    background: var(--steel);
+    color: var(--white);
+  }
+  .toggle-btn.active.after-btn { color: var(--teal); }
+
+  .diagram-panel {
+    display: none;
+    animation: panelFade 0.5s ease;
+  }
+  .diagram-panel.active { display: block; }
+
+  @keyframes panelFade {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  .floor-svg {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    display: block;
+  }
+
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5px;
+    background: var(--rule);
+    margin-top: 3rem;
+    border: 1px solid var(--rule);
+  }
+  .compare-cell {
+    background: var(--base);
+    padding: 2rem 2.5rem;
+  }
+  .compare-cell.header-cell {
+    background: rgba(255,255,255,0.02);
+    padding: 1.2rem 2.5rem;
+  }
+  .compare-cell.vega-header {
+    background: rgba(26,138,138,0.07);
+    border-top: 2px solid var(--teal);
+  }
+  .compare-cell.vega-cell {
+    background: rgba(26,138,138,0.03);
+  }
+  .compare-col-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 300;
+    font-size: 0.72rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--dim);
+  }
+  .compare-col-label.teal { color: var(--teal); }
+  .compare-metric-name {
+    font-size: 0.72rem;
+    color: var(--dim);
+    letter-spacing: 0.05em;
+    margin-bottom: 0.4rem;
+  }
+  .compare-value-bad {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 300;
+    font-size: 2rem;
+    line-height: 1;
+    color: rgba(244,242,238,0.4);
+  }
+  .compare-value-good {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 300;
+    font-size: 2rem;
+    line-height: 1;
+    color: var(--white);
+  }
+  .compare-value-good .val-unit { color: var(--teal); font-size: 0.6em; }
+  .compare-note {
+    font-size: 0.68rem;
+    color: var(--dim);
+    margin-top: 0.35rem;
+    letter-spacing: 0.03em;
+  }
+
+  .rack-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5px;
+    background: var(--rule);
+    margin-top: 3rem;
+  }
+  .rack-card {
+    background: var(--base);
+    padding: 2.5rem;
+  }
+  .rack-card-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--dim);
+    margin-bottom: 1.25rem;
+  }
+  .rack-card-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 400;
+    font-size: 1.4rem;
+    color: var(--white);
+    margin-bottom: 0.5rem;
+  }
+  .rack-card-desc {
+    font-size: 0.82rem;
+    color: var(--dim);
+    line-height: 1.65;
+  }
+  .rack-governed {
+    background: rgba(26,138,138,0.08);
+    border: 1px solid rgba(26,138,138,0.2);
+    padding: 1.25rem 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .rack-governed-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 300;
+    font-size: 0.72rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--teal);
+    text-align: center;
+  }
+  .rack-governed-sub {
+    font-size: 0.68rem;
+    color: rgba(26,138,138,0.6);
+    text-align: center;
+    margin-top: 0.2rem;
+    letter-spacing: 0.05em;
+  }
+  .rack-loop-bar {
+    grid-column: 1 / -1;
+    background: rgba(26,138,138,0.05);
+    border: 1px solid rgba(26,138,138,0.15);
+    padding: 1.5rem 2.5rem;
+    text-align: center;
+  }
+  .rack-loop-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    font-weight: 400;
+    font-style: italic;
+    color: var(--white);
+    letter-spacing: 0.02em;
+  }
+  .rack-loop-text span { color: var(--teal); font-style: normal; }
+
+  .stack-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5px;
+    margin-top: 3rem;
+  }
+  .stack-layer {
+    padding: 2rem 2.5rem;
+    display: grid;
+    grid-template-columns: 120px 1fr auto;
+    align-items: center;
+    gap: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .stack-layer::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+  }
+  .stack-layer.it { background: rgba(255,255,255,0.02); }
+  .stack-layer.it::before { background: var(--steel); }
+  .stack-layer.control {
+    background: rgba(26,138,138,0.07);
+    border: 1px solid rgba(26,138,138,0.15);
+  }
+  .stack-layer.control::before { background: var(--teal); }
+  .stack-layer.facility { background: rgba(255,255,255,0.015); }
+  .stack-layer.facility::before { background: rgba(244,242,238,0.15); }
+
+  .stack-tag {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 300;
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+  }
+  .stack-tag.it { color: var(--dim); }
+  .stack-tag.control { color: var(--teal); }
+  .stack-tag.facility { color: var(--dim); }
+
+  .stack-content-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 400;
+    font-size: 1.2rem;
+    margin-bottom: 0.25rem;
+  }
+  .stack-content-title.teal { color: var(--teal); }
+
+  .stack-content-desc {
+    font-size: 0.78rem;
+    color: var(--dim);
+    line-height: 1.5;
+  }
+
+  .stack-badge {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 300;
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--dim);
+    text-align: right;
+    white-space: nowrap;
+  }
+  .stack-badge.teal { color: var(--teal); }
+
+  #keystone {
+    padding: 8rem 4rem;
+    text-align: center;
+    position: relative;
+  }
+  #keystone::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 4rem; right: 4rem;
+    height: 1px; background: var(--rule);
+  }
+  .keystone-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 600;
+    font-size: clamp(1.6rem, 3.5vw, 2.8rem);
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+    max-width: 22ch;
+    margin: 0 auto;
+  }
+  .keystone-rule {
+    width: 2.5rem;
+    height: 1px;
+    background: var(--copper);
+    margin: 2.5rem auto 0;
+  }
+
+  #contact {
+    padding: 6rem 4rem 5rem;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 3rem;
+  }
+  .contact-headline {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: clamp(1.8rem, 3vw, 2.5rem);
+    line-height: 1.2;
+    max-width: 18ch;
+  }
+  .contact-headline em {
+    font-style: italic;
+    color: var(--copper);
+  }
+  .contact-block { text-align: right; }
+  .contact-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 300;
+    font-size: 0.72rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--dim);
+    margin-bottom: 0.5rem;
+  }
+  .contact-detail {
+    font-size: 0.88rem;
+    color: var(--white);
+    line-height: 1.8;
+  }
+  .contact-detail a {
+    color: var(--copper);
+    text-decoration: none;
+    transition: opacity 0.2s;
+  }
+  .contact-detail a:hover { opacity: 0.7; }
+  .contact-agt {
+    margin-top: 1rem;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 200;
+    font-size: 0.62rem;
+    letter-spacing: 0.5em;
+    text-transform: uppercase;
+    color: rgba(244,242,238,0.2);
+  }
+
+  footer {
+    padding: 1.5rem 4rem;
+    border-top: 1px solid var(--rule);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .footer-note {
+    font-size: 0.65rem;
+    color: rgba(244,242,238,0.2);
+    letter-spacing: 0.05em;
+    line-height: 1.6;
+    max-width: 60ch;
+  }
+  .footer-logo {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 200;
+    font-size: 0.7rem;
+    letter-spacing: 0.5em;
+    color: rgba(244,242,238,0.2);
+    text-transform: uppercase;
+  }
+
+  /* === NEW: REVENUE UNLOCK SECTION === */
+  #revenue {
+    padding: 7rem 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+  #revenue::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 70% 50% at 30% 50%, rgba(184,149,110,0.04) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  #revenue::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 4rem; right: 4rem;
+    height: 1px; background: var(--rule);
+  }
+  .revenue-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+    align-items: start;
+    margin-top: 3rem;
+  }
+  .revenue-narrative {
+    max-width: 48ch;
+  }
+  .revenue-narrative p {
+    font-size: 0.9rem;
+    color: var(--dim);
+    line-height: 1.75;
+    margin-bottom: 1.25rem;
+  }
+  .revenue-narrative p strong {
+    color: var(--white);
+    font-weight: 400;
+  }
+  .revenue-narrative p em {
+    color: var(--copper);
+    font-style: normal;
+    font-weight: 400;
+  }
+  .revenue-economics {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+  }
+  .revenue-econ-row {
+    background: var(--base);
+    padding: 1.75rem 2.25rem;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  .revenue-econ-row.active-row {
+    background: rgba(26,138,138,0.06);
+    border-left: 3px solid var(--teal);
+  }
+  .revenue-econ-row.copper-row {
+    background: rgba(184,149,110,0.05);
+    border-left: 3px solid var(--copper);
+  }
+  .revenue-econ-label {
+    font-size: 0.78rem;
+    color: var(--dim);
+    line-height: 1.5;
+  }
+  .revenue-econ-label strong {
+    color: var(--white);
+    font-weight: 400;
+    display: block;
+    margin-bottom: 0.15rem;
+  }
+  .revenue-econ-value {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 200;
+    font-size: 2.2rem;
+    line-height: 1;
+    text-align: right;
+    white-space: nowrap;
+  }
+  .revenue-econ-value.dim { color: rgba(244,242,238,0.3); }
+  .revenue-econ-value.teal { color: var(--teal); }
+  .revenue-econ-value.copper { color: var(--copper); }
+  .revenue-econ-value .val-sm {
+    font-size: 0.45em;
+    font-weight: 300;
+    vertical-align: super;
+    margin-left: 0.1em;
+    color: inherit;
+    opacity: 0.7;
+  }
+  .revenue-callout {
+    background: var(--base);
+    padding: 2rem 2.25rem;
+    text-align: center;
+  }
+  .revenue-callout-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 400;
+    font-size: 1.15rem;
+    font-style: italic;
+    color: var(--white);
+    letter-spacing: 0.02em;
+    line-height: 1.5;
+  }
+  .revenue-callout-text span { color: var(--copper); font-style: normal; }
+
+  @media (max-width: 768px) {
+    nav { padding: 1.25rem 1.5rem; }
+    #hero, .section, #contrast, #keystone, #revenue, #qualify { padding-left: 1.5rem; padding-right: 1.5rem; }
+    #stats { grid-template-columns: 1fr; gap: 0; padding: 4rem 1.5rem; }
+    .stat-divider { display: none; }
+    #stats::after { left: 1.5rem; right: 1.5rem; }
+    #qualify > div > div { grid-template-columns: 1fr !important; gap: 2rem !important; }
+    .compare-grid, .rack-grid { grid-template-columns: 1fr; }
+    .stack-layer { grid-template-columns: 1fr; gap: 0.75rem; }
+    .stack-badge { text-align: left; }
+    #contact { padding: 4rem 1.5rem; flex-direction: column; }
+    .contact-block { text-align: left; }
+    footer { padding: 1.5rem; }
+    .contrast-header { flex-direction: column; }
+    .revenue-grid { grid-template-columns: 1fr; gap: 3rem; }
+  }
+</style>
+</head>
+<body id="artifacts-component-root-html">
+
+<nav>
+  <a class="nav-logo" href="https://www.claudeusercontent.com/artifact/15841929-4977-496f-904f-c3d97163bf15?domain=claude.ai&amp;errorReportingMode=parent&amp;formattedSpreadsheets=true#">A<span>·</span>G<span>·</span>T</a>
+  <span class="nav-tag">Facility-to-Chip™ Cooling Platform</span>
+</nav>
+
+<section id="hero">
+  <p class="hero-eyebrow">Vega™ ✦ Thermal Node</p>
+  <h1 class="hero-h1">Cooling capacity<br>you <em>deploy.</em></h1>
+  <h2 class="hero-h2">Not a facility upgrade<br>you build.</h2>
+  <p class="hero-sub">
+    Vega creates a self-contained cooling zone for high-density racks,
+    governed by <strong>Borealis</strong> — the single supervisory controller.
+    No plant expansion. No control conflicts.<br>No construction timeline.
+  </p>
+  <p class="hero-sub" style="margin-top: 1.25rem; opacity: 0; animation: fadeUp 1s cubic-bezier(.16,1,.3,1) 0.9s forwards;">
+    <strong style="color: var(--copper); font-weight: 400;">Deploy liquid cooling at the rack level without expanding the central plant.</strong>
+  </p>
+  <span class="hero-scroll">Scroll to explore</span>
+</section>
+
+<section id="stats">
+  <div class="stat-item reveal visible">
+    <div class="stat-number">
+      <span class="counter" data-target="27.3" data-decimals="1">27.3</span><span class="unit">sq ft</span>
+    </div>
+    <div class="stat-label">Node Footprint</div>
+    <div class="stat-label" style="margin-top: 0.3rem; letter-spacing: 0.1em; color: rgba(244,242,238,0.25); font-size: 0.62rem;">Consolidated thermal deployment</div>
+  </div>
+  <div class="stat-divider"></div>
+  <div class="stat-item reveal reveal-delay-1 visible">
+    <div class="stat-number">
+      <span class="counter" data-target="7" data-decimals="0">7</span><span class="unit">days</span>
+    </div>
+    <div class="stat-label">Site-Ready Deployment</div>
+    <div class="stat-label" style="margin-top: 0.3rem; letter-spacing: 0.1em; color: rgba(244,242,238,0.25); font-size: 0.62rem;">Once access and heat rejection path confirmed</div>
+  </div>
+  <div class="stat-divider"></div>
+  <div class="stat-item reveal reveal-delay-2 visible">
+    <div class="stat-number" style="font-size: clamp(2.8rem, 5vw, 4.5rem);">
+      Multi-MW
+    </div>
+    <div class="stat-label">Modular Site Capacity</div>
+    <div class="stat-label" style="margin-top: 0.3rem; letter-spacing: 0.1em; color: rgba(244,242,238,0.25); font-size: 0.62rem;">Same node from pod to 5 MW site capacity</div>
+  </div>
+</section>
+
+<section id="qualify" style="padding: 5rem 4rem; position: relative;">
+  <div style="position: absolute; bottom: 0; left: 4rem; right: 4rem; height: 1px; background: var(--rule);"></div>
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: start;" class="reveal visible">
+    <div>
+      <p class="section-label">When Vega Applies</p>
+      <div style="display: flex; flex-direction: column; gap: 1.25rem; margin-top: 1rem;">
+        <div style="display: flex; align-items: flex-start; gap: 1rem;">
+          <span style="color: var(--teal); font-family: &#39;Barlow Condensed&#39;, sans-serif; font-size: 0.7rem; letter-spacing: 0.2em; min-width: 1.5rem; padding-top: 0.15rem;">→</span>
+          <span style="font-size: 0.88rem; color: var(--white); line-height: 1.5;">A tenant requires liquid cooling at rack densities the air-cooled plant cannot serve</span>
+        </div>
+        <div style="display: flex; align-items: flex-start; gap: 1rem;">
+          <span style="color: var(--teal); font-family: &#39;Barlow Condensed&#39;, sans-serif; font-size: 0.7rem; letter-spacing: 0.2em; min-width: 1.5rem; padding-top: 0.15rem;">→</span>
+          <span style="font-size: 0.88rem; color: var(--white); line-height: 1.5;">The central plant cannot expand — no yard space, no roof capacity, no permitting path</span>
+        </div>
+        <div style="display: flex; align-items: flex-start; gap: 1rem;">
+          <span style="color: var(--teal); font-family: &#39;Barlow Condensed&#39;, sans-serif; font-size: 0.7rem; letter-spacing: 0.2em; min-width: 1.5rem; padding-top: 0.15rem;">→</span>
+          <span style="font-size: 0.88rem; color: var(--white); line-height: 1.5;">The deployment cannot wait 18–30 months for a capital construction project</span>
+        </div>
+      </div>
+    </div>
+    <div class="reveal reveal-delay-2 visible" style="padding: 2rem 2.5rem; background: rgba(255,255,255,0.02); border: 1px solid var(--rule);">
+      <p style="font-family: &#39;Barlow Condensed&#39;, sans-serif; font-weight: 300; font-size: 0.68rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--copper); margin-bottom: 1rem;">Deployment Heritage</p>
+      <p style="font-size: 0.88rem; color: var(--dim); line-height: 1.7;">
+        The underlying control approach — precision thermal governance under single supervisory control — has been <strong style="color: var(--white); font-weight: 400;">deployed thousands of times</strong> across semiconductor, pharmaceutical, and currency-printing environments.
+      </p>
+      <p style="font-size: 0.88rem; color: var(--dim); line-height: 1.7; margin-top: 0.75rem;">
+        These are applications with tighter tolerances than most data center loads require.
+      </p>
+      <p style="font-size: 0.78rem; color: rgba(244,242,238,0.3); margin-top: 0.75rem; line-height: 1.5;">
+        AGT-USA · 35+ years precision thermal engineering · Corona, California
+      </p>
+    </div>
+  </div>
+</section>
+
+<section id="contrast">
+  <div class="contrast-header reveal visible">
+    <div>
+      <p class="section-label">500 kW Mechanical Scope Comparison</p>
+      <h2 class="section-headline">The same data hall.<br>A different outcome.</h2>
+    </div>
+    <div class="toggle-wrap">
+      <button class="toggle-btn active" id="btn-before" onclick="showPanel(&#39;before&#39;)">Before</button>
+      <button class="toggle-btn after-btn" id="btn-after" onclick="showPanel(&#39;after&#39;)">With Vega</button>
+    </div>
+  </div>
+
+  <div class="diagram-panel active reveal reveal-delay-1 visible" id="panel-before">
+    <svg class="floor-svg" viewBox="0 0 860 360" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="860" height="360" fill="#1A1E23"></rect>
+      <text x="430" y="24" text-anchor="middle" font-family="Barlow Condensed" font-size="9" fill="#8A9099" letter-spacing="3">AIR-COOLED DATA HALL</text>
+      <rect x="30" y="40" width="160" height="260" fill="none" stroke="#3A4048" stroke-width="1"></rect>
+      <text x="110" y="128" text-anchor="middle" font-family="Barlow Condensed" font-size="11" fill="#8A9099" letter-spacing="2">CENTRAL</text>
+      <text x="110" y="148" text-anchor="middle" font-family="Barlow Condensed" font-size="11" fill="#8A9099" letter-spacing="2">PLANT</text>
+      <rect x="50" y="200" width="120" height="28" fill="rgba(200,50,50,0.12)" stroke="rgba(200,50,50,0.4)" stroke-width="1"></rect>
+      <text x="110" y="219" text-anchor="middle" font-family="Barlow Condensed" font-size="8" fill="#B85555" letter-spacing="2">AT CAPACITY</text>
+      <rect x="200" y="40" width="130" height="120" fill="rgba(200,50,50,0.04)" stroke="rgba(200,50,50,0.25)" stroke-width="1" stroke-dasharray="4 3"></rect>
+      <text x="265" y="95" text-anchor="middle" font-family="Barlow Condensed" font-size="8" fill="rgba(180,50,50,0.7)" letter-spacing="2">PLANT EXPANSION</text>
+      <text x="265" y="112" text-anchor="middle" font-family="Barlow Condensed" font-size="8" fill="rgba(180,50,50,0.7)" letter-spacing="2">CONSTRAINED</text>
+      <line x1="240" y1="70" x2="290" y2="90" stroke="rgba(180,50,50,0.35)" stroke-width="1"></line>
+      <line x1="290" y1="70" x2="240" y2="90" stroke="rgba(180,50,50,0.35)" stroke-width="1"></line>
+      <g id="before-racks">
+        <rect x="350" y="50" width="28" height="60" fill="#252A30" stroke="#3A4048" stroke-width="0.5"></rect>
+        <rect x="386" y="50" width="28" height="60" fill="#252A30" stroke="#3A4048" stroke-width="0.5"></rect>
+        <rect x="422" y="50" width="28" height="60" fill="#252A30" stroke="#3A4048" stroke-width="0.5"></rect>
+        <rect x="458" y="50" width="28" height="60" fill="#252A30" stroke="#3A4048" stroke-width="0.5"></rect>
+        <rect x="494" y="50" width="28" height="60" fill="#252A30" stroke="#3A4048" stroke-width="0.5"></rect>
+        <rect x="530" y="50" width="28" height="60" fill="#252A30" stroke="#3A4048" stroke-width="0.5"></rect>
+        <rect x="566" y="50" width="28" height="60" fill="#252A30" stroke="#3A4048" stroke-width="0.5"></rect>
+        <rect x="602" y="50" width="28" height="60" fill="#252A30" stroke="#3A4048" stroke-width="0.5"></rect>
+        <rect x="638" y="50" width="28" height="60" fill="#252A30" stroke="#3A4048" stroke-width="0.5"></rect>
+        <rect x="674" y="50" width="28" height="60" fill="#252A30" stroke="#3A4048" stroke-width="0.5"></rect>
+        <rect x="710" y="50" width="28" height="60" fill="#252A30" stroke="#3A4048" stroke-width="0.5"></rect>
+        <rect x="746" y="50" width="28" height="60" fill="#252A30" stroke="#3A4048" stroke-width="0.5"></rect>
+        <rect x="782" y="50" width="28" height="60" fill="#252A30" stroke="#3A4048" stroke-width="0.5"></rect>
+        <rect x="350" y="130" width="28" height="60" fill="#252A30" stroke="#3A4048" stroke-width="0.5"></rect>
+        <rect x="386" y="130" width="28" height="60" fill="#252A30" stroke="#3A4048" stroke-width="0.5"></rect>
+        <rect x="422" y="130" width="28" height="60" fill="#252A30" stroke="#3A4048" stroke-width="0.5"></rect>
+        <rect x="458" y="130" width="28" height="60" fill="#252A30" stroke="#3A4048" stroke-width="0.5"></rect>
+        <rect x="494" y="130" width="28" height="60" fill="#252A30" stroke="#3A4048" stroke-width="0.5"></rect>
+        <rect x="530" y="130" width="28" height="60" fill="#252A30" stroke="#3A4048" stroke-width="0.5"></rect>
+        <rect x="566" y="130" width="28" height="60" fill="#252A30" stroke="#3A4048" stroke-width="0.5"></rect>
+        <rect x="602" y="130" width="28" height="60" fill="#252A30" stroke="#3A4048" stroke-width="0.5"></rect>
+        <rect x="638" y="130" width="28" height="60" fill="#252A30" stroke="#3A4048" stroke-width="0.5"></rect>
+        <rect x="674" y="130" width="28" height="60" fill="#252A30" stroke="#3A4048" stroke-width="0.5"></rect>
+        <rect x="710" y="130" width="28" height="60" fill="#252A30" stroke="#3A4048" stroke-width="0.5"></rect>
+        <rect x="746" y="130" width="28" height="60" fill="#252A30" stroke="#3A4048" stroke-width="0.5"></rect>
+        <rect x="782" y="130" width="28" height="60" fill="#252A30" stroke="#3A4048" stroke-width="0.5"></rect>
+        <rect x="350" y="210" width="28" height="60" fill="#252A30" stroke="#3A4048" stroke-width="0.5"></rect>
+        <rect x="386" y="210" width="28" height="60" fill="#252A30" stroke="#3A4048" stroke-width="0.5"></rect>
+        <rect x="422" y="210" width="28" height="60" fill="#252A30" stroke="#3A4048" stroke-width="0.5"></rect>
+        <rect x="458" y="210" width="28" height="60" fill="#252A30" stroke="#3A4048" stroke-width="0.5"></rect>
+        <rect x="494" y="210" width="28" height="60" fill="#252A30" stroke="#3A4048" stroke-width="0.5"></rect>
+        <rect x="530" y="210" width="28" height="60" fill="#252A30" stroke="#3A4048" stroke-width="0.5"></rect>
+        <rect x="566" y="210" width="28" height="60" fill="#252A30" stroke="#3A4048" stroke-width="0.5"></rect>
+        <rect x="602" y="210" width="28" height="60" fill="#252A30" stroke="#3A4048" stroke-width="0.5"></rect>
+        <rect x="638" y="210" width="28" height="60" fill="#252A30" stroke="#3A4048" stroke-width="0.5"></rect>
+        <rect x="674" y="210" width="28" height="60" fill="#252A30" stroke="#3A4048" stroke-width="0.5"></rect>
+        <rect x="710" y="210" width="28" height="60" fill="#252A30" stroke="#3A4048" stroke-width="0.5"></rect>
+        <rect x="746" y="210" width="28" height="60" fill="#252A30" stroke="#3A4048" stroke-width="0.5"></rect>
+        <rect x="782" y="210" width="28" height="60" fill="#252A30" stroke="#3A4048" stroke-width="0.5"></rect>
+      </g>
+      <!-- kW per rack labels -->
+      <text x="364" y="83" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(200,80,80,0.45)" font-weight="300">15</text>
+      <text x="400" y="83" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(200,80,80,0.45)" font-weight="300">15</text>
+      <text x="436" y="83" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(200,80,80,0.45)" font-weight="300">15</text>
+      <text x="472" y="83" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(200,80,80,0.45)" font-weight="300">15</text>
+      <text x="508" y="83" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(200,80,80,0.45)" font-weight="300">15</text>
+      <text x="544" y="83" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(200,80,80,0.45)" font-weight="300">15</text>
+      <text x="580" y="83" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(200,80,80,0.45)" font-weight="300">15</text>
+      <text x="616" y="83" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(200,80,80,0.45)" font-weight="300">15</text>
+      <text x="652" y="83" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(200,80,80,0.45)" font-weight="300">15</text>
+      <text x="688" y="83" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(200,80,80,0.45)" font-weight="300">15</text>
+      <text x="724" y="83" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(200,80,80,0.45)" font-weight="300">15</text>
+      <text x="760" y="83" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(200,80,80,0.45)" font-weight="300">15</text>
+      <text x="796" y="83" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(200,80,80,0.45)" font-weight="300">15</text>
+      <text x="364" y="163" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(200,80,80,0.45)" font-weight="300">15</text>
+      <text x="400" y="163" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(200,80,80,0.45)" font-weight="300">15</text>
+      <text x="436" y="163" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(200,80,80,0.45)" font-weight="300">15</text>
+      <text x="472" y="163" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(200,80,80,0.45)" font-weight="300">15</text>
+      <text x="508" y="163" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(200,80,80,0.45)" font-weight="300">15</text>
+      <text x="544" y="163" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(200,80,80,0.45)" font-weight="300">15</text>
+      <text x="580" y="163" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(200,80,80,0.45)" font-weight="300">15</text>
+      <text x="616" y="163" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(200,80,80,0.45)" font-weight="300">15</text>
+      <text x="652" y="163" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(200,80,80,0.45)" font-weight="300">15</text>
+      <text x="688" y="163" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(200,80,80,0.45)" font-weight="300">15</text>
+      <text x="724" y="163" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(200,80,80,0.45)" font-weight="300">15</text>
+      <text x="760" y="163" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(200,80,80,0.45)" font-weight="300">15</text>
+      <text x="796" y="163" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(200,80,80,0.45)" font-weight="300">15</text>
+      <text x="364" y="243" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(200,80,80,0.45)" font-weight="300">15</text>
+      <text x="400" y="243" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(200,80,80,0.45)" font-weight="300">15</text>
+      <text x="436" y="243" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(200,80,80,0.45)" font-weight="300">15</text>
+      <text x="472" y="243" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(200,80,80,0.45)" font-weight="300">15</text>
+      <text x="508" y="243" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(200,80,80,0.45)" font-weight="300">15</text>
+      <text x="544" y="243" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(200,80,80,0.45)" font-weight="300">15</text>
+      <text x="580" y="243" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(200,80,80,0.45)" font-weight="300">15</text>
+      <text x="616" y="243" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(200,80,80,0.45)" font-weight="300">15</text>
+      <text x="652" y="243" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(200,80,80,0.45)" font-weight="300">15</text>
+      <text x="688" y="243" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(200,80,80,0.45)" font-weight="300">15</text>
+      <text x="724" y="243" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(200,80,80,0.45)" font-weight="300">15</text>
+      <text x="760" y="243" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(200,80,80,0.45)" font-weight="300">15</text>
+      <text x="796" y="243" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(200,80,80,0.45)" font-weight="300">15</text>
+      <!-- Legend -->
+      <text x="350" y="305" font-family="Barlow Condensed" font-size="6" fill="rgba(200,80,80,0.4)" letter-spacing="1.5">kW PER RACK — AIR-COOLED MAXIMUM</text>
+      <rect x="30" y="320" width="800" height="28" fill="rgba(200,50,50,0.06)" stroke="rgba(200,50,50,0.2)" stroke-width="0.5"></rect>
+      <text x="430" y="339" text-anchor="middle" font-family="Barlow Condensed" font-size="9" fill="rgba(180,50,50,0.8)" letter-spacing="3">LIQUID COOLING DEPLOYMENT CONSTRAINED — CENTRAL PLANT AT CAPACITY</text>
+    </svg>
+  </div>
+
+  <div class="diagram-panel reveal reveal-delay-1" id="panel-after">
+    <svg class="floor-svg" viewBox="0 0 860 360" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="860" height="360" fill="#1A1E23"></rect>
+      <rect x="690" y="10" width="150" height="22" fill="rgba(26,138,138,0.1)" stroke="rgba(26,138,138,0.3)" stroke-width="0.5"></rect>
+      <text x="765" y="25" text-anchor="middle" font-family="Barlow Condensed" font-size="7.5" fill="#1A8A8A" letter-spacing="2">ADIABATIC FLUID COOLER</text>
+      <rect x="30" y="40" width="150" height="260" fill="none" stroke="#3A4048" stroke-width="1"></rect>
+      <text x="105" y="125" text-anchor="middle" font-family="Barlow Condensed" font-size="11" fill="#8A9099" letter-spacing="2">CENTRAL</text>
+      <text x="105" y="145" text-anchor="middle" font-family="Barlow Condensed" font-size="11" fill="#8A9099" letter-spacing="2">PLANT</text>
+      <text x="105" y="200" text-anchor="middle" font-family="Barlow Condensed" font-size="8" fill="rgba(244,242,238,0.2)" letter-spacing="2">UNCHANGED</text>
+      <text x="105" y="215" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(244,242,238,0.15)" letter-spacing="1">Existing tenants unaffected</text>
+      <line x1="200" y1="40" x2="200" y2="300" stroke="rgba(26,138,138,0.4)" stroke-width="1" stroke-dasharray="5 3"></line>
+      <text x="203" y="58" font-family="Barlow Condensed" font-size="7" fill="rgba(26,138,138,0.6)" letter-spacing="2" transform="rotate(90 203 58)">THERMAL BOUNDARY</text>
+      <rect x="210" y="40" width="600" height="260" fill="rgba(26,138,138,0.04)" stroke="rgba(26,138,138,0.2)" stroke-width="1"></rect>
+      <text x="510" y="58" text-anchor="middle" font-family="Barlow Condensed" font-size="7.5" fill="rgba(26,138,138,0.5)" letter-spacing="3">GOVERNED THERMAL ENVELOPE</text>
+      <!-- Vega Node — Row 1 -->
+      <rect x="220" y="82" width="100" height="32" fill="rgba(26,138,138,0.15)" stroke="#1A8A8A" stroke-width="1"></rect>
+      <text x="270" y="98" text-anchor="middle" font-family="Barlow Condensed" font-size="8" fill="#1A8A8A" letter-spacing="1">VEGA ✦ NODE</text>
+      <text x="270" y="108" text-anchor="middle" font-family="Barlow Condensed" font-size="5.5" fill="rgba(26,138,138,0.6)" letter-spacing="1">Borealis Control</text>
+      <!-- Vega Node — Row 2 -->
+      <rect x="220" y="162" width="100" height="32" fill="rgba(26,138,138,0.15)" stroke="#1A8A8A" stroke-width="1"></rect>
+      <text x="270" y="178" text-anchor="middle" font-family="Barlow Condensed" font-size="8" fill="#1A8A8A" letter-spacing="1">VEGA ✦ NODE</text>
+      <text x="270" y="188" text-anchor="middle" font-family="Barlow Condensed" font-size="5.5" fill="rgba(26,138,138,0.6)" letter-spacing="1">Borealis Control</text>
+      <!-- Vega Node — Row 3 -->
+      <rect x="220" y="242" width="100" height="32" fill="rgba(26,138,138,0.15)" stroke="#1A8A8A" stroke-width="1"></rect>
+      <text x="270" y="258" text-anchor="middle" font-family="Barlow Condensed" font-size="8" fill="#1A8A8A" letter-spacing="1">VEGA ✦ NODE</text>
+      <text x="270" y="268" text-anchor="middle" font-family="Barlow Condensed" font-size="5.5" fill="rgba(26,138,138,0.6)" letter-spacing="1">Borealis Control</text>
+      <g id="after-racks">
+        <rect x="350" y="80" width="28" height="55" fill="#232830" stroke="rgba(26,138,138,0.2)" stroke-width="0.5"></rect>
+        <rect x="378" y="80" width="4" height="55" fill="rgba(26,138,138,0.5)" rx="0.5"></rect>
+        <rect x="386" y="80" width="28" height="55" fill="#232830" stroke="rgba(26,138,138,0.2)" stroke-width="0.5"></rect>
+        <rect x="414" y="80" width="4" height="55" fill="rgba(26,138,138,0.5)" rx="0.5"></rect>
+        <rect x="422" y="80" width="28" height="55" fill="#232830" stroke="rgba(26,138,138,0.2)" stroke-width="0.5"></rect>
+        <rect x="450" y="80" width="4" height="55" fill="rgba(26,138,138,0.5)" rx="0.5"></rect>
+        <rect x="458" y="80" width="28" height="55" fill="#232830" stroke="rgba(26,138,138,0.2)" stroke-width="0.5"></rect>
+        <rect x="486" y="80" width="4" height="55" fill="rgba(26,138,138,0.5)" rx="0.5"></rect>
+        <rect x="494" y="80" width="28" height="55" fill="#232830" stroke="rgba(26,138,138,0.2)" stroke-width="0.5"></rect>
+        <rect x="522" y="80" width="4" height="55" fill="rgba(26,138,138,0.5)" rx="0.5"></rect>
+        <rect x="530" y="80" width="28" height="55" fill="#232830" stroke="rgba(26,138,138,0.2)" stroke-width="0.5"></rect>
+        <rect x="558" y="80" width="4" height="55" fill="rgba(26,138,138,0.5)" rx="0.5"></rect>
+        <rect x="566" y="80" width="28" height="55" fill="#232830" stroke="rgba(26,138,138,0.2)" stroke-width="0.5"></rect>
+        <rect x="594" y="80" width="4" height="55" fill="rgba(26,138,138,0.5)" rx="0.5"></rect>
+        <rect x="602" y="80" width="28" height="55" fill="#232830" stroke="rgba(26,138,138,0.2)" stroke-width="0.5"></rect>
+        <rect x="630" y="80" width="4" height="55" fill="rgba(26,138,138,0.5)" rx="0.5"></rect>
+        <rect x="638" y="80" width="28" height="55" fill="#232830" stroke="rgba(26,138,138,0.2)" stroke-width="0.5"></rect>
+        <rect x="666" y="80" width="4" height="55" fill="rgba(26,138,138,0.5)" rx="0.5"></rect>
+        <rect x="674" y="80" width="28" height="55" fill="#232830" stroke="rgba(26,138,138,0.2)" stroke-width="0.5"></rect>
+        <rect x="702" y="80" width="4" height="55" fill="rgba(26,138,138,0.5)" rx="0.5"></rect>
+        <rect x="710" y="80" width="28" height="55" fill="#232830" stroke="rgba(26,138,138,0.2)" stroke-width="0.5"></rect>
+        <rect x="738" y="80" width="4" height="55" fill="rgba(26,138,138,0.5)" rx="0.5"></rect>
+        <rect x="746" y="80" width="28" height="55" fill="#232830" stroke="rgba(26,138,138,0.2)" stroke-width="0.5"></rect>
+        <rect x="774" y="80" width="4" height="55" fill="rgba(26,138,138,0.5)" rx="0.5"></rect>
+        <rect x="782" y="80" width="28" height="55" fill="#232830" stroke="rgba(26,138,138,0.2)" stroke-width="0.5"></rect>
+        <rect x="810" y="80" width="4" height="55" fill="rgba(26,138,138,0.5)" rx="0.5"></rect>
+        <rect x="350" y="160" width="28" height="55" fill="#232830" stroke="rgba(26,138,138,0.2)" stroke-width="0.5"></rect>
+        <rect x="378" y="160" width="4" height="55" fill="rgba(26,138,138,0.5)" rx="0.5"></rect>
+        <rect x="386" y="160" width="28" height="55" fill="#232830" stroke="rgba(26,138,138,0.2)" stroke-width="0.5"></rect>
+        <rect x="414" y="160" width="4" height="55" fill="rgba(26,138,138,0.5)" rx="0.5"></rect>
+        <rect x="422" y="160" width="28" height="55" fill="#232830" stroke="rgba(26,138,138,0.2)" stroke-width="0.5"></rect>
+        <rect x="450" y="160" width="4" height="55" fill="rgba(26,138,138,0.5)" rx="0.5"></rect>
+        <rect x="458" y="160" width="28" height="55" fill="#232830" stroke="rgba(26,138,138,0.2)" stroke-width="0.5"></rect>
+        <rect x="486" y="160" width="4" height="55" fill="rgba(26,138,138,0.5)" rx="0.5"></rect>
+        <rect x="494" y="160" width="28" height="55" fill="#232830" stroke="rgba(26,138,138,0.2)" stroke-width="0.5"></rect>
+        <rect x="522" y="160" width="4" height="55" fill="rgba(26,138,138,0.5)" rx="0.5"></rect>
+        <rect x="530" y="160" width="28" height="55" fill="#232830" stroke="rgba(26,138,138,0.2)" stroke-width="0.5"></rect>
+        <rect x="558" y="160" width="4" height="55" fill="rgba(26,138,138,0.5)" rx="0.5"></rect>
+        <rect x="566" y="160" width="28" height="55" fill="#232830" stroke="rgba(26,138,138,0.2)" stroke-width="0.5"></rect>
+        <rect x="594" y="160" width="4" height="55" fill="rgba(26,138,138,0.5)" rx="0.5"></rect>
+        <rect x="602" y="160" width="28" height="55" fill="#232830" stroke="rgba(26,138,138,0.2)" stroke-width="0.5"></rect>
+        <rect x="630" y="160" width="4" height="55" fill="rgba(26,138,138,0.5)" rx="0.5"></rect>
+        <rect x="638" y="160" width="28" height="55" fill="#232830" stroke="rgba(26,138,138,0.2)" stroke-width="0.5"></rect>
+        <rect x="666" y="160" width="4" height="55" fill="rgba(26,138,138,0.5)" rx="0.5"></rect>
+        <rect x="674" y="160" width="28" height="55" fill="#232830" stroke="rgba(26,138,138,0.2)" stroke-width="0.5"></rect>
+        <rect x="702" y="160" width="4" height="55" fill="rgba(26,138,138,0.5)" rx="0.5"></rect>
+        <rect x="710" y="160" width="28" height="55" fill="#232830" stroke="rgba(26,138,138,0.2)" stroke-width="0.5"></rect>
+        <rect x="738" y="160" width="4" height="55" fill="rgba(26,138,138,0.5)" rx="0.5"></rect>
+        <rect x="746" y="160" width="28" height="55" fill="#232830" stroke="rgba(26,138,138,0.2)" stroke-width="0.5"></rect>
+        <rect x="774" y="160" width="4" height="55" fill="rgba(26,138,138,0.5)" rx="0.5"></rect>
+        <rect x="782" y="160" width="28" height="55" fill="#232830" stroke="rgba(26,138,138,0.2)" stroke-width="0.5"></rect>
+        <rect x="810" y="160" width="4" height="55" fill="rgba(26,138,138,0.5)" rx="0.5"></rect>
+        <rect x="350" y="240" width="28" height="50" fill="#232830" stroke="rgba(26,138,138,0.2)" stroke-width="0.5"></rect>
+        <rect x="378" y="240" width="4" height="50" fill="rgba(26,138,138,0.5)" rx="0.5"></rect>
+        <rect x="386" y="240" width="28" height="50" fill="#232830" stroke="rgba(26,138,138,0.2)" stroke-width="0.5"></rect>
+        <rect x="414" y="240" width="4" height="50" fill="rgba(26,138,138,0.5)" rx="0.5"></rect>
+        <rect x="422" y="240" width="28" height="50" fill="#232830" stroke="rgba(26,138,138,0.2)" stroke-width="0.5"></rect>
+        <rect x="450" y="240" width="4" height="50" fill="rgba(26,138,138,0.5)" rx="0.5"></rect>
+        <rect x="458" y="240" width="28" height="50" fill="#232830" stroke="rgba(26,138,138,0.2)" stroke-width="0.5"></rect>
+        <rect x="486" y="240" width="4" height="50" fill="rgba(26,138,138,0.5)" rx="0.5"></rect>
+        <rect x="494" y="240" width="28" height="50" fill="#232830" stroke="rgba(26,138,138,0.2)" stroke-width="0.5"></rect>
+        <rect x="522" y="240" width="4" height="50" fill="rgba(26,138,138,0.5)" rx="0.5"></rect>
+        <rect x="530" y="240" width="28" height="50" fill="#232830" stroke="rgba(26,138,138,0.2)" stroke-width="0.5"></rect>
+        <rect x="558" y="240" width="4" height="50" fill="rgba(26,138,138,0.5)" rx="0.5"></rect>
+        <rect x="566" y="240" width="28" height="50" fill="#232830" stroke="rgba(26,138,138,0.2)" stroke-width="0.5"></rect>
+        <rect x="594" y="240" width="4" height="50" fill="rgba(26,138,138,0.5)" rx="0.5"></rect>
+        <rect x="602" y="240" width="28" height="50" fill="#232830" stroke="rgba(26,138,138,0.2)" stroke-width="0.5"></rect>
+        <rect x="630" y="240" width="4" height="50" fill="rgba(26,138,138,0.5)" rx="0.5"></rect>
+        <rect x="638" y="240" width="28" height="50" fill="#232830" stroke="rgba(26,138,138,0.2)" stroke-width="0.5"></rect>
+        <rect x="666" y="240" width="4" height="50" fill="rgba(26,138,138,0.5)" rx="0.5"></rect>
+        <rect x="674" y="240" width="28" height="50" fill="#232830" stroke="rgba(26,138,138,0.2)" stroke-width="0.5"></rect>
+        <rect x="702" y="240" width="4" height="50" fill="rgba(26,138,138,0.5)" rx="0.5"></rect>
+        <rect x="710" y="240" width="28" height="50" fill="#232830" stroke="rgba(26,138,138,0.2)" stroke-width="0.5"></rect>
+        <rect x="738" y="240" width="4" height="50" fill="rgba(26,138,138,0.5)" rx="0.5"></rect>
+        <rect x="746" y="240" width="28" height="50" fill="#232830" stroke="rgba(26,138,138,0.2)" stroke-width="0.5"></rect>
+        <rect x="774" y="240" width="4" height="50" fill="rgba(26,138,138,0.5)" rx="0.5"></rect>
+        <rect x="782" y="240" width="28" height="50" fill="#232830" stroke="rgba(26,138,138,0.2)" stroke-width="0.5"></rect>
+        <rect x="810" y="240" width="4" height="50" fill="rgba(26,138,138,0.5)" rx="0.5"></rect>
+      </g>
+      <!-- RDHx Callout -->
+      <line x1="382" y1="80" x2="382" y2="68" stroke="rgba(26,138,138,0.5)" stroke-width="0.5"></line>
+      <line x1="382" y1="68" x2="440" y2="68" stroke="rgba(26,138,138,0.5)" stroke-width="0.5"></line>
+      <circle cx="382" cy="80" r="1.5" fill="#1A8A8A"></circle>
+      <text x="444" y="66" font-family="Barlow Condensed" font-size="6.5" fill="rgba(26,138,138,0.7)" letter-spacing="1.5">REAR-DOOR HEAT EXCHANGER</text>
+      <text x="444" y="74" font-family="Barlow Condensed" font-size="5.5" fill="rgba(26,138,138,0.4)" letter-spacing="1">GOVERNED INTERFACE — NO LOCAL CONTROLLER</text>
+      <!-- kW per rack labels -->
+      <text x="364" y="110" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(26,138,138,0.6)" font-weight="300">50</text>
+      <text x="400" y="110" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(26,138,138,0.6)" font-weight="300">50</text>
+      <text x="436" y="110" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(26,138,138,0.6)" font-weight="300">50</text>
+      <text x="472" y="110" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(26,138,138,0.6)" font-weight="300">50</text>
+      <text x="508" y="110" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(26,138,138,0.6)" font-weight="300">50</text>
+      <text x="544" y="110" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(26,138,138,0.6)" font-weight="300">50</text>
+      <text x="580" y="110" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(26,138,138,0.6)" font-weight="300">50</text>
+      <text x="616" y="110" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(26,138,138,0.6)" font-weight="300">50</text>
+      <text x="652" y="110" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(26,138,138,0.6)" font-weight="300">50</text>
+      <text x="688" y="110" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(26,138,138,0.6)" font-weight="300">50</text>
+      <text x="724" y="110" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(26,138,138,0.6)" font-weight="300">50</text>
+      <text x="760" y="110" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(26,138,138,0.6)" font-weight="300">50</text>
+      <text x="796" y="110" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(26,138,138,0.6)" font-weight="300">50</text>
+      <text x="364" y="190" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(26,138,138,0.6)" font-weight="300">50</text>
+      <text x="400" y="190" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(26,138,138,0.6)" font-weight="300">50</text>
+      <text x="436" y="190" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(26,138,138,0.6)" font-weight="300">50</text>
+      <text x="472" y="190" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(26,138,138,0.6)" font-weight="300">50</text>
+      <text x="508" y="190" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(26,138,138,0.6)" font-weight="300">50</text>
+      <text x="544" y="190" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(26,138,138,0.6)" font-weight="300">50</text>
+      <text x="580" y="190" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(26,138,138,0.6)" font-weight="300">50</text>
+      <text x="616" y="190" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(26,138,138,0.6)" font-weight="300">50</text>
+      <text x="652" y="190" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(26,138,138,0.6)" font-weight="300">50</text>
+      <text x="688" y="190" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(26,138,138,0.6)" font-weight="300">50</text>
+      <text x="724" y="190" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(26,138,138,0.6)" font-weight="300">50</text>
+      <text x="760" y="190" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(26,138,138,0.6)" font-weight="300">50</text>
+      <text x="796" y="190" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(26,138,138,0.6)" font-weight="300">50</text>
+      <text x="364" y="268" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(26,138,138,0.6)" font-weight="300">50</text>
+      <text x="400" y="268" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(26,138,138,0.6)" font-weight="300">50</text>
+      <text x="436" y="268" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(26,138,138,0.6)" font-weight="300">50</text>
+      <text x="472" y="268" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(26,138,138,0.6)" font-weight="300">50</text>
+      <text x="508" y="268" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(26,138,138,0.6)" font-weight="300">50</text>
+      <text x="544" y="268" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(26,138,138,0.6)" font-weight="300">50</text>
+      <text x="580" y="268" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(26,138,138,0.6)" font-weight="300">50</text>
+      <text x="616" y="268" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(26,138,138,0.6)" font-weight="300">50</text>
+      <text x="652" y="268" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(26,138,138,0.6)" font-weight="300">50</text>
+      <text x="688" y="268" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(26,138,138,0.6)" font-weight="300">50</text>
+      <text x="724" y="268" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(26,138,138,0.6)" font-weight="300">50</text>
+      <text x="760" y="268" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(26,138,138,0.6)" font-weight="300">50</text>
+      <text x="796" y="268" text-anchor="middle" font-family="Barlow Condensed" font-size="7" fill="rgba(26,138,138,0.6)" font-weight="300">50</text>
+      <!-- Legend -->
+      <text x="350" y="300" font-family="Barlow Condensed" font-size="6" fill="rgba(26,138,138,0.45)" letter-spacing="1.5">kW PER RACK — LIQUID-COOLED CAPACITY</text>
+      <rect x="30" y="310" width="800" height="28" fill="rgba(26,138,138,0.06)" stroke="rgba(26,138,138,0.2)" stroke-width="0.5"></rect>
+      <text x="430" y="328" text-anchor="middle" font-family="Barlow Condensed" font-size="9" fill="rgba(26,138,138,0.8)" letter-spacing="3">BOREALIS SUPERVISORY CONTROL ACTIVE — INDEPENDENT THERMAL DOMAIN ESTABLISHED</text>
+    </svg>
+  </div>
+
+  <div class="compare-grid reveal reveal-delay-2 visible" style="margin-top: 2rem;">
+    <div class="compare-cell header-cell">
+      <span class="compare-col-label">Conventional 500 kW Expansion</span>
+    </div>
+    <div class="compare-cell header-cell vega-header">
+      <span class="compare-col-label teal">Vega™ Thermal Node</span>
+    </div>
+    <div class="compare-cell" style="opacity: 0.7;">
+      <div class="compare-metric-name">Installed Footprint</div>
+      <div class="compare-value-bad">180–540 <span style="font-size:0.55em; color: var(--dim)">sq ft</span></div>
+      <div class="compare-note">4+ mechanical assets · 18–30′ L × 10–18′ W</div>
+    </div>
+    <div class="compare-cell vega-cell">
+      <div class="compare-metric-name">Installed Footprint</div>
+      <div class="compare-value-good">27.3<span class="val-unit"> sq ft</span></div>
+      <div class="compare-note">1 consolidated node · 10.5′ × 2.6′</div>
+    </div>
+    <div class="compare-cell" style="opacity: 0.7;">
+      <div class="compare-metric-name">Incremental Cooling Overhead</div>
+      <div class="compare-value-bad">1.3–1.5</div>
+      <div class="compare-note">Proportional to plant scale</div>
+    </div>
+    <div class="compare-cell vega-cell">
+      <div class="compare-metric-name">Incremental Cooling Overhead</div>
+      <div class="compare-value-good">1.10–1.20</div>
+      <div class="compare-note">Independent of central plant</div>
+    </div>
+    <div class="compare-cell" style="opacity: 0.7;">
+      <div class="compare-metric-name">Deployment Timeline</div>
+      <div class="compare-value-bad" style="font-size: 1.4rem; line-height:1.2;">18–30<span style="font-size:0.55em; color:var(--dim)"> months</span></div>
+      <div class="compare-note">Construction · permitting · plant expansion</div>
+    </div>
+    <div class="compare-cell vega-cell">
+      <div class="compare-metric-name">Deployment Timeline</div>
+      <div class="compare-value-good">5–7<span class="val-unit"> days</span></div>
+      <div class="compare-note">Site-ready to IT liquid loop</div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== NEW: REVENUE UNLOCK SECTION ========== -->
+<section id="revenue">
+  <p class="section-label reveal visible">The Compute Unlock</p>
+  <h2 class="section-headline reveal reveal-delay-1 visible">Cooling isn't the cost.<br>It's the key to the revenue.</h2>
+
+  <div class="revenue-grid">
+    <div class="revenue-narrative reveal reveal-delay-2 visible">
+      <p style="font-family: &#39;Barlow Condensed&#39;, sans-serif; font-weight: 300; font-size: 0.68rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--copper); margin-bottom: 0.5rem;">Power is already sold</p>
+      <p>
+        At sites where <strong>power is already contracted and distribution is in place</strong>,
+        thermal capacity becomes the binding constraint. The power is real.
+        The bus is energized. The tenant has a contract.
+      </p>
+      <p style="font-family: &#39;Barlow Condensed&#39;, sans-serif; font-weight: 300; font-size: 0.68rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--copper); margin-bottom: 0.5rem; margin-top: 2rem;">Cooling is the constraint</p>
+      <p>
+        Without thermal removal at 50–100 kW per rack, contracted power cannot support GPU load.
+        Every idle kilowatt is <em>stranded revenue</em> — power the operator has sold
+        but cannot deliver because air-cooled infrastructure was never designed for this density.
+      </p>
+      <p style="font-family: &#39;Barlow Condensed&#39;, sans-serif; font-weight: 300; font-size: 0.68rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--copper); margin-bottom: 0.5rem; margin-top: 2rem;">Revenue activates when thermal capacity does</p>
+      <p>
+        Vega doesn't reduce operating cost. <strong>It converts contracted power into billable
+        compute.</strong> The tenant goes live. The operator's timeline
+        compresses from a capital construction project to a deployment event.
+        <em>The product pays for itself in weeks, not years.</em>
+      </p>
+    </div>
+
+    <div class="revenue-economics reveal reveal-delay-3 visible">
+      <div class="revenue-econ-row">
+        <div class="revenue-econ-label">
+          <strong>Power Contracted</strong>
+          500 kW allocated at facility bus — energized, ready
+        </div>
+        <div class="revenue-econ-value dim">500<span class="val-sm">kW</span></div>
+      </div>
+      <div class="revenue-econ-row">
+        <div class="revenue-econ-label">
+          <strong>Thermally Deliverable (Air-Cooled)</strong>
+          Existing CRAHs max out at ~8 kW/rack — cannot serve GPU density
+        </div>
+        <div class="revenue-econ-value dim">~80<span class="val-sm">kW</span></div>
+      </div>
+      <div class="revenue-econ-row active-row">
+        <div class="revenue-econ-label">
+          <strong>Thermally Deliverable (With Vega)</strong>
+          Independent thermal domain — full 500 kW activated at rack density
+        </div>
+        <div class="revenue-econ-value teal">500<span class="val-sm">kW</span></div>
+      </div>
+      <div class="revenue-econ-row copper-row">
+        <div class="revenue-econ-label">
+          <strong>Revenue Unlocked</strong>
+          Stranded capacity converted to billable compute — per month, per 500 kW pod
+        </div>
+        <div class="revenue-econ-value copper">$160K<span class="val-sm">/mo</span></div>
+      </div>
+      <div class="revenue-callout">
+        <div class="revenue-callout-text">
+          The constraint is thermal. The consequence is <span>revenue</span>.<br>
+          Vega removes the first to activate the second.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- ========== END NEW SECTION ========== -->
+
+<section class="section" id="rack">
+  <p class="section-label reveal visible">Rack-Neutral by Design</p>
+  <h2 class="section-headline reveal reveal-delay-1 visible">Any rack. Same governed loop.<br>Same supervisory authority.</h2>
+  <p class="section-body reveal reveal-delay-2 visible">Air-cooled or liquid-ready GPU racks connect to the same Vega IT liquid loop — governed by Borealis, no competing setpoints, no rack-level controllers.</p>
+  <div class="rack-grid reveal reveal-delay-2 visible">
+    <div class="rack-card">
+      <div class="rack-card-label">Option A</div>
+      <div class="rack-card-title">Air-Cooled GPU Rack</div>
+      <div class="rack-card-desc">Standard 19″ rack · Any server vendor<br>Hot exhaust air out the rear door</div>
+    </div>
+    <div class="rack-card">
+      <div class="rack-card-label">Option B</div>
+      <div class="rack-card-title">Liquid-Ready GPU Rack</div>
+      <div class="rack-card-desc">OEM-designed for direct liquid cooling<br>Cold plates on CPU/GPU packages</div>
+    </div>
+    <div class="rack-governed">
+      <div>
+        <div class="rack-governed-label">Governed Rear-Door Heat Exchanger (RDHx)</div>
+        <div class="rack-governed-sub">Intercepts exhaust heat at rack boundary</div>
+      </div>
+    </div>
+    <div class="rack-governed">
+      <div>
+        <div class="rack-governed-label">Governed Cold Plate Interface</div>
+        <div class="rack-governed-sub">Direct liquid-to-chip thermal transfer</div>
+      </div>
+    </div>
+    <div class="rack-loop-bar">
+      <div class="rack-loop-text">
+        <span>Vega™ IT Liquid Loop</span> — Same governed loop. Any rack.
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="stack">
+  <p class="section-label reveal visible">Architecture</p>
+  <h2 class="section-headline reveal reveal-delay-1 visible">Three layers.<br>One authority.</h2>
+  <p class="section-body reveal reveal-delay-2 visible">Borealis sits between the IT load and the facility — the only control authority that sees both and governs both.</p>
+  <div class="stack-container reveal reveal-delay-3 visible">
+    <div class="stack-layer it">
+      <span class="stack-tag it">IT Layer</span>
+      <div>
+        <div class="stack-content-title">GPU Servers · RDHx · Rack Boundary</div>
+        <div class="stack-content-desc">Heat generated at chip level — captured at rack boundary via RDHx or cold plate interface</div>
+      </div>
+      <div class="stack-badge">Load origin</div>
+    </div>
+    <div class="stack-layer control">
+      <span class="stack-tag control">Borealis™ Control</span>
+      <div>
+        <div class="stack-content-title teal">Single Supervisory Control Authority</div>
+        <div class="stack-content-desc">Unified thermal governance · No competing setpoints · No rack-level controllers · BMS visibility available</div>
+      </div>
+      <div class="stack-badge teal">Sole authority</div>
+    </div>
+    <div class="stack-layer facility">
+      <span class="stack-tag facility">Facility Layer</span>
+      <div>
+        <div class="stack-content-title">Adiabatic Fluid Cooler · Roof Rejection</div>
+        <div class="stack-content-desc">No plant tie-in · No plant expansion · Existing tenants unaffected · Central plant unchanged</div>
+      </div>
+      <div class="stack-badge">Plant-independent</div>
+    </div>
+  </div>
+</section>
+
+<section id="keystone">
+  <p class="keystone-text reveal visible">
+    Not a rack-level appliance,<br>not a kit of parts,<br>not a multi-controller integration project.
+  </p>
+  <p class="reveal reveal-delay-1 visible" style="font-family: &#39;Cormorant Garamond&#39;, serif; font-weight: 300; font-style: italic; font-size: clamp(1rem, 2vw, 1.35rem); color: var(--copper); margin-top: 1.75rem; letter-spacing: 0.01em;">
+    A governed thermal platform for constrained high-density deployment.
+  </p>
+  <div class="keystone-rule reveal reveal-delay-2 visible"></div>
+</section>
+
+<section id="contact">
+  <div class="reveal visible">
+    <h2 class="contact-headline">Ready to deploy<br>a governed thermal<br><em>domain?</em></h2>
+    <p style="font-size: 0.82rem; color: var(--dim); margin-top: 1.5rem; max-width: 36ch; line-height: 1.6;">For brownfield, constrained-expansion, or no-construction-timeline sites — contact AGT-USA to evaluate fit.</p>
+  </div>
+  <div class="contact-block reveal reveal-delay-1 visible">
+    <div class="contact-name">Steve Barberi · AGT-USA Inc.</div>
+    <div class="contact-detail">
+      <a href="tel:9099730634">909-973-0634</a><br>
+      <a href="mailto:sbarberi@agt-usa.com">sbarberi@agt-usa.com</a>
+    </div>
+    <div class="contact-agt">Corona, California · 35+ years precision thermal engineering</div>
+  </div>
+</section>
+
+<footer>
+  <p class="footer-note">Deployment footprint is node only; roof heat rejection is separate. All values illustrative and site/climate dependent. Comparison is for rack thermal enablement scope, not entire building MEP. Cooling overhead values represent incremental thermal envelope performance, not whole-facility PUE. Revenue example assumes $320/kW/month colocation rate on a 500 kW pod. Deployment timeline assumes site access, power, and heat rejection path are ready.</p>
+  <span class="footer-logo">AGT-USA Inc. · Facility-to-Chip™</span>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        if (e.target.querySelector('.counter')) {
+          e.target.querySelectorAll('.counter').forEach(animateCounter);
+        }
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.15 });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  function animateCounter(el) {
+    const target = parseFloat(el.dataset.target);
+    const decimals = parseInt(el.dataset.decimals) || 0;
+    const duration = 1600;
+    const start = performance.now();
+    const easeOut = t => 1 - Math.pow(1 - t, 3);
+    function step(now) {
+      const progress = Math.min((now - start) / duration, 1);
+      el.textContent = (target * easeOut(progress)).toFixed(decimals);
+      if (progress < 1) requestAnimationFrame(step);
+      else el.textContent = target.toFixed(decimals);
+    }
+    requestAnimationFrame(step);
+  }
+
+  function showPanel(which) {
+    document.getElementById('panel-before').classList.toggle('active', which === 'before');
+    document.getElementById('panel-after').classList.toggle('active', which === 'after');
+    document.getElementById('btn-before').classList.toggle('active', which === 'before');
+    document.getElementById('btn-after').classList.toggle('active', which === 'after');
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.code === 'Space') {
+      e.preventDefault();
+      const isBefore = document.getElementById('panel-before').classList.contains('active');
+      showPanel(isBefore ? 'after' : 'before');
+    }
+  });
+</script>
+
+
+</body></html>

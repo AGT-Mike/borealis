@@ -1,0 +1,2587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AGT Vega™ Thermal Node — Rack-Level Liquid Cooling</title>
+  <meta name="description" content="Vega creates a self-contained cooling zone for high-density racks, governed by Borealis. No plant expansion. No control conflicts. No construction timeline." />
+  <meta name="robots" content="index, follow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    /* ===================================================
+       CUSTOM PROPERTIES
+    =================================================== */
+    :root {
+      --bg: #06080C;
+      --surface: #0D1117;
+      --surface2: #161B24;
+      --border: #21262D;
+      --teal: #00E5CC;
+      --teal-dim: rgba(0, 229, 204, 0.12);
+      --teal-glow: rgba(0, 229, 204, 0.15);
+      --teal-glow-sm: rgba(0, 229, 204, 0.08);
+      --amber: #F59E0B;
+      --red: #FF4444;
+      --red-dim: rgba(255, 68, 68, 0.12);
+      --text: #E6EDF3;
+      --muted: #8B949E;
+      --dim: #484F58;
+      --nav-height: 72px;
+    }
+
+    /* ===================================================
+       RESET & BASE
+    =================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-size: 16px;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-weight: 400;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+    }
+
+    img { max-width: 100%; display: block; }
+    a { color: inherit; text-decoration: none; }
+    ul { list-style: none; }
+
+    /* ===================================================
+       TYPOGRAPHY UTILITIES
+    =================================================== */
+    .font-display { font-family: 'Space Grotesk', sans-serif; }
+
+    .section-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--teal);
+      display: inline-block;
+      margin-bottom: 20px;
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, var(--teal) 0%, #00B8A8 60%, #009F92 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ===================================================
+       LAYOUT UTILITIES
+    =================================================== */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 32px;
+    }
+
+    section {
+      position: relative;
+    }
+
+    /* ===================================================
+       REVEAL ANIMATIONS
+    =================================================== */
+    .reveal {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+                  transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+    .reveal-delay-5 { transition-delay: 0.5s; }
+
+    /* ===================================================
+       NAV
+    =================================================== */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      height: var(--nav-height);
+      background: rgba(6, 8, 12, 0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(0, 229, 204, 0.2);
+      transition: height 0.3s ease, background 0.3s ease;
+    }
+
+    nav.scrolled {
+      height: 58px;
+      background: rgba(6, 8, 12, 0.92);
+    }
+
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 32px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+
+    .nav-logo-mark {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 22px;
+      color: var(--teal);
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+
+    .nav-logo-sub {
+      font-family: 'Inter', sans-serif;
+      font-size: 10px;
+      font-weight: 400;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .nav-product-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+      letter-spacing: 0.02em;
+    }
+
+    .nav-cta {
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--teal);
+      border: 1px solid rgba(0, 229, 204, 0.5);
+      padding: 8px 18px;
+      border-radius: 6px;
+      transition: background 0.2s ease, border-color 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .nav-cta:hover {
+      background: var(--teal-dim);
+      border-color: var(--teal);
+    }
+
+    /* ===================================================
+       HERO
+    =================================================== */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      padding: calc(var(--nav-height) + 40px) 32px 80px;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 50% 40%, rgba(0, 229, 204, 0.08) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 30% at 50% 60%, rgba(0, 229, 204, 0.04) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(33, 38, 45, 0.4) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(33, 38, 45, 0.4) 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 0%, transparent 75%);
+      -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 0%, transparent 75%);
+      pointer-events: none;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid rgba(0, 229, 204, 0.4);
+      border-radius: 100px;
+      padding: 6px 16px;
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--teal);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 40px;
+      background: var(--teal-dim);
+    }
+
+    .hero-eyebrow::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--teal);
+      box-shadow: 0 0 8px var(--teal);
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+    }
+
+    .hero-headline {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: clamp(52px, 7vw, 82px);
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      color: var(--text);
+      margin-bottom: 28px;
+    }
+
+    .hero-headline .accent {
+      background: linear-gradient(135deg, var(--teal) 0%, #00C9B4 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(16px, 2vw, 19px);
+      font-weight: 300;
+      color: var(--muted);
+      max-width: 640px;
+      margin: 0 auto 48px;
+      line-height: 1.7;
+    }
+
+    .hero-stats {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      margin-bottom: 48px;
+      flex-wrap: wrap;
+    }
+
+    .hero-stat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 32px;
+    }
+
+    .hero-stat:not(:last-child) {
+      border-right: 1px solid rgba(0, 229, 204, 0.25);
+    }
+
+    .hero-stat-value {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 28px;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+
+    .hero-stat-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--muted);
+      margin-top: 4px;
+      letter-spacing: 0.04em;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--teal);
+      color: #06080C;
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      padding: 14px 28px;
+      border-radius: 8px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+      letter-spacing: 0.01em;
+    }
+
+    .btn-primary:hover {
+      background: #00CCBB;
+      transform: translateY(-1px);
+      box-shadow: 0 8px 30px rgba(0, 229, 204, 0.35);
+    }
+
+    .btn-outline {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: transparent;
+      color: var(--teal);
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      padding: 13px 28px;
+      border-radius: 8px;
+      border: 1px solid rgba(0, 229, 204, 0.5);
+      transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+      letter-spacing: 0.01em;
+    }
+
+    .btn-outline:hover {
+      background: var(--teal-dim);
+      border-color: var(--teal);
+      transform: translateY(-1px);
+    }
+
+    /* Scroll indicator */
+    .hero-scroll-hint {
+      position: absolute;
+      bottom: 36px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      opacity: 0.4;
+      animation: bounce 2s ease-in-out infinite;
+    }
+
+    .hero-scroll-hint span {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .scroll-arrow {
+      width: 20px;
+      height: 20px;
+      border-right: 1.5px solid var(--muted);
+      border-bottom: 1.5px solid var(--muted);
+      transform: rotate(45deg);
+      margin-top: -6px;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(6px); }
+    }
+
+    /* ===================================================
+       PROBLEM STATEMENT
+    =================================================== */
+    #problem {
+      background: var(--surface);
+      padding: 100px 32px;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .problem-headline {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: clamp(40px, 5vw, 62px);
+      color: var(--text);
+      text-align: center;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 8px;
+    }
+
+    .problem-subheadline {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: clamp(40px, 5vw, 62px);
+      text-align: center;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 8px;
+      color: var(--muted);
+    }
+    .problem-resolution {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: clamp(40px, 5vw, 62px);
+      text-align: center;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 64px;
+      background: linear-gradient(135deg, var(--teal) 0%, #00B8A8 60%, #009F92 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .problem-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .problem-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 32px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .problem-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+    }
+
+    .problem-card.red-card::before { background: var(--red); }
+    .problem-card.teal-card::before { background: var(--teal); }
+
+    .problem-metric {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 42px;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .problem-card.red-card .problem-metric { color: var(--red); }
+    .problem-card.teal-card .problem-metric { color: var(--teal); }
+
+    .problem-metric-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .problem-metric-desc {
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .problem-card-divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 24px 0;
+    }
+
+    /* ===================================================
+       WHEN VEGA APPLIES
+    =================================================== */
+    #qualifying {
+      padding: 100px 32px;
+      background: var(--bg);
+    }
+
+    .qualifying-header {
+      max-width: 600px;
+      margin-bottom: 56px;
+    }
+
+    .qualifying-headline {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: clamp(32px, 4vw, 46px);
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      color: var(--text);
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .feature-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--teal);
+      border-radius: 0 12px 12px 0;
+      padding: 32px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, var(--teal-dim) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 229, 204, 0.15);
+      background: var(--surface2);
+    }
+
+    .feature-card:hover::after { opacity: 1; }
+
+    .card-icon {
+      width: 44px;
+      height: 44px;
+      background: var(--teal-dim);
+      border: 1px solid rgba(0, 229, 204, 0.2);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .card-icon svg {
+      width: 20px;
+      height: 20px;
+      color: var(--teal);
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.75;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .card-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 18px;
+      color: var(--text);
+      margin-bottom: 12px;
+      letter-spacing: -0.01em;
+      position: relative;
+      z-index: 1;
+    }
+
+    .card-body {
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.65;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ===================================================
+       COMPARISON
+    =================================================== */
+    #comparison {
+      padding: 100px 32px;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .comparison-header {
+      text-align: center;
+      margin-bottom: 56px;
+    }
+
+    .section-headline {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: clamp(28px, 3.5vw, 42px);
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      color: var(--text);
+    }
+
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    .compare-card {
+      border-radius: 16px;
+      padding: 40px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .compare-card.conventional {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+    }
+
+    .compare-card.vega {
+      background: var(--surface2);
+      border: 1px solid rgba(0, 229, 204, 0.3);
+      box-shadow: 0 0 40px rgba(0, 229, 204, 0.06), inset 0 1px 0 rgba(0, 229, 204, 0.1);
+    }
+
+    .compare-card.vega::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--teal), #00B8A8);
+    }
+
+    .compare-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .compare-card.conventional .compare-label { color: var(--muted); }
+    .compare-card.vega .compare-label { color: var(--teal); }
+
+    .compare-stats {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .compare-stat {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .compare-stat-value {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 28px;
+      letter-spacing: -0.02em;
+    }
+
+    .compare-card.conventional .compare-stat-value { color: var(--red); }
+    .compare-card.vega .compare-stat-value { color: var(--teal); }
+
+    .compare-stat-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .compare-badge {
+      display: inline-block;
+      background: var(--teal-dim);
+      border: 1px solid rgba(0, 229, 204, 0.25);
+      color: var(--teal);
+      font-size: 11px;
+      font-weight: 500;
+      padding: 3px 10px;
+      border-radius: 100px;
+      margin-top: 4px;
+      letter-spacing: 0.04em;
+    }
+
+    /* ===================================================
+       REVENUE SECTION
+    =================================================== */
+    #revenue {
+      padding: 100px 32px;
+      background: var(--bg);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .revenue-bg {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 50% 60% at 50% 50%, rgba(245, 158, 11, 0.04) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .revenue-number {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: clamp(80px, 12vw, 140px);
+      letter-spacing: -0.04em;
+      line-height: 1;
+      color: var(--amber);
+      margin-bottom: 16px;
+      position: relative;
+      z-index: 1;
+      text-shadow: 0 0 60px rgba(245, 158, 11, 0.25);
+    }
+
+    .revenue-period {
+      font-family: 'Inter', sans-serif;
+      font-size: 18px;
+      font-weight: 400;
+      color: var(--muted);
+      margin-bottom: 12px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .revenue-sub {
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      font-weight: 300;
+      color: var(--dim);
+      margin-bottom: 64px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .revenue-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      max-width: 1000px;
+      margin: 0 auto 64px;
+      text-align: left;
+    }
+
+    .revenue-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px;
+      position: relative;
+    }
+
+    .revenue-card-num {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 13px;
+      color: var(--amber);
+      letter-spacing: 0.08em;
+      margin-bottom: 14px;
+      opacity: 0.7;
+    }
+
+    .revenue-card-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 17px;
+      color: var(--text);
+      margin-bottom: 10px;
+      letter-spacing: -0.01em;
+      line-height: 1.3;
+    }
+
+    .revenue-card-body {
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .revenue-callout {
+      position: relative;
+      z-index: 1;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: clamp(20px, 3vw, 28px);
+      color: var(--text);
+      letter-spacing: -0.02em;
+      padding: 32px 40px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .revenue-callout span {
+      color: var(--amber);
+    }
+
+    /* ===================================================
+       RACK-NEUTRAL
+    =================================================== */
+    #rack-neutral {
+      padding: 100px 32px;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .rack-neutral-inner {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .rack-neutral-header {
+      margin-bottom: 56px;
+    }
+
+    .rack-neutral-headline {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: clamp(30px, 4vw, 46px);
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      color: var(--text);
+    }
+
+    .rack-columns {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 32px;
+      align-items: stretch;
+      margin-bottom: 40px;
+    }
+
+    .rack-column {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 32px;
+    }
+
+    .rack-column-type {
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--teal);
+      margin-bottom: 16px;
+    }
+
+    .rack-column-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 20px;
+      color: var(--text);
+      margin-bottom: 12px;
+      letter-spacing: -0.01em;
+    }
+
+    .rack-column-desc {
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .rack-divider {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      position: relative;
+    }
+
+    .rack-divider-line {
+      width: 1px;
+      flex: 1;
+      background: linear-gradient(to bottom, transparent, rgba(0, 229, 204, 0.4), transparent);
+    }
+
+    .rack-divider-node {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--teal-dim);
+      border: 1px solid rgba(0, 229, 204, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--teal);
+      letter-spacing: 0.05em;
+      text-align: center;
+      line-height: 1.2;
+      box-shadow: 0 0 20px rgba(0, 229, 204, 0.12);
+    }
+
+    .rack-unified-banner {
+      background: var(--teal-dim);
+      border: 1px solid rgba(0, 229, 204, 0.25);
+      border-radius: 10px;
+      padding: 20px 28px;
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .rack-unified-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--teal);
+      margin-bottom: 6px;
+    }
+
+    .rack-unified-text {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--text);
+      letter-spacing: -0.01em;
+    }
+
+    .rack-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .rack-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 8px 16px;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--muted);
+    }
+
+    .rack-badge::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--teal);
+      flex-shrink: 0;
+    }
+
+    /* ===================================================
+       ARCHITECTURE
+    =================================================== */
+    #architecture {
+      padding: 100px 32px;
+      background: var(--bg);
+    }
+
+    .arch-header {
+      text-align: center;
+      margin-bottom: 64px;
+    }
+
+    .arch-diagram {
+      max-width: 640px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+    }
+
+    .arch-layer {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px 36px;
+      position: relative;
+    }
+
+    .arch-layer.control {
+      background: var(--surface2);
+      border-color: rgba(0, 229, 204, 0.4);
+      box-shadow: 0 0 50px rgba(0, 229, 204, 0.08), 0 0 0 1px rgba(0, 229, 204, 0.1);
+      transform: scale(1.02);
+      z-index: 2;
+    }
+
+    .arch-layer-badge {
+      font-family: 'Inter', sans-serif;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .arch-layer:not(.control) .arch-layer-badge { color: var(--dim); }
+    .arch-layer.control .arch-layer-badge { color: var(--teal); }
+
+    .arch-layer-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: -0.01em;
+      margin-bottom: 8px;
+    }
+
+    .arch-layer:not(.control) .arch-layer-title { color: var(--text); }
+    .arch-layer.control .arch-layer-title { color: var(--teal); font-size: 20px; }
+
+    .arch-layer-items {
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .arch-layer-note {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-style: italic;
+      color: var(--dim);
+    }
+
+    .arch-layer.control .arch-layer-note { color: rgba(0, 229, 204, 0.5); }
+
+    .arch-connector {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 4px 0;
+      gap: 0;
+    }
+
+    .arch-connector-line {
+      width: 1px;
+      height: 28px;
+      background: linear-gradient(to bottom, var(--border), rgba(0, 229, 204, 0.3));
+    }
+
+    .arch-connector-arrow {
+      width: 0;
+      height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 7px solid rgba(0, 229, 204, 0.4);
+    }
+
+    .arch-footer-note {
+      text-align: center;
+      margin-top: 40px;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      color: var(--muted);
+      font-style: italic;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* ===================================================
+       DEPLOYMENT HERITAGE
+    =================================================== */
+    #heritage {
+      padding: 100px 32px;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .heritage-inner {
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .heritage-headline {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: clamp(28px, 4vw, 42px);
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      color: var(--text);
+      margin-bottom: 24px;
+    }
+
+    .heritage-body {
+      font-family: 'Inter', sans-serif;
+      font-size: 17px;
+      font-weight: 300;
+      color: var(--muted);
+      line-height: 1.75;
+      margin-bottom: 56px;
+      max-width: 640px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .heritage-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 40px;
+    }
+
+    .heritage-stat {
+      background: var(--surface2);
+      padding: 32px 24px;
+      text-align: center;
+    }
+
+    .heritage-stat-value {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 36px;
+      color: var(--teal);
+      letter-spacing: -0.03em;
+      margin-bottom: 8px;
+    }
+
+    .heritage-stat-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .heritage-industries {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .industry-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 8px 18px;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--muted);
+    }
+
+    .industry-tag::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--teal);
+      opacity: 0.6;
+    }
+
+    /* ===================================================
+       CONTACT CTA
+    =================================================== */
+    #contact {
+      padding: 100px 32px;
+      background: linear-gradient(180deg, var(--bg) 0%, rgba(0, 229, 204, 0.03) 100%);
+    }
+
+    .contact-inner {
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .contact-headline {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: clamp(28px, 4vw, 44px);
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      color: var(--text);
+      margin-bottom: 20px;
+    }
+
+    .contact-sub {
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      font-weight: 300;
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 56px;
+      max-width: 560px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .contact-card {
+      background: rgba(13, 17, 23, 0.8);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(0, 229, 204, 0.2);
+      border-radius: 16px;
+      padding: 48px;
+      margin-bottom: 32px;
+      box-shadow: 0 0 60px rgba(0, 229, 204, 0.05);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .contact-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--teal), transparent);
+    }
+
+    .contact-name {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 26px;
+      color: var(--text);
+      letter-spacing: -0.02em;
+      margin-bottom: 4px;
+    }
+
+    .contact-title {
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      color: var(--teal);
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 32px;
+    }
+
+    .contact-details {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .contact-detail {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      color: var(--muted);
+      transition: color 0.2s ease;
+    }
+
+    .contact-detail:hover { color: var(--text); }
+
+    .contact-detail-icon {
+      font-size: 18px;
+      width: 24px;
+      text-align: center;
+    }
+
+    .contact-buttons {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* ===================================================
+       FOOTER
+    =================================================== */
+    footer {
+      padding: 32px;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    .footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      text-align: center;
+    }
+
+    .footer-copy {
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .footer-back {
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      color: var(--dim);
+      transition: color 0.2s ease;
+    }
+
+    .footer-back:hover { color: var(--teal); }
+
+    .footer-disclaimer {
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      color: var(--dim);
+      max-width: 640px;
+      line-height: 1.6;
+    }
+
+    /* ===================================================
+       TEAL GLOW SEPARATOR
+    =================================================== */
+    .section-separator {
+      width: 60px;
+      height: 2px;
+      background: linear-gradient(90deg, var(--teal), transparent);
+      margin-bottom: 20px;
+    }
+
+    /* ===================================================
+       RESPONSIVE
+    =================================================== */
+    @media (max-width: 900px) {
+      .cards-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .comparison-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .revenue-cards {
+        grid-template-columns: 1fr;
+      }
+
+      .rack-columns {
+        grid-template-columns: 1fr;
+        gap: 0;
+      }
+
+      .rack-divider {
+        flex-direction: row;
+        height: 40px;
+        width: 100%;
+        padding: 0;
+      }
+
+      .rack-divider-line {
+        width: auto;
+        flex: 1;
+        height: 1px;
+        background: linear-gradient(to right, transparent, rgba(0, 229, 204, 0.4), transparent);
+      }
+
+      .heritage-stats {
+        grid-template-columns: 1fr;
+      }
+
+      .problem-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      :root {
+        --nav-height: 60px;
+      }
+
+      .container,
+      section,
+      nav { }
+
+      .nav-inner { padding: 0 20px; }
+      .nav-product-label { display: none; }
+
+      .hero-stat { padding: 0 16px; }
+      .hero-stat-value { font-size: 22px; }
+
+      #hero { padding: calc(var(--nav-height) + 24px) 20px 60px; }
+      #problem, #qualifying, #comparison, #revenue,
+      #rack-neutral, #architecture, #heritage, #contact {
+        padding: 72px 20px;
+      }
+
+      .compare-card { padding: 28px; }
+      .contact-card { padding: 32px 24px; }
+      .revenue-callout { padding: 24px 20px; }
+
+      .hero-stats {
+        gap: 0;
+      }
+
+      footer { padding: 28px 20px; }
+    }
+
+    @media (max-width: 480px) {
+      .hero-stats {
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .hero-stat:not(:last-child) {
+        border-right: none;
+        border-bottom: 1px solid rgba(0, 229, 204, 0.25);
+        padding-bottom: 16px;
+      }
+
+      .contact-buttons {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .btn-primary, .btn-outline {
+        width: 100%;
+        justify-content: center;
+        max-width: 300px;
+      }
+
+      .heritage-body {
+        margin-bottom: 40px;
+      }
+    }
+
+    /* ===================================================
+       ANIMATED COUNTER
+    =================================================== */
+    .counter-wrapper {
+      display: inline;
+    }
+
+    /* ===================================================
+       ACCENT LINES AND DECORATIONS
+    =================================================== */
+    .teal-line {
+      display: block;
+      width: 40px;
+      height: 3px;
+      background: var(--teal);
+      border-radius: 2px;
+      margin-bottom: 24px;
+      box-shadow: 0 0 12px rgba(0, 229, 204, 0.4);
+    }
+
+    /* Additional micro-animations */
+    @keyframes fadeSlideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes glowPulse {
+      0%, 100% { box-shadow: 0 0 20px rgba(0, 229, 204, 0.1); }
+      50% { box-shadow: 0 0 40px rgba(0, 229, 204, 0.2); }
+    }
+
+    .arch-layer.control {
+      animation: glowPulse 3s ease-in-out infinite;
+    }
+
+    /* ===================================================
+       FLOOR PLAN DIAGRAM (Problem Section)
+    =================================================== */
+    .problem-diagram-wrap { margin-top: 56px; }
+
+    .pdiag-toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .pdiag-toggle-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .pdiag-toggles {
+      display: flex;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .pdiag-btn {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 8px 22px;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+    .pdiag-btn + .pdiag-btn { border-left: 1px solid var(--border); }
+    .pdiag-btn.active { background: var(--surface2); color: var(--teal); }
+    .pdiag-btn:hover:not(.active) { color: var(--text); }
+
+    .pdiag-shell {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .pdiag-state { display: none; }
+    .pdiag-state.active { display: block; }
+
+    .pdiag-body { display: flex; height: 300px; }
+
+    /* Central Plant */
+    .pdiag-plant {
+      width: 170px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 20px;
+    }
+    .pdiag-plant-inner {
+      border: 1px solid rgba(230, 237, 243, 0.1);
+      border-radius: 6px;
+      padding: 14px 16px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      flex: 1;
+    }
+    .pdiag-plant-title {
+      font-family: 'Inter', sans-serif;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .pdiag-badge {
+      font-family: 'Inter', sans-serif;
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border: 1px solid;
+      border-radius: 4px;
+    }
+    .pdiag-badge.red  { border-color: var(--red); color: #ff9090; background: var(--red-dim); }
+    .pdiag-badge.dim  { border-color: transparent; color: var(--dim); }
+    .pdiag-plant-note {
+      font-family: 'Inter', sans-serif;
+      font-size: 9px;
+      letter-spacing: 0.06em;
+      color: var(--dim);
+      text-align: center;
+      line-height: 1.6;
+    }
+
+    /* Middle: constrained (BEFORE) */
+    .pdiag-middle {
+      width: 190px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 10px;
+      padding: 20px 16px;
+    }
+    .pdiag-constrained {
+      border: 2px dashed var(--red);
+      border-radius: 4px;
+      padding: 14px;
+      width: 100%;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .pdiag-constrained::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(to bottom right,
+          transparent calc(50% - 0.5px),
+          rgba(255,68,68,0.2) calc(50% - 0.5px),
+          rgba(255,68,68,0.2) calc(50% + 0.5px),
+          transparent calc(50% + 0.5px)),
+        linear-gradient(to bottom left,
+          transparent calc(50% - 0.5px),
+          rgba(255,68,68,0.2) calc(50% - 0.5px),
+          rgba(255,68,68,0.2) calc(50% + 0.5px),
+          transparent calc(50% + 0.5px));
+      pointer-events: none;
+    }
+    .pdiag-constrained-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #ff9090;
+      line-height: 1.6;
+      position: relative;
+    }
+
+    /* Data Hall (BEFORE) */
+    .pdiag-hall {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      padding: 10px 14px;
+      gap: 5px;
+      overflow: hidden;
+    }
+    .pdiag-hall-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-align: center;
+      margin-bottom: 4px;
+    }
+    .pdiag-hall-note {
+      font-family: 'Inter', sans-serif;
+      font-size: 9px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--dim);
+      text-align: center;
+      flex-shrink: 0;
+      padding-top: 4px;
+    }
+    .pdiag-hall .pdiag-rack-row  { margin: 11px 48px; }
+    .pdiag-hall .pdiag-hall-note { margin: 0 48px; }
+
+    /* Rack rows & units */
+    .pdiag-rack-row { display: flex; gap: 3px; flex: 1; align-items: stretch; }
+    .pdiag-rack {
+      flex: 1;
+      min-width: 14px;
+      max-width: 28px;
+      border: 1px solid;
+      border-radius: 2px;
+      position: relative;
+    }
+    .pdiag-rack.air    { border-color: rgba(230,237,243,0.12); background: rgba(230,237,243,0.02); }
+    .pdiag-rack.liquid { border-color: rgba(0,229,204,0.28);   background: rgba(0,229,204,0.04); }
+    .pdiag-rack::after {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 1px;
+      height: 55%;
+    }
+    .pdiag-rack.air::after    { background: rgba(230,237,243,0.1); }
+    .pdiag-rack.liquid::after { background: rgba(0,229,204,0.22); }
+
+    /* Thermal boundary (WITH VEGA) */
+    .pdiag-thermal {
+      display: flex;
+      flex-direction: row;
+      align-items: stretch;
+      width: 28px;
+      flex-shrink: 0;
+      margin: 20px 0;
+    }
+    .pdiag-tb-line { width: 1px; border-left: 1px dashed rgba(0,229,204,0.38); align-self: stretch; }
+    .pdiag-tb-label {
+      writing-mode: vertical-lr;
+      font-family: 'Inter', sans-serif;
+      font-size: 7.5px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(0,229,204,0.4);
+      padding-left: 4px;
+      margin-top: 8px;
+      white-space: nowrap;
+    }
+
+    /* Vega section (WITH VEGA) */
+    .pdiag-vega-section { flex: 1; display: flex; flex-direction: column; }
+    .pdiag-vega-enclosed {
+      border: 1px solid rgba(0,229,204,0.16);
+      background: rgba(0,229,204,0.03);
+      border-radius: 8px;
+      margin: 20px 8px 20px 0;
+    }
+    .pdiag-vega-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 12px;
+      flex-shrink: 0;
+    }
+    .pdiag-vega-loop-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--teal);
+      opacity: 0.65;
+    }
+    .pdiag-adiabatic {
+      font-family: 'Inter', sans-serif;
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--teal);
+      background: var(--teal-dim);
+      border: 1px solid rgba(0,229,204,0.28);
+      border-radius: 4px;
+      padding: 3px 10px;
+      flex-shrink: 0;
+    }
+    .pdiag-vega-rows {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 6px 10px;
+      gap: 4px;
+    }
+    .pdiag-vega-row {
+      flex: 1;
+      display: flex;
+      align-items: stretch;
+      gap: 8px;
+      padding: 4px 0;
+    }
+    .pdiag-connector { color: var(--teal); opacity: 0.5; font-size: 10px; flex-shrink: 0; align-self: center; }
+    .pdiag-vega-row .pdiag-rack-row { flex: 1; min-width: 0; align-self: stretch; }
+    .pdiag-node-pill {
+      border: 1px solid rgba(0,229,204,0.45);
+      border-radius: 4px;
+      padding: 5px 10px;
+      min-width: 108px;
+      flex-shrink: 0;
+      font-family: 'Inter', sans-serif;
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--teal);
+      background: rgba(0,229,204,0.04);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      align-self: center;
+    }
+    .pdiag-pill-main::before { content: '▸'; font-size: 8px; margin-right: 4px; }
+    .pdiag-pill-sub { font-size: 7.5px; letter-spacing: 0.08em; color: rgba(0,229,204,0.5); }
+
+    /* Diagram footer */
+    .pdiag-footer {
+      padding: 10px 24px;
+      text-align: center;
+      font-family: 'Inter', sans-serif;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    .pdiag-footer.red  { background: rgba(255,68,68,0.08); color: #ff9090; border-top: 1px solid rgba(255,68,68,0.2); }
+    .pdiag-footer.teal { background: rgba(0,229,204,0.07); color: var(--teal); border-top: 1px solid rgba(0,229,204,0.18); }
+  </style>
+</head>
+<body>
+
+  <!-- ================================================
+       NAV
+  ================================================= -->
+  <nav id="nav">
+    <div class="nav-inner">
+      <div class="nav-logo">
+        <span class="nav-logo-mark">AGT</span>
+        <span class="nav-logo-sub">Facility-to-Chip™ Cooling Platform</span>
+      </div>
+      <div class="nav-right">
+        <span class="nav-product-label">Vega™ Thermal Node</span>
+        <a href="#contact" class="nav-cta">Contact →</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ================================================
+       HERO
+  ================================================= -->
+  <section id="hero">
+    <div class="hero-bg" aria-hidden="true"></div>
+    <div class="hero-grid" aria-hidden="true"></div>
+
+    <div class="hero-content">
+      <div class="hero-eyebrow reveal">Rack-Level Liquid Cooling</div>
+
+      <h1 class="hero-headline reveal reveal-delay-1">
+        Cooling capacity<br>
+        <span class="accent">you deploy.</span><br>
+        Not a facility upgrade<br>
+        <span class="accent">you build.</span>
+      </h1>
+
+      <p class="hero-sub reveal reveal-delay-2">
+        Vega creates a self-contained cooling zone for high-density racks, governed by Borealis. No plant expansion. No control conflicts. No construction timeline.
+      </p>
+
+      <div class="hero-stats reveal reveal-delay-3">
+        <div class="hero-stat">
+          <span class="hero-stat-value">27.3 sq ft</span>
+          <span class="hero-stat-label">Installed Footprint</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-value">5–7 Day</span>
+          <span class="hero-stat-label">Deployment</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-value">50 kW/rack</span>
+          <span class="hero-stat-label">Thermal Capacity</span>
+        </div>
+      </div>
+
+      <div class="reveal reveal-delay-4">
+        <a href="#contact" class="btn-primary">Evaluate Your Site →</a>
+      </div>
+    </div>
+
+    <div class="hero-scroll-hint" aria-hidden="true">
+      <span>Scroll</span>
+      <div class="scroll-arrow"></div>
+    </div>
+  </section>
+
+  <!-- ================================================
+       PROBLEM STATEMENT
+  ================================================= -->
+  <section id="problem">
+    <div class="container">
+      <h2 class="problem-headline reveal">You have the power.</h2>
+      <p class="problem-subheadline reveal reveal-delay-1">You don't have the cooling.</p>
+      <p class="problem-resolution reveal reveal-delay-2">Vega™ unlocks both.</p>
+
+      <div class="problem-grid">
+        <!-- Left: red constraints -->
+        <div class="problem-card red-card reveal reveal-delay-3">
+          <div class="problem-metric">15 kW</div>
+          <div class="problem-metric-label">Air-Cooled Rack Limit</div>
+          <div class="problem-metric-desc">Maximum sustainable thermal density with conventional air-cooled architecture</div>
+          <hr class="problem-card-divider" />
+          <div class="problem-metric">~80 kW</div>
+          <div class="problem-metric-label">CRAH Deliverable Ceiling</div>
+          <div class="problem-metric-desc">Thermally deliverable with existing CRAH — not rack-addressable without plant changes</div>
+        </div>
+
+        <!-- Right: teal capability -->
+        <div class="problem-card teal-card reveal reveal-delay-4">
+          <div class="problem-metric">50 kW</div>
+          <div class="problem-metric-label">Liquid-Cooled Rack Capacity</div>
+          <div class="problem-metric-desc">Per-rack thermal capacity with Vega — addressable without touching the central plant</div>
+          <hr class="problem-card-divider" />
+          <div class="problem-metric">500 kW</div>
+          <div class="problem-metric-label">Full Pod Activation</div>
+          <div class="problem-metric-desc">Complete 500 kW pod activated — contracted power converted to billable compute</div>
+        </div>
+      </div>
+
+      <!-- Floor Plan Diagram -->
+      <div class="problem-diagram-wrap reveal reveal-delay-4">
+        <div class="pdiag-toggle-row">
+          <span class="pdiag-toggle-label">Floor Plan View</span>
+          <div class="pdiag-toggles">
+            <button class="pdiag-btn active" id="v2-btn-before">Before</button>
+            <button class="pdiag-btn" id="v2-btn-vega">With Vega™</button>
+          </div>
+        </div>
+
+        <div class="pdiag-shell">
+          <!-- BEFORE state -->
+          <div class="pdiag-state active" id="v2-diag-before">
+            <div class="pdiag-body">
+              <div class="pdiag-plant">
+                <div class="pdiag-plant-inner">
+                  <p class="pdiag-plant-title">Central<br>Plant</p>
+                  <span class="pdiag-badge red">At Capacity</span>
+                </div>
+              </div>
+              <div class="pdiag-middle">
+                <div class="pdiag-constrained">
+                  <p class="pdiag-constrained-label">Floor Location<br>Constrained</p>
+                </div>
+              </div>
+              <div class="pdiag-hall">
+                <p class="pdiag-hall-label">Air-Cooled Data Hall</p>
+                <div class="pdiag-rack-row" id="v2-before-row-1"></div>
+                <div class="pdiag-rack-row" id="v2-before-row-2"></div>
+                <div class="pdiag-rack-row" id="v2-before-row-3"></div>
+                <p class="pdiag-hall-note">15 kW / rack &nbsp;·&nbsp; AIR-COOLED MAXIMUM</p>
+              </div>
+            </div>
+            <div class="pdiag-footer red">Liquid Cooling Deployment Constrained — Central Plant at Capacity</div>
+          </div>
+
+          <!-- WITH VEGA state -->
+          <div class="pdiag-state" id="v2-diag-vega">
+            <div class="pdiag-body">
+              <div class="pdiag-plant">
+                <div class="pdiag-plant-inner">
+                  <p class="pdiag-plant-title">Central<br>Plant</p>
+                  <span class="pdiag-badge dim">Unchanged</span>
+                  <p class="pdiag-plant-note">Existing Tenants<br>Unaffected</p>
+                </div>
+              </div>
+              <div class="pdiag-thermal">
+                <div class="pdiag-tb-line"></div>
+                <span class="pdiag-tb-label">Thermal Boundary</span>
+              </div>
+              <div class="pdiag-vega-section pdiag-vega-enclosed">
+                <div class="pdiag-vega-head">
+                  <span class="pdiag-vega-loop-label">Vega IT Liquid Loop &nbsp;·&nbsp; Independent Thermal Domain</span>
+                  <span class="pdiag-adiabatic">Adiabatic Fluid Cooler</span>
+                </div>
+                <div class="pdiag-vega-rows">
+                  <div class="pdiag-vega-row">
+                    <div class="pdiag-node-pill">
+                      <span class="pdiag-pill-main">Vega™ Node</span>
+                      <span class="pdiag-pill-sub">Borealis Control</span>
+                    </div>
+                    <span class="pdiag-connector">→</span>
+                    <div class="pdiag-rack-row" id="v2-vega-row-1"></div>
+                  </div>
+                  <div class="pdiag-vega-row">
+                    <div class="pdiag-node-pill">
+                      <span class="pdiag-pill-main">Vega™ Node</span>
+                      <span class="pdiag-pill-sub">Borealis Control</span>
+                    </div>
+                    <span class="pdiag-connector">→</span>
+                    <div class="pdiag-rack-row" id="v2-vega-row-2"></div>
+                  </div>
+                  <div class="pdiag-vega-row">
+                    <div class="pdiag-node-pill">
+                      <span class="pdiag-pill-main">Vega™ Node</span>
+                      <span class="pdiag-pill-sub">Borealis Control</span>
+                    </div>
+                    <span class="pdiag-connector">→</span>
+                    <div class="pdiag-rack-row" id="v2-vega-row-3"></div>
+                  </div>
+                  <div style="display:flex;gap:8px;flex-shrink:0;">
+                    <div style="min-width:108px;flex-shrink:0;"></div>
+                    <span style="flex-shrink:0;visibility:hidden;font-size:10px;">→</span>
+                    <p class="pdiag-hall-note" style="flex:1;text-align:center;">50 kW / rack &nbsp;·&nbsp; LIQUID-COOLED CAPACITY</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="pdiag-footer teal">Borealis Supervisory Control Active — Independent Thermal Domain Established</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================
+       WHEN VEGA APPLIES
+  ================================================= -->
+  <section id="qualifying">
+    <div class="container">
+      <div class="qualifying-header reveal">
+        <span class="section-label">Qualifying Conditions</span>
+        <h2 class="qualifying-headline">Vega solves a<br>specific problem.</h2>
+      </div>
+
+      <div class="cards-grid">
+        <div class="feature-card reveal reveal-delay-1">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24">
+              <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+          </div>
+          <div class="card-title">Density Gap</div>
+          <div class="card-body">A tenant requires liquid cooling at rack densities the air-cooled plant cannot serve. The power is contracted. The load is ready. The thermal infrastructure is not.</div>
+        </div>
+
+        <div class="feature-card reveal reveal-delay-2">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+              <line x1="9" y1="9" x2="15" y2="15"/>
+              <line x1="15" y1="9" x2="9" y2="15"/>
+            </svg>
+          </div>
+          <div class="card-title">No Expansion Path</div>
+          <div class="card-body">The central plant cannot expand — no yard space, no roof capacity, no permitting path. Conventional approaches require infrastructure the site cannot provide.</div>
+        </div>
+
+        <div class="feature-card reveal reveal-delay-3">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+          </div>
+          <div class="card-title">No Time</div>
+          <div class="card-body">The deployment cannot wait 18–30 months for a capital construction project. Revenue is stranded now. The constraint requires a weeks-scale, not years-scale, solution.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================
+       COMPARISON
+  ================================================= -->
+  <section id="comparison">
+    <div class="container">
+      <div class="comparison-header">
+        <span class="section-label reveal">Scope Comparison</span>
+        <h2 class="section-headline reveal reveal-delay-1">The same data hall.<br>A dramatically different outcome.</h2>
+      </div>
+
+      <div class="comparison-grid">
+        <!-- Conventional -->
+        <div class="compare-card conventional reveal reveal-delay-2">
+          <div class="compare-label">Conventional 500 kW Expansion</div>
+          <div class="compare-stats">
+            <div class="compare-stat">
+              <div class="compare-stat-value">180–540 sq ft</div>
+              <div class="compare-stat-label">Installed footprint — 20× larger than Vega</div>
+            </div>
+            <div class="compare-stat">
+              <div class="compare-stat-value">4+ assets</div>
+              <div class="compare-stat-label">Mechanical assets to procure, coordinate, and commission</div>
+            </div>
+            <div class="compare-stat">
+              <div class="compare-stat-value">1.3–1.5×</div>
+              <div class="compare-stat-label">Cooling overhead — significant energy penalty at scale</div>
+            </div>
+            <div class="compare-stat">
+              <div class="compare-stat-value">18–30 months</div>
+              <div class="compare-stat-label">Deployment timeline — capital project with construction dependency</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Vega -->
+        <div class="compare-card vega reveal reveal-delay-3">
+          <div class="compare-label">Vega™ Thermal Node</div>
+          <div class="compare-stats">
+            <div class="compare-stat">
+              <div class="compare-stat-value">27.3 sq ft</div>
+              <div class="compare-stat-label">Installed footprint</div>
+              <span class="compare-badge">20× smaller</span>
+            </div>
+            <div class="compare-stat">
+              <div class="compare-stat-value">1 node</div>
+              <div class="compare-stat-label">Single consolidated thermal node — one governed loop</div>
+            </div>
+            <div class="compare-stat">
+              <div class="compare-stat-value">1.10–1.20×</div>
+              <div class="compare-stat-label">Cooling overhead — high efficiency, minimal energy penalty</div>
+            </div>
+            <div class="compare-stat">
+              <div class="compare-stat-value">5–7 days</div>
+              <div class="compare-stat-label">Deployment timeline — no construction, no permitting</div>
+              <span class="compare-badge">100× faster</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================
+       REVENUE SECTION
+  ================================================= -->
+  <section id="revenue">
+    <div class="revenue-bg" aria-hidden="true"></div>
+    <div class="container" style="position:relative; z-index:1;">
+      <span class="section-label reveal">The Compute Unlock</span>
+
+      <div class="revenue-number reveal reveal-delay-1" id="revenue-counter" data-target="160" data-prefix="$" data-suffix="K">
+        $0K
+      </div>
+      <div class="revenue-period reveal reveal-delay-2">per month, per 500 kW pod</div>
+      <div class="revenue-sub reveal reveal-delay-2">Stranded contracted power converted to billable compute</div>
+
+      <div class="revenue-cards">
+        <div class="revenue-card reveal reveal-delay-2">
+          <div class="revenue-card-num">01</div>
+          <div class="revenue-card-title">Power is already sold.</div>
+          <div class="revenue-card-body">Contracted power at the bus. Distribution in place. Thermal is the constraint — not the grid, not the contract, not the hardware.</div>
+        </div>
+        <div class="revenue-card reveal reveal-delay-3">
+          <div class="revenue-card-num">02</div>
+          <div class="revenue-card-title">Cooling is the bottleneck.</div>
+          <div class="revenue-card-body">Without 50–100 kW/rack thermal removal, GPU load cannot be served. Every idle kilowatt is stranded revenue accumulating against a signed contract.</div>
+        </div>
+        <div class="revenue-card reveal reveal-delay-4">
+          <div class="revenue-card-num">03</div>
+          <div class="revenue-card-title">Revenue activates with heat removal.</div>
+          <div class="revenue-card-body">Vega converts contracted power into billable compute. Weeks to payback, not years. The unlock is thermal, and the unlock is immediate.</div>
+        </div>
+      </div>
+
+      <div class="revenue-callout reveal">
+        The constraint is <span>thermal.</span> The consequence is <span>revenue.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================
+       RACK-NEUTRAL DESIGN
+  ================================================= -->
+  <section id="rack-neutral">
+    <div class="container">
+      <div class="rack-neutral-inner">
+        <div class="rack-neutral-header reveal">
+          <span class="section-label">Rack-Neutral by Design</span>
+          <h2 class="rack-neutral-headline">Any rack.<br>Same governed loop.</h2>
+        </div>
+
+        <div class="rack-columns reveal reveal-delay-1">
+          <!-- Air-cooled column -->
+          <div class="rack-column">
+            <div class="rack-column-type">Air-Cooled Rack</div>
+            <div class="rack-column-title">Standard 19" Rack with RDHx</div>
+            <div class="rack-column-desc">
+              Rear Door Heat Exchanger mounted at the rear of any standard 19" rack enclosure. Compatible with any vendor or OEM. The Borealis loop governs the fluid supply to the RDHx — no rack controller required, no separate setpoint authority.
+            </div>
+          </div>
+
+          <!-- Connector -->
+          <div class="rack-divider">
+            <div class="rack-divider-line"></div>
+            <div class="rack-divider-node">BOREALIS<br>LOOP</div>
+            <div class="rack-divider-line"></div>
+          </div>
+
+          <!-- Liquid-ready column -->
+          <div class="rack-column">
+            <div class="rack-column-type">Liquid-Ready Rack</div>
+            <div class="rack-column-title">OEM Direct-Liquid Cooling</div>
+            <div class="rack-column-desc">
+              Cold plates on CPU and GPU, direct manifold connection to the Vega loop. OEM liquid-cooled servers from any major manufacturer. The same Borealis control authority governs supply temperature and flow — no competing setpoints, no separate control domain.
+            </div>
+          </div>
+        </div>
+
+        <div class="rack-unified-banner reveal reveal-delay-2">
+          <div class="rack-unified-label">Unified Control Authority</div>
+          <div class="rack-unified-text">Both rack types governed by the same Borealis supervisory control loop — single authority, single setpoint, full BMS visibility</div>
+        </div>
+
+        <div class="rack-badges reveal reveal-delay-3">
+          <span class="rack-badge">No competing setpoints</span>
+          <span class="rack-badge">No rack controllers</span>
+          <span class="rack-badge">BMS visibility</span>
+          <span class="rack-badge">Any OEM vendor</span>
+          <span class="rack-badge">Mixed rack types supported</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================
+       ARCHITECTURE
+  ================================================= -->
+  <section id="architecture">
+    <div class="container">
+      <div class="arch-header">
+        <span class="section-label reveal">Architecture</span>
+        <h2 class="section-headline reveal reveal-delay-1">Three layers. One authority.</h2>
+      </div>
+
+      <div class="arch-diagram">
+        <!-- IT Layer -->
+        <div class="arch-layer reveal reveal-delay-1">
+          <div class="arch-layer-badge">IT Layer</div>
+          <div class="arch-layer-title">GPU Servers · RDHx · Rack Boundary</div>
+          <div class="arch-layer-items">High-density compute loads · Rear Door Heat Exchangers · Direct-liquid cold plates</div>
+          <div class="arch-layer-note">Heat generated at chip level — managed at rack boundary</div>
+        </div>
+
+        <div class="arch-connector" aria-hidden="true">
+          <div class="arch-connector-line"></div>
+          <div class="arch-connector-arrow"></div>
+        </div>
+
+        <!-- Control Layer -->
+        <div class="arch-layer control reveal reveal-delay-2">
+          <div class="arch-layer-badge">Borealis Control</div>
+          <div class="arch-layer-title">Single Supervisory Control Authority</div>
+          <div class="arch-layer-items">Real-time thermal sensing · Supply temperature governance · Fluid flow management · BMS integration</div>
+          <div class="arch-layer-note">Sole authority — sees both layers, governs both. No competing control systems.</div>
+        </div>
+
+        <div class="arch-connector" aria-hidden="true">
+          <div class="arch-connector-line"></div>
+          <div class="arch-connector-arrow"></div>
+        </div>
+
+        <!-- Facility Layer -->
+        <div class="arch-layer reveal reveal-delay-3">
+          <div class="arch-layer-badge">Facility Layer</div>
+          <div class="arch-layer-title">Adiabatic Fluid Cooler · Roof Rejection</div>
+          <div class="arch-layer-items">Self-contained heat rejection · Roof-mounted adiabatic fluid cooler · Independent of central plant</div>
+          <div class="arch-layer-note">No plant tie-in · No plant expansion · No conflicts with existing BAS</div>
+        </div>
+      </div>
+
+      <p class="arch-footer-note reveal">
+        Not a rack-level appliance. Not a kit of parts. A governed thermal platform with a single control authority from chip to atmosphere.
+      </p>
+    </div>
+  </section>
+
+  <!-- ================================================
+       DEPLOYMENT HERITAGE
+  ================================================= -->
+  <section id="heritage">
+    <div class="container">
+      <div class="heritage-inner">
+        <span class="section-label reveal">Deployment Heritage</span>
+        <h2 class="heritage-headline reveal reveal-delay-1">Proven in harder environments<br>than yours.</h2>
+        <p class="heritage-body reveal reveal-delay-2">
+          The underlying control approach has been deployed thousands of times across semiconductor, pharmaceutical, and currency-printing environments — applications with tighter tolerances than most data center loads require. This is not an experimental platform. It is a mature control methodology applied to a new thermal domain.
+        </p>
+
+        <div class="heritage-stats reveal reveal-delay-3">
+          <div class="heritage-stat">
+            <div class="heritage-stat-value" id="years-counter" data-target="35">0+</div>
+            <div class="heritage-stat-label">Years of deployment heritage in precision process environments</div>
+          </div>
+          <div class="heritage-stat">
+            <div class="heritage-stat-value">Thousands</div>
+            <div class="heritage-stat-label">Of deployments in controlled, high-consequence environments</div>
+          </div>
+          <div class="heritage-stat">
+            <div class="heritage-stat-value">Sub-±0.5°C</div>
+            <div class="heritage-stat-label">Control precision in pharmaceutical and semiconductor applications</div>
+          </div>
+        </div>
+
+        <div class="heritage-industries reveal reveal-delay-4">
+          <span class="industry-tag">Semiconductor Fabrication</span>
+          <span class="industry-tag">Pharmaceutical Manufacturing</span>
+          <span class="industry-tag">Currency Printing</span>
+          <span class="industry-tag">Precision Process Control</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================
+       CONTACT CTA
+  ================================================= -->
+  <section id="contact">
+    <div class="container">
+      <div class="contact-inner">
+        <span class="section-label reveal">Deploy with Confidence</span>
+        <h2 class="contact-headline reveal reveal-delay-1">Ready to deploy a governed<br>thermal domain?</h2>
+        <p class="contact-sub reveal reveal-delay-2">
+          For brownfield, constrained-expansion, or no-construction-timeline sites — contact AGT-USA to evaluate fit.
+        </p>
+
+        <div class="contact-card reveal reveal-delay-3">
+          <div class="contact-name">Steve Barberi</div>
+          <div class="contact-title">AGT-USA Inc.</div>
+          <div class="contact-details">
+            <a href="tel:+19099730634" class="contact-detail">
+              <span class="contact-detail-icon">📞</span>
+              <span>909-973-0634</span>
+            </a>
+            <a href="mailto:sbarberi@agt-usa.com" class="contact-detail">
+              <span class="contact-detail-icon">✉</span>
+              <span>sbarberi@agt-usa.com</span>
+            </a>
+            <div class="contact-detail">
+              <span class="contact-detail-icon">📍</span>
+              <span>Corona, California</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="contact-buttons reveal reveal-delay-4">
+          <a href="tel:+19099730634" class="btn-primary">Call Now →</a>
+          <a href="mailto:sbarberi@agt-usa.com" class="btn-outline">Send Email →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================
+       FOOTER
+  ================================================= -->
+  <footer>
+    <div class="footer-inner">
+      <p class="footer-copy">© AGT-USA Inc. · Facility-to-Chip™ Cooling Platform</p>
+      <a href="https://borealis.cool" class="footer-back">← borealis.cool</a>
+      <p class="footer-disclaimer">
+        Vega™ Thermal Node and Facility-to-Chip™ are trademarks of AGT-USA Inc. All performance figures are representative of design targets and installed configurations. Actual results depend on site conditions, load profile, and ambient environment. Contact AGT-USA for a site-specific evaluation.
+      </p>
+    </div>
+  </footer>
+
+  <!-- ================================================
+       JAVASCRIPT
+  ================================================= -->
+  <script>
+    // ==========================================
+    // NAV SHRINK ON SCROLL
+    // ==========================================
+    const nav = document.getElementById('nav');
+
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 60) {
+        nav.classList.add('scrolled');
+      } else {
+        nav.classList.remove('scrolled');
+      }
+    }, { passive: true });
+
+    // ==========================================
+    // INTERSECTION OBSERVER — REVEAL ANIMATIONS
+    // ==========================================
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, {
+      threshold: 0.12,
+      rootMargin: '0px 0px -40px 0px'
+    });
+
+    document.querySelectorAll('.reveal').forEach(el => {
+      revealObserver.observe(el);
+    });
+
+    // ==========================================
+    // ANIMATED COUNTERS
+    // ==========================================
+    function animateCounter(element, target, duration, prefix, suffix) {
+      const start = performance.now();
+      const isDecimal = target % 1 !== 0;
+
+      function update(currentTime) {
+        const elapsed = currentTime - start;
+        const progress = Math.min(elapsed / duration, 1);
+        // Ease out cubic
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const current = eased * target;
+
+        if (isDecimal) {
+          element.textContent = prefix + current.toFixed(1) + suffix;
+        } else {
+          element.textContent = prefix + Math.round(current) + suffix;
+        }
+
+        if (progress < 1) {
+          requestAnimationFrame(update);
+        } else {
+          element.textContent = prefix + target + suffix;
+        }
+      }
+
+      requestAnimationFrame(update);
+    }
+
+    // Revenue counter
+    const revenueCounter = document.getElementById('revenue-counter');
+    if (revenueCounter) {
+      const counterObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const target = parseFloat(revenueCounter.dataset.target);
+            const prefix = revenueCounter.dataset.prefix || '';
+            const suffix = revenueCounter.dataset.suffix || '';
+            animateCounter(revenueCounter, target, 1800, prefix, suffix);
+            counterObserver.unobserve(revenueCounter);
+          }
+        });
+      }, { threshold: 0.4 });
+      counterObserver.observe(revenueCounter);
+    }
+
+    // Years counter
+    const yearsCounter = document.getElementById('years-counter');
+    if (yearsCounter) {
+      const yearsObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const target = parseInt(yearsCounter.dataset.target);
+            const el = yearsCounter;
+            const start = performance.now();
+            const duration = 1400;
+
+            function updateYears(currentTime) {
+              const elapsed = currentTime - start;
+              const progress = Math.min(elapsed / duration, 1);
+              const eased = 1 - Math.pow(1 - progress, 3);
+              const current = Math.round(eased * target);
+              el.textContent = current + '+';
+              if (progress < 1) requestAnimationFrame(updateYears);
+            }
+
+            requestAnimationFrame(updateYears);
+            yearsObserver.unobserve(yearsCounter);
+          }
+        });
+      }, { threshold: 0.4 });
+      yearsObserver.observe(yearsCounter);
+    }
+
+    // ==========================================
+    // STAGGERED CARD ANIMATIONS
+    // ==========================================
+    // Cards within a grid animate in sequence when the grid is visible
+    const cardGrids = document.querySelectorAll('.cards-grid, .revenue-cards, .comparison-grid');
+
+    cardGrids.forEach(grid => {
+      const cards = grid.querySelectorAll('.feature-card, .revenue-card, .compare-card');
+      cards.forEach((card, index) => {
+        // Already handled by reveal-delay classes, but enforce stagger
+        if (!card.classList.contains('reveal-delay-1') &&
+            !card.classList.contains('reveal-delay-2') &&
+            !card.classList.contains('reveal-delay-3')) {
+          card.style.transitionDelay = (index * 0.1) + 's';
+        }
+      });
+    });
+
+    // ==========================================
+    // SMOOTH SCROLL for nav links
+    // ==========================================
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        const targetId = this.getAttribute('href');
+        if (targetId === '#') return;
+        const targetEl = document.querySelector(targetId);
+        if (targetEl) {
+          e.preventDefault();
+          const offset = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-height')) || 72;
+          const top = targetEl.getBoundingClientRect().top + window.scrollY - offset;
+          window.scrollTo({ top, behavior: 'smooth' });
+        }
+      });
+    });
+
+    // ==========================================
+    // HERO PARALLAX SUBTLE EFFECT
+    // ==========================================
+    const heroBg = document.querySelector('.hero-bg');
+    if (heroBg) {
+      window.addEventListener('scroll', () => {
+        const scrolled = window.scrollY;
+        const maxScroll = window.innerHeight;
+        if (scrolled < maxScroll) {
+          const progress = scrolled / maxScroll;
+          heroBg.style.transform = `translateY(${progress * 40}px)`;
+        }
+      }, { passive: true });
+    }
+
+    // ==========================================
+    // FLOOR PLAN DIAGRAM — Problem Section
+    // ==========================================
+    function v2BuildRacks(id, cls, count) {
+      const row = document.getElementById(id);
+      if (!row) return;
+      row.innerHTML = Array.from({ length: count }, () =>
+        `<div class="pdiag-rack ${cls}"></div>`
+      ).join('');
+    }
+    ['v2-before-row-1','v2-before-row-2','v2-before-row-3'].forEach(id => v2BuildRacks(id, 'air', 12));
+    ['v2-vega-row-1',  'v2-vega-row-2',  'v2-vega-row-3' ].forEach(id => v2BuildRacks(id, 'liquid', 12));
+
+    const v2BtnBefore  = document.getElementById('v2-btn-before');
+    const v2BtnVega    = document.getElementById('v2-btn-vega');
+    const v2DiagBefore = document.getElementById('v2-diag-before');
+    const v2DiagVega   = document.getElementById('v2-diag-vega');
+
+    v2BtnBefore?.addEventListener('click', () => {
+      v2DiagBefore.classList.add('active');    v2DiagVega.classList.remove('active');
+      v2BtnBefore.classList.add('active');     v2BtnVega.classList.remove('active');
+    });
+    v2BtnVega?.addEventListener('click', () => {
+      v2DiagVega.classList.add('active');      v2DiagBefore.classList.remove('active');
+      v2BtnVega.classList.add('active');       v2BtnBefore.classList.remove('active');
+    });
+  </script>
+</body>
+</html>
