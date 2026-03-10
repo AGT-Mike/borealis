@@ -60,6 +60,18 @@
     .reveal-d2 { transition-delay: 0.16s; }
     .reveal-d3 { transition-delay: 0.24s; }
 
+    /* ─── Vega node pulse ────────────────────────── */
+    @keyframes vega-node-pulse {
+      0%, 100% { opacity: 0.9; }
+      50%       { opacity: 1; }
+    }
+    .vega-node-anim       { animation: vega-node-pulse 2.8s ease-in-out infinite; }
+    .vega-node-anim-d1    { animation-delay: 0.7s; }
+    .vega-node-anim-d2    { animation-delay: 1.4s; }
+    @media (prefers-reduced-motion: reduce) {
+      .vega-node-anim { animation: none; }
+    }
+
     /* ─── NAV ────────────────────────────────────── */
     nav {
       position: fixed;
@@ -789,6 +801,89 @@
     }
     .metrics-quote em { font-style: italic; color: var(--copper); }
 
+    /* ─── REVENUE SLIDER (inside cu-right) ──────── */
+    .rev-slider-wrap {
+      margin-top: 28px;
+      border: 1px solid var(--rule);
+    }
+    .rev-slider-head {
+      padding: 14px 26px;
+      border-bottom: 1px solid var(--rule);
+      border-left: 2px solid var(--copper);
+      background: rgba(244,242,238,0.025);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--copper);
+    }
+    .rev-slider-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .rev-slider-card {
+      padding: 18px 20px;
+      border-right: 1px solid var(--rule);
+    }
+    .rev-slider-card:last-child { border-right: none; }
+    .rev-slider-card-lbl {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--dim); margin-bottom: 8px;
+    }
+    .rev-slider-card-val {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: clamp(1.3rem, 2vw, 1.9rem);
+      font-weight: 400; line-height: 1; margin-bottom: 4px;
+    }
+    .rev-slider-card-note { font-size: 10px; color: var(--dim); }
+    .rev-slider-body {
+      padding: 18px 26px;
+      border-top: 1px solid var(--rule);
+      background: rgba(26,138,138,0.03);
+    }
+    .rev-slider-row { display: flex; align-items: center; gap: 14px; }
+    .rev-slider-lbl {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px; letter-spacing: 0.1em; color: var(--dim); white-space: nowrap;
+    }
+    .rev-slider-input {
+      flex: 1; cursor: pointer;
+      -webkit-appearance: none; appearance: none;
+      height: 3px; border-radius: 2px;
+      background: linear-gradient(to right, var(--teal) var(--fill, 33%), var(--teal-dim) var(--fill, 33%));
+      outline: none;
+    }
+    .rev-slider-input::-webkit-slider-thumb {
+      -webkit-appearance: none; appearance: none;
+      width: 16px; height: 16px; border-radius: 50%;
+      background: var(--white);
+      border: none;
+      box-shadow: 0 0 6px rgba(26,138,138,0.4);
+      cursor: pointer;
+    }
+    .rev-slider-input::-moz-range-thumb {
+      width: 16px; height: 16px; border-radius: 50%;
+      background: var(--white); border: none;
+      box-shadow: 0 0 6px rgba(26,138,138,0.4);
+      cursor: pointer;
+    }
+    .rev-slider-input::-moz-range-track {
+      height: 3px; border-radius: 2px; background: var(--steel); border: none;
+    }
+    .rev-slider-input::-moz-range-progress {
+      height: 3px; border-radius: 2px; background: var(--teal);
+    }
+    .rev-slider-display {
+      margin-top: 8px; text-align: center;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px; letter-spacing: 0.12em; font-weight:400; color: var(--teal);
+    }
+    .rev-slider-note {
+      margin-top: 4px; font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px; letter-spacing: 0.08em; color: var(--dim); text-align: center;
+    }
+
     /* ─── RACK-NEUTRAL ───────────────────────────── */
     #rack-neutral { border-bottom: 1px solid var(--rule); }
     .rn-head {
@@ -1202,10 +1297,25 @@
         <div class="diag-rule vega"></div>
       </div>
       <svg class="floor-svg" viewBox="0 0 860 360" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <filter id="vega-glow" x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur stdDeviation="3" result="blur-outer">
+              <animate attributeName="stdDeviation" values="2;3.5;2" dur="3.5s" repeatCount="indefinite"/>
+            </feGaussianBlur>
+            <feMerge>
+              <feMergeNode in="blur-outer"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
+        </defs>
         <rect width="860" height="360" fill="#1E2532"/>
-        <!-- Adiabatic badge -->
-        <rect x="690" y="10" width="150" height="22" fill="rgba(26,138,138,0.24)" stroke="rgba(26,138,138,0.68)" stroke-width="0.5"/>
-        <text x="765" y="25" text-anchor="middle" font-family="Barlow Condensed" font-size="7.5" fill="#1A8A8A" letter-spacing="2">ADIABATIC FLUID COOLER</text>
+        <!-- Adiabatic badges — 3 total, left/right edges aligned with governed envelope, equally spaced -->
+        <rect x="210" y="10" width="150" height="22" fill="rgba(26,138,138,0.24)" stroke="rgba(26,138,138,0.68)" stroke-width="0.5"/>
+        <text x="285" y="25" text-anchor="middle" font-family="Barlow Condensed" font-size="7.5" fill="#1A8A8A" letter-spacing="2">ADIABATIC FLUID COOLER</text>
+        <rect x="445" y="10" width="150" height="22" fill="rgba(26,138,138,0.24)" stroke="rgba(26,138,138,0.68)" stroke-width="0.5"/>
+        <text x="520" y="25" text-anchor="middle" font-family="Barlow Condensed" font-size="7.5" fill="#1A8A8A" letter-spacing="2">ADIABATIC FLUID COOLER</text>
+        <rect x="680" y="10" width="150" height="22" fill="rgba(26,138,138,0.24)" stroke="rgba(26,138,138,0.68)" stroke-width="0.5"/>
+        <text x="755" y="25" text-anchor="middle" font-family="Barlow Condensed" font-size="7.5" fill="#1A8A8A" letter-spacing="2">ADIABATIC FLUID COOLER</text>
         <!-- Central Plant -->
         <rect x="30" y="40" width="150" height="260" fill="none" stroke="#3A4048" stroke-width="1"/>
         <text x="105" y="125" text-anchor="middle" font-family="Barlow Condensed" font-size="11" fill="#C2CDD8" letter-spacing="2">CENTRAL</text>
@@ -1219,17 +1329,23 @@
         <rect x="210" y="40" width="620" height="260" fill="rgba(26,138,138,0.12)" stroke="rgba(26,138,138,0.48)" stroke-width="1"/>
         <text x="510" y="58" text-anchor="middle" font-family="Barlow Condensed" font-size="9.5" fill="rgba(26,138,138,0.82)" letter-spacing="3">GOVERNED THERMAL ENVELOPE</text>
         <!-- Vega Node 1 -->
-        <rect x="220" y="82" width="100" height="32" fill="rgba(26,138,138,0.34)" stroke="#1A8A8A" stroke-width="1"/>
-        <text x="270" y="97" text-anchor="middle" font-family="Barlow Condensed" font-size="10" fill="#1A8A8A" letter-spacing="1">VEGA ✦ NODE</text>
-        <text x="270" y="108" text-anchor="middle" font-family="Barlow Condensed" font-size="7.5" fill="rgba(26,138,138,0.92)" letter-spacing="1">BOREALIS CONTROL</text>
+        <g class="vega-node-anim">
+          <rect x="220" y="82" width="100" height="32" fill="rgba(26,138,138,0.34)" stroke="#1A8A8A" stroke-width="1" filter="url(#vega-glow)"/>
+          <text x="270" y="97" text-anchor="middle" font-family="Barlow Condensed" font-size="10" fill="#F4F2EE" letter-spacing="1">VEGA ✦ NODE</text>
+          <text x="270" y="108" text-anchor="middle" font-family="Barlow Condensed" font-size="7.5" fill="rgba(244,242,238,0.72)" letter-spacing="1">BOREALIS CONTROL</text>
+        </g>
         <!-- Vega Node 2 -->
-        <rect x="220" y="162" width="100" height="32" fill="rgba(26,138,138,0.34)" stroke="#1A8A8A" stroke-width="1"/>
-        <text x="270" y="177" text-anchor="middle" font-family="Barlow Condensed" font-size="10" fill="#1A8A8A" letter-spacing="1">VEGA ✦ NODE</text>
-        <text x="270" y="188" text-anchor="middle" font-family="Barlow Condensed" font-size="7.5" fill="rgba(26,138,138,0.92)" letter-spacing="1">BOREALIS CONTROL</text>
+        <g class="vega-node-anim vega-node-anim-d1">
+          <rect x="220" y="162" width="100" height="32" fill="rgba(26,138,138,0.34)" stroke="#1A8A8A" stroke-width="1" filter="url(#vega-glow)"/>
+          <text x="270" y="177" text-anchor="middle" font-family="Barlow Condensed" font-size="10" fill="#F4F2EE" letter-spacing="1">VEGA ✦ NODE</text>
+          <text x="270" y="188" text-anchor="middle" font-family="Barlow Condensed" font-size="7.5" fill="rgba(244,242,238,0.72)" letter-spacing="1">BOREALIS CONTROL</text>
+        </g>
         <!-- Vega Node 3 -->
-        <rect x="220" y="242" width="100" height="32" fill="rgba(26,138,138,0.34)" stroke="#1A8A8A" stroke-width="1"/>
-        <text x="270" y="257" text-anchor="middle" font-family="Barlow Condensed" font-size="10" fill="#1A8A8A" letter-spacing="1">VEGA ✦ NODE</text>
-        <text x="270" y="268" text-anchor="middle" font-family="Barlow Condensed" font-size="7.5" fill="rgba(26,138,138,0.92)" letter-spacing="1">BOREALIS CONTROL</text>
+        <g class="vega-node-anim vega-node-anim-d2">
+          <rect x="220" y="242" width="100" height="32" fill="rgba(26,138,138,0.34)" stroke="#1A8A8A" stroke-width="1" filter="url(#vega-glow)"/>
+          <text x="270" y="257" text-anchor="middle" font-family="Barlow Condensed" font-size="10" fill="#F4F2EE" letter-spacing="1">VEGA ✦ NODE</text>
+          <text x="270" y="268" text-anchor="middle" font-family="Barlow Condensed" font-size="7.5" fill="rgba(244,242,238,0.72)" letter-spacing="1">BOREALIS CONTROL</text>
+        </g>
         <!-- Row 1 racks + RDHx -->
         <rect x="350" y="80" width="28" height="55" fill="#28364A" stroke="rgba(26,138,138,0.48)" stroke-width="0.5"/><rect x="378" y="80" width="4" height="55" fill="rgba(26,138,138,0.82)" rx="0.5"/><rect x="386" y="80" width="28" height="55" fill="#28364A" stroke="rgba(26,138,138,0.48)" stroke-width="0.5"/><rect x="414" y="80" width="4" height="55" fill="rgba(26,138,138,0.82)" rx="0.5"/><rect x="422" y="80" width="28" height="55" fill="#28364A" stroke="rgba(26,138,138,0.48)" stroke-width="0.5"/><rect x="450" y="80" width="4" height="55" fill="rgba(26,138,138,0.82)" rx="0.5"/><rect x="458" y="80" width="28" height="55" fill="#28364A" stroke="rgba(26,138,138,0.48)" stroke-width="0.5"/><rect x="486" y="80" width="4" height="55" fill="rgba(26,138,138,0.82)" rx="0.5"/><rect x="494" y="80" width="28" height="55" fill="#28364A" stroke="rgba(26,138,138,0.48)" stroke-width="0.5"/><rect x="522" y="80" width="4" height="55" fill="rgba(26,138,138,0.82)" rx="0.5"/><rect x="530" y="80" width="28" height="55" fill="#28364A" stroke="rgba(26,138,138,0.48)" stroke-width="0.5"/><rect x="558" y="80" width="4" height="55" fill="rgba(26,138,138,0.82)" rx="0.5"/><rect x="566" y="80" width="28" height="55" fill="#28364A" stroke="rgba(26,138,138,0.48)" stroke-width="0.5"/><rect x="594" y="80" width="4" height="55" fill="rgba(26,138,138,0.82)" rx="0.5"/><rect x="602" y="80" width="28" height="55" fill="#28364A" stroke="rgba(26,138,138,0.48)" stroke-width="0.5"/><rect x="630" y="80" width="4" height="55" fill="rgba(26,138,138,0.82)" rx="0.5"/><rect x="638" y="80" width="28" height="55" fill="#28364A" stroke="rgba(26,138,138,0.48)" stroke-width="0.5"/><rect x="666" y="80" width="4" height="55" fill="rgba(26,138,138,0.82)" rx="0.5"/><rect x="674" y="80" width="28" height="55" fill="#28364A" stroke="rgba(26,138,138,0.48)" stroke-width="0.5"/><rect x="702" y="80" width="4" height="55" fill="rgba(26,138,138,0.82)" rx="0.5"/><rect x="710" y="80" width="28" height="55" fill="#28364A" stroke="rgba(26,138,138,0.48)" stroke-width="0.5"/><rect x="738" y="80" width="4" height="55" fill="rgba(26,138,138,0.82)" rx="0.5"/><rect x="746" y="80" width="28" height="55" fill="#28364A" stroke="rgba(26,138,138,0.48)" stroke-width="0.5"/><rect x="774" y="80" width="4" height="55" fill="rgba(26,138,138,0.82)" rx="0.5"/><rect x="782" y="80" width="28" height="55" fill="#28364A" stroke="rgba(26,138,138,0.48)" stroke-width="0.5"/><rect x="810" y="80" width="4" height="55" fill="rgba(26,138,138,0.82)" rx="0.5"/>
         <!-- Row 2 racks + RDHx -->
@@ -1358,6 +1474,37 @@
       The constraint is thermal. The consequence is <em>revenue.</em><br>
       Vega removes the first to activate the second.
     </p>
+
+    <!-- Revenue slider — continues from the metrics table above -->
+    <div class="rev-slider-wrap">
+      <div class="rev-slider-head">Revenue unlocked – Adjust Colocation Rate</div>
+      <div class="rev-slider-cards">
+        <div class="rev-slider-card">
+          <p class="rev-slider-card-lbl">kW Unlocked</p>
+          <p class="rev-slider-card-val" style="color:var(--teal)">450 kW</p>
+          <p class="rev-slider-card-note">From 50 → 500 kW</p>
+        </div>
+        <div class="rev-slider-card">
+          <p class="rev-slider-card-lbl">Monthly Revenue</p>
+          <p class="rev-slider-card-val" style="color:var(--copper)" id="econ-monthly">$67,500</p>
+          <p class="rev-slider-card-note" id="econ-monthly-sub">At $150/kW/mo</p>
+        </div>
+        <div class="rev-slider-card">
+          <p class="rev-slider-card-lbl">Annual Revenue</p>
+          <p class="rev-slider-card-val" style="color:var(--copper)" id="econ-annual">$810K</p>
+          <p class="rev-slider-card-note">From unlocked capacity</p>
+        </div>
+      </div>
+      <div class="rev-slider-body">
+        <div class="rev-slider-row">
+          <span class="rev-slider-lbl">$75</span>
+          <input type="range" class="rev-slider-input" min="75" max="300" value="150" id="econ-slider" oninput="econUpdateRevenue(this.value)">
+          <span class="rev-slider-lbl">$300</span>
+        </div>
+        <div class="rev-slider-display" id="econ-slider-display">$150 / kW / mo</div>
+        <div class="rev-slider-note">Conservative: $75–$150 &nbsp;·&nbsp; Enterprise / GPU: $200–$300</div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -1531,6 +1678,27 @@
 
   // Also observe stat cells directly for counters
   document.querySelectorAll('.stat-cell').forEach(el => io.observe(el));
+
+  /* ── Revenue slider ──────────────────────────── */
+  function updateSliderFill(input) {
+    const pct = ((input.value - input.min) / (input.max - input.min)) * 100;
+    input.style.setProperty('--fill', pct + '%');
+  }
+
+  function econUpdateRevenue(rate) {
+    const r = parseInt(rate);
+    const monthly = 450 * r;
+    const annual = monthly * 12;
+    const slider = document.getElementById('econ-slider');
+    updateSliderFill(slider);
+    document.getElementById('econ-monthly').textContent = '$' + monthly.toLocaleString();
+    document.getElementById('econ-monthly-sub').textContent = 'At $' + r + '/kW/mo';
+    document.getElementById('econ-annual').textContent = '$' + Math.round(annual / 1000) + 'K';
+    document.getElementById('econ-slider-display').textContent = '$' + r + ' / kW / mo';
+  }
+
+  // Set initial fill on load
+  updateSliderFill(document.getElementById('econ-slider'));
 </script>
 </body>
 </html>
