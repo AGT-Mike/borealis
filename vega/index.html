@@ -1467,7 +1467,7 @@
           <p class="m-title">Revenue Unlocked</p>
           <p class="m-note">Stranded capacity converted to billable compute — per month, per 500 kW pod</p>
         </div>
-        <div class="m-val copper-val">$160K<span class="u">/mo</span></div>
+        <div class="m-val copper-val">$60K<span class="u">/mo</span></div>
       </div>
     </div>
     <p class="metrics-quote">
@@ -1481,27 +1481,27 @@
       <div class="rev-slider-cards">
         <div class="rev-slider-card">
           <p class="rev-slider-card-lbl">kW Unlocked</p>
-          <p class="rev-slider-card-val" style="color:var(--teal)">450 kW</p>
+          <p class="rev-slider-card-val" style="color:var(--teal)">500 kW</p>
           <p class="rev-slider-card-note">From 50 → 500 kW</p>
         </div>
         <div class="rev-slider-card">
           <p class="rev-slider-card-lbl">Monthly Revenue</p>
-          <p class="rev-slider-card-val" style="color:var(--copper)" id="econ-monthly">$67,500</p>
-          <p class="rev-slider-card-note" id="econ-monthly-sub">At $150/kW/mo</p>
+          <p class="rev-slider-card-val" style="color:var(--copper)" id="econ-monthly">$60,000</p>
+          <p class="rev-slider-card-note" id="econ-monthly-sub">At $120/kW/mo</p>
         </div>
         <div class="rev-slider-card">
           <p class="rev-slider-card-lbl">Annual Revenue</p>
-          <p class="rev-slider-card-val" style="color:var(--copper)" id="econ-annual">$810K</p>
+          <p class="rev-slider-card-val" style="color:var(--copper)" id="econ-annual">$720K</p>
           <p class="rev-slider-card-note">From unlocked capacity</p>
         </div>
       </div>
       <div class="rev-slider-body">
         <div class="rev-slider-row">
           <span class="rev-slider-lbl">$75</span>
-          <input type="range" class="rev-slider-input" min="75" max="300" value="150" id="econ-slider" oninput="econUpdateRevenue(this.value)">
+          <input type="range" class="rev-slider-input" min="75" max="300" value="120" id="econ-slider" oninput="econUpdateRevenue(this.value)">
           <span class="rev-slider-lbl">$300</span>
         </div>
-        <div class="rev-slider-display" id="econ-slider-display">$150 / kW / mo</div>
+        <div class="rev-slider-display" id="econ-slider-display">$120 / kW / mo</div>
         <div class="rev-slider-note">Conservative: $75–$150 &nbsp;·&nbsp; Enterprise / GPU: $200–$300</div>
       </div>
     </div>
@@ -1687,7 +1687,7 @@
 
   function econUpdateRevenue(rate) {
     const r = parseInt(rate);
-    const monthly = 450 * r;
+    const monthly = 500 * r;
     const annual = monthly * 12;
     const slider = document.getElementById('econ-slider');
     updateSliderFill(slider);
