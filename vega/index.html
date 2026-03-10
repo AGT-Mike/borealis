@@ -797,15 +797,19 @@
       line-height: 1.75;
       max-width: 480px;
     }
-    .rn-options {
+    .rn-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       border-top: 1px solid var(--rule);
     }
+    .rn-col {
+      display: flex;
+      flex-direction: column;
+    }
+    .rn-col:first-child { border-right: 1px solid var(--rule); }
     .rn-opt {
       padding: 36px 80px;
     }
-    .rn-opt:first-child { border-right: 1px solid var(--rule); }
     .rn-opt-label {
       font-family: 'Barlow Condensed', sans-serif;
       font-size: 10px;
@@ -826,20 +830,16 @@
       color: var(--dim);
       line-height: 1.7;
     }
-    .rn-band {
+    .rn-band-col {
       background: rgba(26,138,138,0.07);
       border-top: 1px solid rgba(26,138,138,0.18);
       border-bottom: 1px solid rgba(26,138,138,0.18);
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-    }
-    .rn-band-col {
       padding: 20px 80px;
       display: flex;
       flex-direction: column;
       gap: 5px;
     }
-    .rn-band-col:first-child { border-right: 1px solid rgba(26,138,138,0.14); }
+    .rn-col:first-child .rn-band-col { border-right: 1px solid rgba(26,138,138,0.14); }
     .rn-band-col-label {
       font-family: 'Barlow Condensed', sans-serif;
       font-size: 10px;
@@ -1048,12 +1048,11 @@
       .cu-left { border-right: none; border-bottom: 1px solid var(--rule); padding: 48px 24px; }
       .cu-right { padding: 48px 24px; }
       .rn-head { padding: 48px 24px 32px; }
-      .rn-options { grid-template-columns: 1fr; }
-      .rn-opt:first-child { border-right: none; border-bottom: 1px solid var(--rule); }
+      .rn-grid { grid-template-columns: 1fr; }
+      .rn-col:first-child { border-right: none; }
+      .rn-col:first-child .rn-band-col { border-right: none; border-bottom: 1px solid var(--rule); }
       .rn-opt { padding: 28px 24px; }
-      .rn-band { grid-template-columns: 1fr; }
       .rn-band-col { padding: 16px 24px; }
-      .rn-band-col:first-child { border-right: none; border-bottom: 1px solid rgba(26,138,138,0.14); }
       .rn-loop { padding: 14px 24px; }
       #architecture { padding: 48px 24px; }
       .arch-layer { grid-template-columns: 90px 1fr; }
@@ -1358,26 +1357,28 @@
     <h2 class="rn-headline">Any rack. Same governed loop.<br>Same supervisory authority.</h2>
     <p class="rn-intro">Air-cooled or liquid-ready GPU racks connect to the same Vega IT liquid loop — governed by Borealis, no competing setpoints, no rack-level controllers.</p>
   </div>
-  <div class="rn-options">
-    <div class="rn-opt reveal">
-      <p class="rn-opt-label">Option A</p>
-      <h3 class="rn-opt-title">Air-Cooled GPU Rack</h3>
-      <p class="rn-opt-spec">Standard 19&quot; rack &nbsp;·&nbsp; Any server vendor<br>Hot exhaust air out the rear door</p>
+  <div class="rn-grid">
+    <div class="rn-col">
+      <div class="rn-opt reveal">
+        <p class="rn-opt-label">Option A</p>
+        <h3 class="rn-opt-title">Air-Cooled GPU Rack</h3>
+        <p class="rn-opt-spec">Standard 19&quot; rack &nbsp;·&nbsp; Any server vendor<br>Hot exhaust air out the rear door</p>
+      </div>
+      <div class="rn-band-col">
+        <p class="rn-band-col-label">Governed Rear-Door Heat Exchanger (RDHx)</p>
+        <p class="rn-band-col-desc">Intercepts exhaust heat at rack boundary</p>
+      </div>
     </div>
-    <div class="rn-opt reveal reveal-d1">
-      <p class="rn-opt-label">Option B</p>
-      <h3 class="rn-opt-title">Liquid-Ready GPU Rack</h3>
-      <p class="rn-opt-spec">OEM-designed for direct liquid cooling<br>Cold plates on CPU/GPU packages</p>
-    </div>
-  </div>
-  <div class="rn-band">
-    <div class="rn-band-col">
-      <p class="rn-band-col-label">Governed Rear-Door Heat Exchanger (RDHx)</p>
-      <p class="rn-band-col-desc">Intercepts exhaust heat at rack boundary</p>
-    </div>
-    <div class="rn-band-col">
-      <p class="rn-band-col-label">Governed Cold Plate Interface</p>
-      <p class="rn-band-col-desc">Direct liquid-to-chip thermal transfer</p>
+    <div class="rn-col">
+      <div class="rn-opt reveal reveal-d1">
+        <p class="rn-opt-label">Option B</p>
+        <h3 class="rn-opt-title">Liquid-Ready GPU Rack</h3>
+        <p class="rn-opt-spec">OEM-designed for direct liquid cooling<br>Cold plates on CPU/GPU packages</p>
+      </div>
+      <div class="rn-band-col">
+        <p class="rn-band-col-label">Governed Cold Plate Interface</p>
+        <p class="rn-band-col-desc">Direct liquid-to-chip thermal transfer</p>
+      </div>
     </div>
   </div>
   <div class="rn-loop">
