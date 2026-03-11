@@ -719,169 +719,291 @@
       color: var(--dimmer);
     }
 
-    /* ─── COMPUTE UNLOCK ─────────────────────────── */
-    #compute-unlock {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
+    /* ─── ECONOMICS (The Compute Unlock) ─────────── */
+    #economics {
+      padding: 72px 80px 64px;
       border-bottom: 1px solid var(--rule);
     }
-    .cu-left {
-      padding: 80px 64px;
-      border-right: 1px solid var(--rule);
+    .econ-header {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 52px;
     }
-    .cu-headline {
+    .econ-headline {
       font-family: 'Cormorant Garamond', serif;
       font-size: clamp(1.8rem, 3.2vw, 3.5rem);
       font-weight: 300;
       line-height: 1.15;
-      margin: 20px 0 44px;
     }
-    .cu-block { margin-bottom: 30px; }
-    .cu-block:last-child { margin-bottom: 0; }
-    .cu-block-label {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 10px;
-      font-weight: 400;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: var(--dim);
-      margin-bottom: 10px;
-    }
-    .cu-block-text {
-      font-size: 13px;
-      font-weight: 300;
-      color: var(--dim);
-      line-height: 1.8;
-    }
-    .cu-block-text strong { font-weight: 500; color: var(--white); }
-    .cu-block-text .t { color: var(--teal); }
-    .cu-block-text .c { color: var(--copper); }
-
-    .cu-right {
-      padding: 80px 64px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-    .metrics-tbl { border: 1px solid var(--rule); }
-    .m-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 20px 26px;
-      border-bottom: 1px solid var(--rule);
-    }
-    .m-row:last-child { border-bottom: none; }
-    .m-row.row-teal { border-left: 2px solid var(--teal); background: rgba(26,138,138,0.04); }
-    .m-row.row-revenue { background: rgba(244,242,238,0.025); }
-    .m-title { font-size: 13px; font-weight: 400; color: var(--white); }
-    .m-note  { font-size: 11px; color: var(--dim); margin-top: 3px; }
-    .m-val {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: clamp(2rem, 3.2vw, 3.4rem);
-      font-weight: 300;
-      line-height: 1;
-      display: flex;
-      align-items: baseline;
-      gap: 4px;
-    }
-    .m-val .u { font-size: 0.4em; letter-spacing: 0.05em; }
-    .m-val.dim-val    { color: var(--dim); }
-    .m-val.teal-val   { color: var(--teal); }
-    .m-val.copper-val { color: var(--copper); }
-
-    .metrics-quote {
-      margin-top: 22px;
-      text-align: center;
+    .econ-rule-sentence {
       font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-size: clamp(14px, 1.6vw, 18px);
       font-style: italic;
-      font-size: 15px;
       color: var(--dim);
-      line-height: 1.75;
+      line-height: 1.6;
+      max-width: 44ch;
+      margin-bottom: 44px;
     }
-    .metrics-quote em { font-style: italic; color: var(--copper); }
-
-    /* ─── REVENUE SLIDER (inside cu-right) ──────── */
-    .rev-slider-wrap {
-      margin-top: 28px;
-      border: 1px solid var(--rule);
+    .econ-rule-sentence em { font-style: italic; color: var(--copper); }
+    .econ-bars-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      margin-bottom: 52px;
     }
-    .rev-slider-head {
-      padding: 14px 26px;
-      border-bottom: 1px solid var(--rule);
-      border-left: 2px solid var(--copper);
-      background: rgba(244,242,238,0.025);
+    .econ-bar-group-title {
       font-family: 'Barlow Condensed', sans-serif;
-      font-size: 10px;
+      font-weight: 400;
+      font-size: 11px;
       letter-spacing: 0.22em;
       text-transform: uppercase;
-      color: var(--copper);
+      margin-bottom: 20px;
     }
-    .rev-slider-cards {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-    }
-    .rev-slider-card {
-      padding: 18px 20px;
-      border-right: 1px solid var(--rule);
-    }
-    .rev-slider-card:last-child { border-right: none; }
-    .rev-slider-card-lbl {
+    .econ-bar-group-title.dim { color: var(--dim); }
+    .econ-bar-group-title.teal { color: var(--teal); }
+    .econ-bar-wrap { margin-bottom: 16px; }
+    .econ-bar-label {
       font-family: 'Barlow Condensed', sans-serif;
-      font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase;
-      color: var(--dim); margin-bottom: 8px;
+      font-weight: 400;
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--dim);
+      margin-bottom: 6px;
     }
-    .rev-slider-card-val {
+    .econ-bar-track {
+      height: 32px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--rule);
+      position: relative;
+      overflow: visible;
+    }
+    .econ-bar-fill {
+      height: 100%;
+      transition: width 0.8s cubic-bezier(.16,1,.3,1);
+    }
+    .econ-bar-fill.power { background: rgba(244,242,238,0.12); }
+    .econ-bar-fill.cooling-limited { background: var(--red-dim); }
+    .econ-bar-fill.cooling-vega { background: rgba(26,138,138,0.35); }
+    .econ-bar-number {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
       font-family: 'Barlow Condensed', sans-serif;
-      font-size: clamp(1.3rem, 2vw, 1.9rem);
-      font-weight: 400; line-height: 1; margin-bottom: 4px;
+      font-weight: 400;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
     }
-    .rev-slider-card-note { font-size: 10px; color: var(--dim); }
-    .rev-slider-body {
-      padding: 18px 26px;
-      border-top: 1px solid var(--rule);
-      background: rgba(26,138,138,0.03);
+    .econ-bar-number.dim { color: var(--dimmer); }
+    .econ-bar-number.red { color: var(--red-text); }
+    .econ-bar-number.teal { color: var(--teal); }
+    .econ-bar-caption {
+      font-size: 12px;
+      font-weight: 300;
+      color: var(--dimmer);
+      margin-top: 10px;
+      line-height: 1.6;
     }
-    .rev-slider-row { display: flex; align-items: center; gap: 14px; }
-    .rev-slider-lbl {
+    .econ-bar-caption strong { font-weight: 400; }
+    .econ-bar-caption strong.red { color: var(--red-text); }
+    .econ-bar-caption strong.teal { color: var(--teal); }
+    .econ-gap-marker {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      border-left: 1px dashed rgba(139,53,53,0.45);
+    }
+    .econ-gap-label {
+      position: absolute;
+      top: -16px;
       font-family: 'Barlow Condensed', sans-serif;
-      font-size: 10px; letter-spacing: 0.1em; color: var(--dim); white-space: nowrap;
+      font-size: 9px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--red-text);
+      opacity: 0.6;
+      white-space: nowrap;
     }
-    .rev-slider-input {
-      flex: 1; cursor: pointer;
-      -webkit-appearance: none; appearance: none;
-      height: 3px; border-radius: 2px;
-      background: linear-gradient(to right, var(--teal) var(--fill, 33%), var(--teal-dim) var(--fill, 33%));
+    /* Revenue calculator */
+    .econ-slider-section {
+      padding: 32px 40px;
+      border: 1px solid var(--rule);
+      background: rgba(244,242,238,0.02);
+    }
+    .econ-slider-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 400;
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--teal);
+      margin-bottom: 24px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--rule);
+    }
+    .econ-slider-row {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .econ-slider-input-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+      min-width: 200px;
+    }
+    .econ-slider-label {
+      font-size: 12px;
+      font-weight: 300;
+      color: var(--dim);
+      white-space: nowrap;
+    }
+    .econ-range {
+      flex: 1;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 3px;
+      background: linear-gradient(to right, var(--teal) var(--fill, 33%), var(--rule) var(--fill, 33%));
       outline: none;
+      border-radius: 2px;
+      cursor: pointer;
     }
-    .rev-slider-input::-webkit-slider-thumb {
-      -webkit-appearance: none; appearance: none;
-      width: 16px; height: 16px; border-radius: 50%;
+    .econ-range::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
       background: var(--white);
+      cursor: pointer;
       border: none;
       box-shadow: 0 0 6px rgba(26,138,138,0.4);
-      cursor: pointer;
     }
-    .rev-slider-input::-moz-range-thumb {
-      width: 16px; height: 16px; border-radius: 50%;
-      background: var(--white); border: none;
+    .econ-range::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--white);
+      cursor: pointer;
+      border: none;
       box-shadow: 0 0 6px rgba(26,138,138,0.4);
-      cursor: pointer;
     }
-    .rev-slider-input::-moz-range-track {
-      height: 3px; border-radius: 2px; background: var(--steel); border: none;
+    .econ-range::-moz-range-track {
+      height: 3px; border-radius: 2px; background: var(--rule); border: none;
     }
-    .rev-slider-input::-moz-range-progress {
+    .econ-range::-moz-range-progress {
       height: 3px; border-radius: 2px; background: var(--teal);
     }
-    .rev-slider-display {
-      margin-top: 8px; text-align: center;
+    .econ-rate-display {
       font-family: 'Barlow Condensed', sans-serif;
-      font-size: 13px; letter-spacing: 0.12em; font-weight:400; color: var(--teal);
+      font-weight: 400;
+      font-size: clamp(1.3rem, 2vw, 1.9rem);
+      color: var(--teal);
+      min-width: 5ch;
+      text-align: right;
     }
-    .rev-slider-note {
-      margin-top: 4px; font-family: 'Barlow Condensed', sans-serif;
-      font-size: 10px; letter-spacing: 0.08em; color: var(--dim); text-align: center;
+    .econ-deploy-badge {
+      margin-top: 20px;
+      padding: 8px 16px;
+      background: var(--teal-dim);
+      border: 1px solid var(--teal-mid);
+      display: inline-block;
+    }
+    .econ-deploy-badge .badge-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 9px;
+      font-weight: 400;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--teal);
+    }
+    .econ-deploy-badge .badge-value {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      color: var(--teal);
+    }
+    .econ-outputs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+      margin-top: 28px;
+      padding-top: 28px;
+      border-top: 1px solid var(--rule);
+    }
+    .econ-output-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 400;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .econ-output-label.dim { color: var(--dim); }
+    .econ-output-label.teal { color: var(--teal); }
+    .econ-output-label.copper { color: var(--copper); }
+    .econ-output-value {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 300;
+      letter-spacing: 0.02em;
+    }
+    .econ-output-value.small {
+      font-size: clamp(1.3rem, 2vw, 1.9rem);
+      color: var(--dim);
+    }
+    .econ-output-value.medium {
+      font-size: clamp(1.3rem, 2vw, 1.9rem);
+      color: var(--teal);
+    }
+    .econ-output-sub {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 300;
+      font-size: 11px;
+      margin-top: 3px;
+    }
+    .econ-output-sub.dim { color: var(--dimmer); }
+    .econ-output-sub.teal { color: rgba(26,138,138,0.6); }
+    .econ-delta-block {
+      grid-column: 1 / -1;
+      padding-top: 22px;
+      border-top: 1px solid var(--rule);
+    }
+    .econ-delta-value {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 300;
+      font-size: clamp(2rem, 3.2vw, 3.4rem);
+      color: var(--copper);
+      line-height: 1;
+    }
+    .econ-delta-annual {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 300;
+      font-size: 13px;
+      color: rgba(184,149,110,0.55);
+      margin-left: 8px;
+    }
+    .econ-slider-secondary {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--rule);
+    }
+    .econ-capacity-hint {
+      font-size: 10px;
+      color: var(--dimmer);
+      margin-top: 4px;
+    }
+    .econ-disclaimer {
+      font-size: 10px;
+      color: var(--dimmer);
+      margin-top: 20px;
+      line-height: 1.6;
     }
 
     /* ─── RACK-NEUTRAL ───────────────────────────── */
@@ -1149,9 +1271,13 @@
       .ct-col.ct-vega { border-top: 2px solid var(--teal); }
       .ct-col.ct-conventional { border-right: none; border-bottom: 1px solid var(--rule); }
       .ct-col-head, .ct-col-body { padding-left: 24px; padding-right: 24px; }
-      #compute-unlock { grid-template-columns: 1fr; }
-      .cu-left { border-right: none; border-bottom: 1px solid var(--rule); padding: 48px 24px; }
-      .cu-right { padding: 48px 24px; }
+      #economics { padding: 48px 24px 40px; }
+      .econ-bars-container { grid-template-columns: 1fr; gap: 36px; }
+      .econ-slider-section { padding: 24px; }
+      .econ-slider-row { flex-direction: column; align-items: flex-start; gap: 12px; }
+      .econ-slider-input-wrap { width: 100%; }
+      .econ-outputs { grid-template-columns: 1fr; gap: 20px; }
+      .econ-delta-block { grid-column: 1; }
       .rn-head { padding: 48px 24px 32px; }
       .rn-grid { grid-template-columns: 1fr; }
       .rn-col:first-child { border-right: none; }
@@ -1242,6 +1368,136 @@
   </div>
 </section>
 
+<!-- ECONOMICS (The Compute Unlock) -->
+<section id="economics">
+  <div class="econ-header reveal">
+    <p class="label">The Compute Unlock</p>
+    <h2 class="econ-headline">Cooling isn't the cost.<br>It's the key to the revenue.</h2>
+  </div>
+
+  <p class="econ-rule-sentence reveal reveal-d1">
+    Compute capacity is limited by the smaller of two numbers: <em>power</em> or <em>cooling.</em>
+  </p>
+
+  <div class="econ-bars-container reveal reveal-d1">
+    <!-- BEFORE VEGA -->
+    <div class="econ-bar-group">
+      <div class="econ-bar-group-title dim">Today — Air-Cooled</div>
+      <div class="econ-bar-wrap">
+        <div class="econ-bar-label">Facility Electrical Capacity</div>
+        <div class="econ-bar-track">
+          <div class="econ-bar-fill power" style="width: 100%;"></div>
+          <span class="econ-bar-number dim">Contracted</span>
+        </div>
+      </div>
+      <div class="econ-bar-wrap">
+        <div class="econ-bar-label">Air-Cooled Thermal Capacity</div>
+        <div class="econ-bar-track">
+          <div class="econ-bar-fill cooling-limited" style="width: 30%;"></div>
+          <span class="econ-bar-number red" style="right: auto; left: 32%;">Limited</span>
+          <div class="econ-gap-marker" style="left: 30%;"></div>
+          <span class="econ-gap-label" style="left: 42%;">Cooling Gap →</span>
+        </div>
+      </div>
+      <div class="econ-bar-caption">
+        Compute capacity <strong class="red">constrained by cooling</strong> — power available but undeliverable
+      </div>
+    </div>
+
+    <!-- WITH VEGA -->
+    <div class="econ-bar-group">
+      <div class="econ-bar-group-title teal">With Vega — Governed Liquid Cooling</div>
+      <div class="econ-bar-wrap">
+        <div class="econ-bar-label">Facility Electrical Capacity</div>
+        <div class="econ-bar-track">
+          <div class="econ-bar-fill power" style="width: 100%;"></div>
+          <span class="econ-bar-number dim">Contracted</span>
+        </div>
+      </div>
+      <div class="econ-bar-wrap">
+        <div class="econ-bar-label">Vega Thermal Domain</div>
+        <div class="econ-bar-track">
+          <div class="econ-bar-fill cooling-vega" style="width: 100%;"></div>
+          <span class="econ-bar-number teal">Matched</span>
+        </div>
+      </div>
+      <div class="econ-bar-caption">
+        Cooling aligned with power — <strong class="teal">compute delivered, revenue enabled</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- Revenue Calculator -->
+  <div class="econ-slider-section reveal reveal-d2">
+    <div class="econ-slider-title">Revenue Potential — Your Site</div>
+
+    <!-- Slider 1: Facility power -->
+    <div class="econ-slider-row">
+      <div class="econ-slider-input-wrap">
+        <span class="econ-slider-label">Facility power available:</span>
+        <input type="range" class="econ-range" id="econ-power" min="500" max="5000" value="1000" step="100">
+        <span class="econ-rate-display" id="econ-power-display">1,000</span>
+        <span class="econ-slider-label">kW</span>
+      </div>
+    </div>
+
+    <!-- Slider 2: Current capacity -->
+    <div class="econ-slider-secondary">
+      <div class="econ-slider-row">
+        <div class="econ-slider-input-wrap">
+          <span class="econ-slider-label">Current air-cooled capacity:</span>
+          <input type="range" class="econ-range" id="econ-capacity" min="50" max="2000" value="200" step="25">
+          <span class="econ-rate-display" id="econ-cap-display" style="color: var(--dim);">200</span>
+          <span class="econ-slider-label">kW</span>
+        </div>
+      </div>
+      <p class="econ-capacity-hint">What your existing cooling can thermally deliver today</p>
+    </div>
+
+    <!-- Slider 3: Rate -->
+    <div class="econ-slider-secondary">
+      <div class="econ-slider-row">
+        <div class="econ-slider-input-wrap">
+          <span class="econ-slider-label">Your colocation rate:</span>
+          <input type="range" class="econ-range" id="econ-rate" min="75" max="300" value="150" step="5">
+          <span class="econ-rate-display" id="econ-rate-display">$150</span>
+          <span class="econ-slider-label">/kW/mo</span>
+        </div>
+      </div>
+      <p class="econ-capacity-hint">Conservative: $75–$150 &nbsp;·&nbsp; Enterprise / GPU: $200–$300</p>
+    </div>
+
+    <!-- Vega deployment indicator -->
+    <div class="econ-deploy-badge">
+      <span class="badge-label">Vega Deployment: </span>
+      <span class="badge-value" id="econ-nodes">2 × 500 kW nodes</span>
+    </div>
+
+    <!-- Three outputs -->
+    <div class="econ-outputs">
+      <div class="econ-output-block">
+        <div class="econ-output-label dim">Revenue today</div>
+        <div class="econ-output-value small" id="econ-today">$30,000</div>
+        <div class="econ-output-sub dim" id="econ-today-annual">$360K/year</div>
+      </div>
+      <div class="econ-output-block">
+        <div class="econ-output-label teal">Revenue with Vega</div>
+        <div class="econ-output-value medium" id="econ-vega">$150,000</div>
+        <div class="econ-output-sub teal" id="econ-vega-annual">$1.8M/year</div>
+      </div>
+      <div class="econ-delta-block">
+        <div class="econ-output-label copper">Additional revenue potential</div>
+        <span class="econ-delta-value" id="econ-delta">$120,000</span>
+        <span class="econ-delta-annual" id="econ-delta-annual">$1.4M/year</span>
+      </div>
+    </div>
+
+    <p class="econ-disclaimer">
+      Illustrative. Revenue = capacity × rate. Actual revenue depends on contract structure, utilization, and market rates. Vega deployment scales in 500 kW node increments. All inputs operator-selected.
+    </p>
+  </div>
+</section>
+
 <!-- COMPARISON DIAGRAM -->
 <section id="comparison">
   <div class="comp-header reveal">
@@ -1250,7 +1506,65 @@
   </div>
 
   <div class="diag-pair">
-    <!-- BEFORE -->
+    <!-- CRAC FACILITY -->
+    <div class="diag-block reveal">
+      <div class="diag-block-head">
+        <span class="diag-state-label before">CRAC Facility</span>
+        <div class="diag-rule before"></div>
+      </div>
+      <svg class="floor-svg" viewBox="0 0 860 380" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="860" height="380" fill="#1E2532"/>
+        <!-- Title — centered above condensers -->
+        <text x="430" y="16" text-anchor="middle" font-family="Barlow Condensed" font-size="9" fill="#C2CDD8" letter-spacing="3">STANDALONE CRAC FACILITY — NO CENTRAL PLANT</text>
+        <!-- Condensers — gray, original positions -->
+        <rect x="210" y="26" width="150" height="22" fill="rgba(244,242,238,0.04)" stroke="#3A4048" stroke-width="0.5"/>
+        <text x="285" y="41" text-anchor="middle" font-family="Barlow Condensed" font-size="7.5" fill="#8A9099" letter-spacing="2">CONDENSER</text>
+        <rect x="445" y="26" width="150" height="22" fill="rgba(244,242,238,0.04)" stroke="#3A4048" stroke-width="0.5"/>
+        <text x="520" y="41" text-anchor="middle" font-family="Barlow Condensed" font-size="7.5" fill="#8A9099" letter-spacing="2">CONDENSER</text>
+        <rect x="680" y="26" width="150" height="22" fill="rgba(244,242,238,0.04)" stroke="#3A4048" stroke-width="0.5"/>
+        <text x="755" y="41" text-anchor="middle" font-family="Barlow Condensed" font-size="7.5" fill="#8A9099" letter-spacing="2">CONDENSER</text>
+        <!-- Central Plant — dotted, no plant -->
+        <rect x="30" y="56" width="150" height="260" fill="none" stroke="#3A4048" stroke-width="1" stroke-dasharray="5 3"/>
+        <text x="105" y="141" text-anchor="middle" font-family="Barlow Condensed" font-size="11" fill="#C2CDD8" letter-spacing="2">NO CENTRAL</text>
+        <text x="105" y="161" text-anchor="middle" font-family="Barlow Condensed" font-size="11" fill="#C2CDD8" letter-spacing="2">PLANT</text>
+        <text x="105" y="206" text-anchor="middle" font-family="Barlow Condensed" font-size="8" fill="rgba(244,242,238,0.84)" letter-spacing="1">No chilled water</text>
+        <text x="105" y="221" text-anchor="middle" font-family="Barlow Condensed" font-size="8" fill="rgba(244,242,238,0.72)" letter-spacing="1">No cooling tower</text>
+        <text x="105" y="236" text-anchor="middle" font-family="Barlow Condensed" font-size="8" fill="rgba(244,242,238,0.72)" letter-spacing="1">No expansion path</text>
+        <!-- Data Hall outline -->
+        <rect x="210" y="56" width="620" height="260" fill="rgba(255,255,255,0.01)" stroke="#3A4048" stroke-width="1"/>
+        <text x="520" y="74" text-anchor="middle" font-family="Barlow Condensed" font-size="9.5" fill="rgba(244,242,238,0.25)" letter-spacing="3">DATA HALL — AIR-COOLED</text>
+        <!-- CRAC Unit 1 -->
+        <rect x="220" y="94" width="100" height="40" fill="rgba(255,255,255,0.04)" stroke="#3A4048" stroke-width="0.75"/>
+        <text x="270" y="111" text-anchor="middle" font-family="Barlow Condensed" font-size="10" fill="rgba(244,242,238,0.4)" letter-spacing="1">70kW CRAC</text>
+        <text x="270" y="126" text-anchor="middle" font-family="Barlow Condensed" font-size="6" fill="rgba(244,242,238,0.8)" letter-spacing="0.5">DX Refrigeration / Self-Contained</text>
+        <!-- CRAC Unit 2 -->
+        <rect x="220" y="174" width="100" height="40" fill="rgba(255,255,255,0.04)" stroke="#3A4048" stroke-width="0.75"/>
+        <text x="270" y="191" text-anchor="middle" font-family="Barlow Condensed" font-size="10" fill="rgba(244,242,238,0.4)" letter-spacing="1">70kW CRAC</text>
+        <text x="270" y="206" text-anchor="middle" font-family="Barlow Condensed" font-size="6" fill="rgba(244,242,238,0.8)" letter-spacing="0.5">DX Refrigeration / Self-Contained</text>
+        <!-- CRAC Unit 3 -->
+        <rect x="220" y="254" width="100" height="40" fill="rgba(255,255,255,0.04)" stroke="#3A4048" stroke-width="0.75"/>
+        <text x="270" y="271" text-anchor="middle" font-family="Barlow Condensed" font-size="10" fill="rgba(244,242,238,0.4)" letter-spacing="1">70kW CRAC</text>
+        <text x="270" y="286" text-anchor="middle" font-family="Barlow Condensed" font-size="6" fill="rgba(244,242,238,0.8)" letter-spacing="0.5">DX Refrigeration / Self-Contained</text>
+        <!-- Row 1 racks -->
+        <rect x="350" y="96" width="28" height="55" fill="#2E3848" stroke="#3A4048" stroke-width="0.5"/><rect x="386" y="96" width="28" height="55" fill="#2E3848" stroke="#3A4048" stroke-width="0.5"/><rect x="422" y="96" width="28" height="55" fill="#2E3848" stroke="#3A4048" stroke-width="0.5"/><rect x="458" y="96" width="28" height="55" fill="#2E3848" stroke="#3A4048" stroke-width="0.5"/><rect x="494" y="96" width="28" height="55" fill="#2E3848" stroke="#3A4048" stroke-width="0.5"/><rect x="530" y="96" width="28" height="55" fill="#2E3848" stroke="#3A4048" stroke-width="0.5"/><rect x="566" y="96" width="28" height="55" fill="#2E3848" stroke="#3A4048" stroke-width="0.5"/><rect x="602" y="96" width="28" height="55" fill="#2E3848" stroke="#3A4048" stroke-width="0.5"/><rect x="638" y="96" width="28" height="55" fill="#2E3848" stroke="#3A4048" stroke-width="0.5"/><rect x="674" y="96" width="28" height="55" fill="#2E3848" stroke="#3A4048" stroke-width="0.5"/><rect x="710" y="96" width="28" height="55" fill="#2E3848" stroke="#3A4048" stroke-width="0.5"/><rect x="746" y="96" width="28" height="55" fill="#2E3848" stroke="#3A4048" stroke-width="0.5"/><rect x="782" y="96" width="28" height="55" fill="#2E3848" stroke="#3A4048" stroke-width="0.5"/>
+        <!-- Row 2 racks -->
+        <rect x="350" y="176" width="28" height="55" fill="#2E3848" stroke="#3A4048" stroke-width="0.5"/><rect x="386" y="176" width="28" height="55" fill="#2E3848" stroke="#3A4048" stroke-width="0.5"/><rect x="422" y="176" width="28" height="55" fill="#2E3848" stroke="#3A4048" stroke-width="0.5"/><rect x="458" y="176" width="28" height="55" fill="#2E3848" stroke="#3A4048" stroke-width="0.5"/><rect x="494" y="176" width="28" height="55" fill="#2E3848" stroke="#3A4048" stroke-width="0.5"/><rect x="530" y="176" width="28" height="55" fill="#2E3848" stroke="#3A4048" stroke-width="0.5"/><rect x="566" y="176" width="28" height="55" fill="#2E3848" stroke="#3A4048" stroke-width="0.5"/><rect x="602" y="176" width="28" height="55" fill="#2E3848" stroke="#3A4048" stroke-width="0.5"/><rect x="638" y="176" width="28" height="55" fill="#2E3848" stroke="#3A4048" stroke-width="0.5"/><rect x="674" y="176" width="28" height="55" fill="#2E3848" stroke="#3A4048" stroke-width="0.5"/><rect x="710" y="176" width="28" height="55" fill="#2E3848" stroke="#3A4048" stroke-width="0.5"/><rect x="746" y="176" width="28" height="55" fill="#2E3848" stroke="#3A4048" stroke-width="0.5"/><rect x="782" y="176" width="28" height="55" fill="#2E3848" stroke="#3A4048" stroke-width="0.5"/>
+        <!-- Row 3 racks -->
+        <rect x="350" y="256" width="28" height="50" fill="#2E3848" stroke="#3A4048" stroke-width="0.5"/><rect x="386" y="256" width="28" height="50" fill="#2E3848" stroke="#3A4048" stroke-width="0.5"/><rect x="422" y="256" width="28" height="50" fill="#2E3848" stroke="#3A4048" stroke-width="0.5"/><rect x="458" y="256" width="28" height="50" fill="#2E3848" stroke="#3A4048" stroke-width="0.5"/><rect x="494" y="256" width="28" height="50" fill="#2E3848" stroke="#3A4048" stroke-width="0.5"/><rect x="530" y="256" width="28" height="50" fill="#2E3848" stroke="#3A4048" stroke-width="0.5"/><rect x="566" y="256" width="28" height="50" fill="#2E3848" stroke="#3A4048" stroke-width="0.5"/><rect x="602" y="256" width="28" height="50" fill="#2E3848" stroke="#3A4048" stroke-width="0.5"/><rect x="638" y="256" width="28" height="50" fill="#2E3848" stroke="#3A4048" stroke-width="0.5"/><rect x="674" y="256" width="28" height="50" fill="#2E3848" stroke="#3A4048" stroke-width="0.5"/><rect x="710" y="256" width="28" height="50" fill="#2E3848" stroke="#3A4048" stroke-width="0.5"/><rect x="746" y="256" width="28" height="50" fill="#2E3848" stroke="#3A4048" stroke-width="0.5"/><rect x="782" y="256" width="28" height="50" fill="#2E3848" stroke="#3A4048" stroke-width="0.5"/>
+        <!-- 15 kW labels row 1 -->
+        <text x="364" y="126" text-anchor="middle" font-family="Barlow Condensed" font-size="9" fill="rgba(220,90,90,0.82)">15</text><text x="400" y="126" text-anchor="middle" font-family="Barlow Condensed" font-size="9" fill="rgba(220,90,90,0.82)">15</text><text x="436" y="126" text-anchor="middle" font-family="Barlow Condensed" font-size="9" fill="rgba(220,90,90,0.82)">15</text><text x="472" y="126" text-anchor="middle" font-family="Barlow Condensed" font-size="9" fill="rgba(220,90,90,0.82)">15</text><text x="508" y="126" text-anchor="middle" font-family="Barlow Condensed" font-size="9" fill="rgba(220,90,90,0.82)">15</text><text x="544" y="126" text-anchor="middle" font-family="Barlow Condensed" font-size="9" fill="rgba(220,90,90,0.82)">15</text><text x="580" y="126" text-anchor="middle" font-family="Barlow Condensed" font-size="9" fill="rgba(220,90,90,0.82)">15</text><text x="616" y="126" text-anchor="middle" font-family="Barlow Condensed" font-size="9" fill="rgba(220,90,90,0.82)">15</text><text x="652" y="126" text-anchor="middle" font-family="Barlow Condensed" font-size="9" fill="rgba(220,90,90,0.82)">15</text><text x="688" y="126" text-anchor="middle" font-family="Barlow Condensed" font-size="9" fill="rgba(220,90,90,0.82)">15</text><text x="724" y="126" text-anchor="middle" font-family="Barlow Condensed" font-size="9" fill="rgba(220,90,90,0.82)">15</text><text x="760" y="126" text-anchor="middle" font-family="Barlow Condensed" font-size="9" fill="rgba(220,90,90,0.82)">15</text><text x="796" y="126" text-anchor="middle" font-family="Barlow Condensed" font-size="9" fill="rgba(220,90,90,0.82)">15</text>
+        <!-- 15 kW labels row 2 -->
+        <text x="364" y="206" text-anchor="middle" font-family="Barlow Condensed" font-size="9" fill="rgba(220,90,90,0.82)">15</text><text x="400" y="206" text-anchor="middle" font-family="Barlow Condensed" font-size="9" fill="rgba(220,90,90,0.82)">15</text><text x="436" y="206" text-anchor="middle" font-family="Barlow Condensed" font-size="9" fill="rgba(220,90,90,0.82)">15</text><text x="472" y="206" text-anchor="middle" font-family="Barlow Condensed" font-size="9" fill="rgba(220,90,90,0.82)">15</text><text x="508" y="206" text-anchor="middle" font-family="Barlow Condensed" font-size="9" fill="rgba(220,90,90,0.82)">15</text><text x="544" y="206" text-anchor="middle" font-family="Barlow Condensed" font-size="9" fill="rgba(220,90,90,0.82)">15</text><text x="580" y="206" text-anchor="middle" font-family="Barlow Condensed" font-size="9" fill="rgba(220,90,90,0.82)">15</text><text x="616" y="206" text-anchor="middle" font-family="Barlow Condensed" font-size="9" fill="rgba(220,90,90,0.82)">15</text><text x="652" y="206" text-anchor="middle" font-family="Barlow Condensed" font-size="9" fill="rgba(220,90,90,0.82)">15</text><text x="688" y="206" text-anchor="middle" font-family="Barlow Condensed" font-size="9" fill="rgba(220,90,90,0.82)">15</text><text x="724" y="206" text-anchor="middle" font-family="Barlow Condensed" font-size="9" fill="rgba(220,90,90,0.82)">15</text><text x="760" y="206" text-anchor="middle" font-family="Barlow Condensed" font-size="9" fill="rgba(220,90,90,0.82)">15</text><text x="796" y="206" text-anchor="middle" font-family="Barlow Condensed" font-size="9" fill="rgba(220,90,90,0.82)">15</text>
+        <!-- 15 kW labels row 3 -->
+        <text x="364" y="284" text-anchor="middle" font-family="Barlow Condensed" font-size="9" fill="rgba(220,90,90,0.82)">15</text><text x="400" y="284" text-anchor="middle" font-family="Barlow Condensed" font-size="9" fill="rgba(220,90,90,0.82)">15</text><text x="436" y="284" text-anchor="middle" font-family="Barlow Condensed" font-size="9" fill="rgba(220,90,90,0.82)">15</text><text x="472" y="284" text-anchor="middle" font-family="Barlow Condensed" font-size="9" fill="rgba(220,90,90,0.82)">15</text><text x="508" y="284" text-anchor="middle" font-family="Barlow Condensed" font-size="9" fill="rgba(220,90,90,0.82)">15</text><text x="544" y="284" text-anchor="middle" font-family="Barlow Condensed" font-size="9" fill="rgba(220,90,90,0.82)">15</text><text x="580" y="284" text-anchor="middle" font-family="Barlow Condensed" font-size="9" fill="rgba(220,90,90,0.82)">15</text><text x="616" y="284" text-anchor="middle" font-family="Barlow Condensed" font-size="9" fill="rgba(220,90,90,0.82)">15</text><text x="652" y="284" text-anchor="middle" font-family="Barlow Condensed" font-size="9" fill="rgba(220,90,90,0.82)">15</text><text x="688" y="284" text-anchor="middle" font-family="Barlow Condensed" font-size="9" fill="rgba(220,90,90,0.82)">15</text><text x="724" y="284" text-anchor="middle" font-family="Barlow Condensed" font-size="9" fill="rgba(220,90,90,0.82)">15</text><text x="760" y="284" text-anchor="middle" font-family="Barlow Condensed" font-size="9" fill="rgba(220,90,90,0.82)">15</text><text x="796" y="284" text-anchor="middle" font-family="Barlow Condensed" font-size="9" fill="rgba(220,90,90,0.82)">15</text>
+        <!-- Legend + footer -->
+        <text x="350" y="330" font-family="Barlow Condensed" font-size="8" fill="rgba(220,90,90,0.7)" letter-spacing="1.5">kW PER RACK — AIR-COOLED MAXIMUM</text>
+        <rect x="30" y="343" width="800" height="28" fill="rgba(200,50,50,0.16)" stroke="rgba(200,50,50,0.52)" stroke-width="0.5"/>
+        <text x="430" y="362" text-anchor="middle" font-family="Barlow Condensed" font-size="9" fill="rgba(215,70,70,0.97)" letter-spacing="3">NO PATH TO LIQUID COOLING — NO CENTRAL PLANT TO EXPAND</text>
+      </svg>
+    </div>
+
+    <!-- BEFORE (CRAH Facility) -->
     <div class="diag-block reveal">
       <div class="diag-block-head">
         <span class="diag-state-label before">Before</span>
@@ -1421,92 +1735,6 @@
   </div>
 </section>
 
-<!-- COMPUTE UNLOCK -->
-<section id="compute-unlock">
-  <div class="cu-left reveal">
-    <p class="label">The Compute Unlock</p>
-    <h2 class="cu-headline">Cooling isn't the cost.<br>It's the key to the revenue.</h2>
-    <div class="cu-block">
-      <p class="cu-block-label">Power is already sold</p>
-      <p class="cu-block-text">At sites where <strong>power is already contracted and distribution is in place</strong>, thermal capacity becomes the binding constraint. The power is real. The bus is energized. The tenant has a contract.</p>
-    </div>
-    <div class="cu-block">
-      <p class="cu-block-label">Cooling is the constraint</p>
-      <p class="cu-block-text">Without thermal removal at 50–100 kW per rack, contracted power cannot support GPU load. Every idle kilowatt is <span class="t">stranded revenue</span> — power the operator has sold but cannot deliver because air-cooled infrastructure was never designed for this density.</p>
-    </div>
-    <div class="cu-block">
-      <p class="cu-block-label">Revenue activates when thermal capacity does</p>
-      <p class="cu-block-text">Vega doesn't reduce operating cost. <strong>It converts contracted power into billable compute.</strong> The tenant goes live. The operator's timeline compresses from a capital construction project to a deployment event. <span class="c">The product pays for itself in weeks, not years.</span></p>
-    </div>
-  </div>
-  <div class="cu-right reveal reveal-d1">
-    <div class="metrics-tbl">
-      <div class="m-row">
-        <div>
-          <p class="m-title">Power Contracted</p>
-          <p class="m-note">500 kW allocated at facility bus — energized, ready</p>
-        </div>
-        <div class="m-val dim-val">500<span class="u">kW</span></div>
-      </div>
-      <div class="m-row">
-        <div>
-          <p class="m-title">Thermally Deliverable (Air-Cooled)</p>
-          <p class="m-note">Existing CRAHs max out at ~8 kW/rack — cannot serve GPU density</p>
-        </div>
-        <div class="m-val dim-val">~80<span class="u">kW</span></div>
-      </div>
-      <div class="m-row row-teal">
-        <div>
-          <p class="m-title">Thermally Deliverable (With Vega)</p>
-          <p class="m-note">Independent thermal domain — full 500 kW activated at rack density</p>
-        </div>
-        <div class="m-val teal-val">500<span class="u">kW</span></div>
-      </div>
-      <div class="m-row row-revenue">
-        <div>
-          <p class="m-title">Revenue Unlocked</p>
-          <p class="m-note">Stranded capacity converted to billable compute — per month, per 500 kW pod</p>
-        </div>
-        <div class="m-val copper-val">$60K<span class="u">/mo</span></div>
-      </div>
-    </div>
-    <p class="metrics-quote">
-      The constraint is thermal. The consequence is <em>revenue.</em><br>
-      Vega removes the first to activate the second.
-    </p>
-
-    <!-- Revenue slider — continues from the metrics table above -->
-    <div class="rev-slider-wrap">
-      <div class="rev-slider-head">Revenue unlocked – Adjust Colocation Rate</div>
-      <div class="rev-slider-cards">
-        <div class="rev-slider-card">
-          <p class="rev-slider-card-lbl">kW Unlocked</p>
-          <p class="rev-slider-card-val" style="color:var(--teal)">500 kW</p>
-          <p class="rev-slider-card-note">From 50 → 500 kW</p>
-        </div>
-        <div class="rev-slider-card">
-          <p class="rev-slider-card-lbl">Monthly Revenue</p>
-          <p class="rev-slider-card-val" style="color:var(--copper)" id="econ-monthly">$60,000</p>
-          <p class="rev-slider-card-note" id="econ-monthly-sub">At $120/kW/mo</p>
-        </div>
-        <div class="rev-slider-card">
-          <p class="rev-slider-card-lbl">Annual Revenue</p>
-          <p class="rev-slider-card-val" style="color:var(--copper)" id="econ-annual">$720K</p>
-          <p class="rev-slider-card-note">From unlocked capacity</p>
-        </div>
-      </div>
-      <div class="rev-slider-body">
-        <div class="rev-slider-row">
-          <span class="rev-slider-lbl">$75</span>
-          <input type="range" class="rev-slider-input" min="75" max="300" value="120" id="econ-slider" oninput="econUpdateRevenue(this.value)">
-          <span class="rev-slider-lbl">$300</span>
-        </div>
-        <div class="rev-slider-display" id="econ-slider-display">$120 / kW / mo</div>
-        <div class="rev-slider-note">Conservative: $75–$150 &nbsp;·&nbsp; Enterprise / GPU: $200–$300</div>
-      </div>
-    </div>
-  </div>
-</section>
 
 <!-- RACK-NEUTRAL -->
 <section id="rack-neutral">
@@ -1679,26 +1907,71 @@
   // Also observe stat cells directly for counters
   document.querySelectorAll('.stat-cell').forEach(el => io.observe(el));
 
-  /* ── Revenue slider ──────────────────────────── */
+  /* ── Revenue calculator — three sliders, three outputs, node count ── */
   function updateSliderFill(input) {
     const pct = ((input.value - input.min) / (input.max - input.min)) * 100;
     input.style.setProperty('--fill', pct + '%');
   }
 
-  function econUpdateRevenue(rate) {
-    const r = parseInt(rate);
-    const monthly = 500 * r;
-    const annual = monthly * 12;
-    const slider = document.getElementById('econ-slider');
-    updateSliderFill(slider);
-    document.getElementById('econ-monthly').textContent = '$' + monthly.toLocaleString();
-    document.getElementById('econ-monthly-sub').textContent = 'At $' + r + '/kW/mo';
-    document.getElementById('econ-annual').textContent = '$' + Math.round(annual / 1000) + 'K';
-    document.getElementById('econ-slider-display').textContent = '$' + r + ' / kW / mo';
+  const econPower = document.getElementById('econ-power');
+  const econRate = document.getElementById('econ-rate');
+  const econCapacity = document.getElementById('econ-capacity');
+  const econPowerDisp = document.getElementById('econ-power-display');
+  const econRateDisp = document.getElementById('econ-rate-display');
+  const econCapDisp = document.getElementById('econ-cap-display');
+  const econNodes = document.getElementById('econ-nodes');
+  const econToday = document.getElementById('econ-today');
+  const econTodayAnnual = document.getElementById('econ-today-annual');
+  const econVega = document.getElementById('econ-vega');
+  const econVegaAnnual = document.getElementById('econ-vega-annual');
+  const econDelta = document.getElementById('econ-delta');
+  const econDeltaAnnual = document.getElementById('econ-delta-annual');
+
+  function fmtAnnual(v) {
+    return v >= 1000000
+      ? '$' + (v / 1000000).toFixed(1) + 'M/year'
+      : '$' + Math.round(v / 1000) + 'K/year';
   }
 
-  // Set initial fill on load
-  updateSliderFill(document.getElementById('econ-slider'));
+  function updateRevenue() {
+    const power = parseInt(econPower.value);
+    const rate = parseInt(econRate.value);
+    let cap = parseInt(econCapacity.value);
+
+    if (cap > power) {
+      cap = power;
+      econCapacity.value = cap;
+    }
+    econCapacity.max = power;
+
+    const nodes = Math.ceil(power / 500);
+    const vegaKW = power;
+    const todayRev = cap * rate;
+    const vegaRev = vegaKW * rate;
+    const deltaRev = vegaRev - todayRev;
+
+    econPowerDisp.textContent = power.toLocaleString();
+    econRateDisp.textContent = '$' + rate;
+    econCapDisp.textContent = cap;
+    econNodes.textContent = nodes + ' × 500 kW node' + (nodes > 1 ? 's' : '');
+    econToday.textContent = '$' + todayRev.toLocaleString();
+    econTodayAnnual.textContent = fmtAnnual(todayRev * 12);
+    econVega.textContent = '$' + vegaRev.toLocaleString();
+    econVegaAnnual.textContent = fmtAnnual(vegaRev * 12);
+    econDelta.textContent = '$' + deltaRev.toLocaleString();
+    econDeltaAnnual.textContent = fmtAnnual(deltaRev * 12);
+
+    updateSliderFill(econPower);
+    updateSliderFill(econCapacity);
+    updateSliderFill(econRate);
+  }
+
+  if (econPower && econRate && econCapacity) {
+    econPower.addEventListener('input', updateRevenue);
+    econRate.addEventListener('input', updateRevenue);
+    econCapacity.addEventListener('input', updateRevenue);
+    updateRevenue();
+  }
 </script>
 </body>
 </html>
