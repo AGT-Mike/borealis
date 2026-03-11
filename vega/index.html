@@ -21,7 +21,7 @@
       --copper:   #B8956E;
       --white:    #F4F2EE;
       --dim:      #8A9099;
-      --dimmer:   #505860;
+      --dimmer:   #939495;
       --rule:     rgba(244,242,238,0.08);
       --red:      #8B3535;
       --red-dim:  rgba(139,53,53,0.28);
@@ -209,7 +209,7 @@
     .stat-label {
       margin-top: 14px;
       font-family: 'Barlow Condensed', sans-serif;
-      font-size: 11px;
+      font-size: 13px;
       font-weight: 400;
       letter-spacing: 0.2em;
       text-transform: uppercase;
@@ -302,30 +302,68 @@
       font-weight: 300;
       line-height: 1.15;
     }
-    /* Diagram pair — stacked with titles */
-    .diag-pair { display: flex; flex-direction: column; gap: 40px; margin: 0 auto; }
-    .diag-block-head {
+    /* Diagram tabbed interface */
+    .diag-tabs {
       display: flex;
       align-items: center;
-      gap: 20px;
-      margin-bottom: 14px;
+      gap: 0;
+      margin-bottom: 24px;
     }
-    .diag-state-label {
+    .diag-tab {
       font-family: 'Barlow Condensed', sans-serif;
-      font-size: 20px;
+      font-size: 15px;
       font-weight: 400;
-      letter-spacing: 0.45em;
+      letter-spacing: 0.3em;
       text-transform: uppercase;
-      flex-shrink: 0;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--dim);
+      padding: 8px 0;
+      border-bottom: 2px solid transparent;
+      transition: color 0.3s ease, border-color 0.3s ease;
     }
-    .diag-state-label.before { color: var(--red-text); }
-    .diag-state-label.vega   { color: var(--teal); }
-    .diag-rule {
-      flex: 1;
-      height: 1px;
+    .diag-tab:hover { color: var(--white); }
+    .diag-tab-sep {
+      color: var(--dim);
+      opacity: 0.3;
+      margin: 0 20px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 15px;
+      user-select: none;
     }
-    .diag-rule.before { background: linear-gradient(to right, rgba(139,53,53,0.55), transparent); }
-    .diag-rule.vega   { background: linear-gradient(to right, rgba(26,138,138,0.55), transparent); }
+    .diag-tab.active[data-diagram="crac"],
+    .diag-tab.active[data-diagram="crah"] {
+      color: var(--red-text);
+      border-bottom-color: var(--red-text);
+    }
+    .diag-tab.active[data-diagram="vega"] {
+      color: var(--teal);
+      border-bottom-color: var(--teal);
+    }
+    /* Panels */
+    .diag-panels { position: relative; }
+    .diag-panel {
+      opacity: 0;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      pointer-events: none;
+      transition: opacity 0.45s ease;
+    }
+    .diag-panel.active {
+      opacity: 1;
+      position: relative;
+      pointer-events: auto;
+    }
+    /* Sticky wrapper for scroll-driven switching */
+    .diag-sticky-wrap {
+      position: sticky;
+      top: 40px;
+      z-index: 2;
+    }
+    .diag-sentinel { height: 60vh; }
     .floor-svg { width: 100%; display: block; }
 
     /* Diagram body: three columns */
@@ -821,11 +859,11 @@
       position: absolute;
       top: -16px;
       font-family: 'Barlow Condensed', sans-serif;
-      font-size: 9px;
+      font-size: 10px;
       letter-spacing: 0.15em;
       text-transform: uppercase;
       color: var(--red-text);
-      opacity: 0.6;
+      opacity: 0.8;
       white-space: nowrap;
     }
     /* Revenue calculator */
@@ -984,8 +1022,8 @@
     }
     .econ-delta-annual {
       font-family: 'Barlow Condensed', sans-serif;
-      font-weight: 300;
-      font-size: 13px;
+      font-weight: 400;
+      font-size: 14px;
       color: rgba(184,149,110,0.55);
       margin-left: 8px;
     }
@@ -1000,7 +1038,7 @@
       margin-top: 4px;
     }
     .econ-disclaimer {
-      font-size: 10px;
+      font-size: 11px;
       color: var(--dimmer);
       margin-top: 20px;
       line-height: 1.6;
@@ -1262,11 +1300,9 @@
       .qualify-right { padding: 40px 24px 0; }
       #comparison { padding: 48px 24px 0; }
       .diag-pair { max-width: 100%; }
-      .diag-body { height: auto; flex-direction: column; }
-      .diag-plant { width: 100%; border-bottom: 1px solid var(--rule); height: 100px; }
-      .diag-middle { width: 100%; border-bottom: 1px solid var(--rule); height: 80px; }
-      .diag-vega-section { min-height: 200px; }
-      .diag-vega-rows { gap: 6px; }
+      .diag-tab { font-size: 12px; letter-spacing: 0.2em; }
+      .diag-tab-sep { margin: 0 10px; font-size: 12px; }
+      .diag-sentinel { height: 50vh; }
       #comp-table { grid-template-columns: 1fr; }
       .ct-col.ct-vega { border-top: 2px solid var(--teal); }
       .ct-col.ct-conventional { border-right: none; border-bottom: 1px solid var(--rule); }
@@ -1506,12 +1542,17 @@
   </div>
 
   <div class="diag-pair">
-    <!-- CRAC FACILITY -->
-    <div class="diag-block reveal">
-      <div class="diag-block-head">
-        <span class="diag-state-label before">CRAC Facility</span>
-        <div class="diag-rule before"></div>
+    <div class="diag-sticky-wrap">
+      <div class="diag-tabs reveal">
+        <button class="diag-tab active" data-diagram="crac">CRAC Facility</button>
+        <span class="diag-tab-sep">|</span>
+        <button class="diag-tab" data-diagram="crah">CRAH Facility</button>
+        <span class="diag-tab-sep">|</span>
+        <button class="diag-tab" data-diagram="vega">With Vega™</button>
       </div>
+      <div class="diag-panels">
+    <!-- CRAC FACILITY -->
+    <div class="diag-panel active" data-diagram="crac">
       <svg class="floor-svg" viewBox="0 0 860 380" fill="none" xmlns="http://www.w3.org/2000/svg">
         <rect width="860" height="380" fill="#1E2532"/>
         <!-- Title — centered above condensers -->
@@ -1564,12 +1605,8 @@
       </svg>
     </div>
 
-    <!-- BEFORE (CRAH Facility) -->
-    <div class="diag-block reveal">
-      <div class="diag-block-head">
-        <span class="diag-state-label before">Before</span>
-        <div class="diag-rule before"></div>
-      </div>
+    <!-- CRAH FACILITY -->
+    <div class="diag-panel" data-diagram="crah">
       <svg class="floor-svg" viewBox="0 0 860 380" fill="none" xmlns="http://www.w3.org/2000/svg">
         <rect width="860" height="380" fill="#1E2532"/>
         <!-- Title -->
@@ -1622,11 +1659,7 @@
     </div>
 
     <!-- WITH VEGA -->
-    <div class="diag-block reveal">
-      <div class="diag-block-head">
-        <span class="diag-state-label vega">With Vega™</span>
-        <div class="diag-rule vega"></div>
-      </div>
+    <div class="diag-panel" data-diagram="vega">
       <svg class="floor-svg" viewBox="0 0 860 360" fill="none" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <filter id="vega-glow" x="-30%" y="-30%" width="160%" height="160%">
@@ -1701,7 +1734,14 @@
         <text x="430" y="337" text-anchor="middle" font-family="Barlow Condensed" font-size="9" fill="rgba(26,138,138,0.97)" letter-spacing="3">BOREALIS SUPERVISORY CONTROL ACTIVE — INDEPENDENT THERMAL DOMAIN ESTABLISHED</text>
       </svg>
     </div>
-  </div>
+      </div><!-- .diag-panels -->
+    </div><!-- .diag-sticky-wrap -->
+
+    <!-- Scroll sentinels — drive tab switching on scroll -->
+    <div class="diag-sentinel" data-diagram="crac"></div>
+    <div class="diag-sentinel" data-diagram="crah"></div>
+    <div class="diag-sentinel" data-diagram="vega"></div>
+  </div><!-- .diag-pair -->
 </section>
 
 <!-- COMPARISON TABLE -->
@@ -1923,6 +1963,41 @@
 
   // Also observe stat cells directly for counters
   document.querySelectorAll('.stat-cell').forEach(el => io.observe(el));
+
+  /* ── Diagram tab switching (click + scroll-driven) ── */
+  (function() {
+    const tabs = document.querySelectorAll('.diag-tab');
+    const panels = document.querySelectorAll('.diag-panel');
+    const sentinels = document.querySelectorAll('.diag-sentinel');
+    if (!tabs.length) return;
+
+    function switchTab(key) {
+      tabs.forEach(t => t.classList.toggle('active', t.dataset.diagram === key));
+      panels.forEach(p => p.classList.toggle('active', p.dataset.diagram === key));
+    }
+
+    // Click handler
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const key = tab.dataset.diagram;
+        switchTab(key);
+        // Scroll the corresponding sentinel into view
+        const sentinel = document.querySelector('.diag-sentinel[data-diagram="' + key + '"]');
+        if (sentinel) sentinel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
+    });
+
+    // Scroll-driven switching via IntersectionObserver on sentinels
+    const sentinelIO = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          switchTab(entry.target.dataset.diagram);
+        }
+      });
+    }, { threshold: 0.4 });
+
+    sentinels.forEach(s => sentinelIO.observe(s));
+  })();
 
   /* ── Revenue calculator — three sliders, three outputs, node count ── */
   function updateSliderFill(input) {
