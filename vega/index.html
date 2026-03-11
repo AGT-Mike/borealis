@@ -1470,7 +1470,7 @@
     <!-- Slider 1: Facility power -->
     <div class="econ-slider-row">
       <div class="econ-slider-input-wrap">
-        <span class="econ-slider-label">Facility power available:</span>
+        <span class="econ-slider-label">Extra Power with Vega:</span>
         <input type="range" class="econ-range" id="econ-power" min="0" max="20000" value="1000" step="100">
         <span class="econ-rate-display" id="econ-power-display">1,000</span>
         <span class="econ-slider-label">kW</span>
@@ -1517,12 +1517,12 @@
         <div class="econ-output-sub dim" id="econ-today-annual">$360K/year</div>
       </div>
       <div class="econ-output-block">
-        <div class="econ-output-label teal">Revenue with Vega</div>
+        <div class="econ-output-label teal">Additional Revenue with Vega</div>
         <div class="econ-output-value medium" id="econ-vega">$150,000</div>
         <div class="econ-output-sub teal" id="econ-vega-annual">$1.8M/year</div>
       </div>
       <div class="econ-delta-block">
-        <div class="econ-output-label copper">Additional revenue potential</div>
+        <div class="econ-output-label copper">Total revenue potential</div>
         <span class="econ-delta-value" id="econ-delta">$120,000</span>
         <span class="econ-delta-annual" id="econ-delta-annual">$1.4M/year</span>
       </div>
@@ -2030,17 +2030,17 @@
     const rate = parseInt(econRate.value);
     let cap = parseInt(econCapacity.value);
 
-    if (cap > power) {
-      cap = power;
-      econCapacity.value = cap;
-    }
+    // if (cap > power) {
+    //   cap = power;
+    //   econCapacity.value = cap;
+    // }
     // econCapacity.max = power;
 
     const nodes = Math.ceil(power / 500);
     const vegaKW = power;
     const todayRev = cap * rate;
     const vegaRev = vegaKW * rate;
-    const deltaRev = vegaRev - todayRev;
+    const deltaRev = vegaRev + todayRev;
 
     econPowerDisp.textContent = power.toLocaleString();
     econRateDisp.textContent = '$' + rate;
