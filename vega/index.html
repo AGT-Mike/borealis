@@ -1471,7 +1471,7 @@
     <div class="econ-slider-row">
       <div class="econ-slider-input-wrap">
         <span class="econ-slider-label">Facility power available:</span>
-        <input type="range" class="econ-range" id="econ-power" min="500" max="5000" value="1000" step="100">
+        <input type="range" class="econ-range" id="econ-power" min="0" max="20000" value="1000" step="100">
         <span class="econ-rate-display" id="econ-power-display">1,000</span>
         <span class="econ-slider-label">kW</span>
       </div>
@@ -1482,7 +1482,7 @@
       <div class="econ-slider-row">
         <div class="econ-slider-input-wrap">
           <span class="econ-slider-label">Current air-cooled capacity:</span>
-          <input type="range" class="econ-range" id="econ-capacity" min="50" max="2000" value="200" step="25">
+          <input type="range" class="econ-range" id="econ-capacity" min="0" max="10000" value="200" step="25">
           <span class="econ-rate-display" id="econ-cap-display" style="color: var(--dim);">200</span>
           <span class="econ-slider-label">kW</span>
         </div>
@@ -1495,7 +1495,7 @@
       <div class="econ-slider-row">
         <div class="econ-slider-input-wrap">
           <span class="econ-slider-label">Your colocation rate:</span>
-          <input type="range" class="econ-range" id="econ-rate" min="75" max="300" value="150" step="5">
+          <input type="range" class="econ-range" id="econ-rate" min="0" max="300" value="150" step="5">
           <span class="econ-rate-display" id="econ-rate-display">$150</span>
           <span class="econ-slider-label">/kW/mo</span>
         </div>
@@ -2034,7 +2034,7 @@
       cap = power;
       econCapacity.value = cap;
     }
-    econCapacity.max = power;
+    // econCapacity.max = power;
 
     const nodes = Math.ceil(power / 500);
     const vegaKW = power;
