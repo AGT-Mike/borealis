@@ -139,7 +139,7 @@
     .hero-image img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      object-fit: contain;
       object-position: center;
       filter: invert(.6) sepia(.15) saturate(1.8) hue-rotate(180deg) grayscale(0.5) brightness(1);
       mix-blend-mode: screen;
@@ -772,7 +772,7 @@
     .ct-conventional .ct-col-hd { color: var(--dim); }
     .ct-vega .ct-col-hd { color: var(--teal); }
     /* Body rows */
-    .ct-col-body { padding: 0 64px 48px; }
+    .ct-col-body { padding: 0 64px; }
 
     .ct-row {
       padding: 22px 0;
@@ -1338,6 +1338,9 @@
     }
 
     /* ─── RESPONSIVE ─────────────────────────────── */
+    /* @media (max-width: 1400px) {
+      .hero-image { width: 50vw; }
+    } */
     @media (max-width: 1250px) {
       .hero-image { display: none; }
     }
@@ -1833,6 +1836,30 @@
       <div class="ct-row-val">9–12 <span class="unit">months</span></div>
       <p class="ct-row-note">Construction &nbsp;·&nbsp; permitting &nbsp;·&nbsp; plant expansion</p>
     </div>
+    <div class="ct-row">
+      <p class="ct-row-label">PLAN VIEW — Installed Footprint</p>
+      <!-- Scale: 17.6 px/ft — shared with Vega diagram -->
+      <svg class="floor-svg" viewBox="50 10 400 280" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-top:12px">
+        <!-- Service clearance zone (dashed) — tight around components -->
+        <rect x="111" y="32" width="278" height="220" fill="none" stroke="#3A4048" stroke-width="1.5" stroke-dasharray="8 4"/>
+        <text x="125" y="244" font-family="Barlow Condensed" font-size="9" fill="#6B7280" letter-spacing="2">SERVICE CLEARANCE ZONE</text>
+        <!-- Air-cooled chiller ~14' × 6' -->
+        <rect x="127" y="48" width="246" height="106" fill="rgba(244,242,238,0.04)" stroke="#3A4048" stroke-width="1"/>
+        <text x="250" y="94" text-anchor="middle" font-family="Barlow Condensed" font-size="13" fill="#8A9099" letter-spacing="3">AIR-COOLED CHILLER</text>
+        <text x="250" y="124" text-anchor="middle" font-family="Barlow Condensed" font-size="11" fill="#6B7280" letter-spacing="2">~14' × ~6'</text>
+        <!-- Pump skid — left-aligned with chiller -->
+        <rect x="127" y="170" width="88" height="62" fill="rgba(244,242,238,0.04)" stroke="#3A4048" stroke-width="1"/>
+        <text x="171" y="206" text-anchor="middle" font-family="Barlow Condensed" font-size="10" fill="#8A9099" letter-spacing="2">PUMP SKID</text>
+        <!-- Ctrl panel -->
+        <rect x="223" y="170" width="88" height="62" fill="rgba(244,242,238,0.04)" stroke="#3A4048" stroke-width="1"/>
+        <text x="267" y="198" text-anchor="middle" font-family="Barlow Condensed" font-size="10" fill="#8A9099" letter-spacing="2">CTRL</text>
+        <text x="267" y="214" text-anchor="middle" font-family="Barlow Condensed" font-size="10" fill="#8A9099" letter-spacing="2">PANEL</text>
+        <!-- Buffer tank — right-aligned with chiller -->
+        <rect x="320" y="170" width="53" height="62" fill="rgba(244,242,238,0.04)" stroke="#3A4048" stroke-width="1"/>
+        <text x="346" y="198" text-anchor="middle" font-family="Barlow Condensed" font-size="9" fill="#8A9099" letter-spacing="1.5">BUFFER</text>
+        <text x="346" y="214" text-anchor="middle" font-family="Barlow Condensed" font-size="9" fill="#8A9099" letter-spacing="1.5">TANK</text>
+      </svg>
+    </div>
     </div>
   </div>
   <div class="ct-col ct-vega reveal reveal-d1">
@@ -1854,6 +1881,32 @@
       <p class="ct-row-label">Deployment Timeline</p>
       <div class="ct-row-val" style="color:var(--teal)">5–7 <span class="unit" style="color:var(--teal)">days</span></div>
       <p class="ct-row-note">Site-ready to IT liquid loop</p>
+    </div>
+    <div class="ct-row" style="display:flex; flex-direction:column; align-items:center;">
+      <p class="ct-row-label" style="align-self:stretch;">PLAN VIEW — Installed Footprint</p>
+      <!-- Scale: 17.6 px/ft — shared with Conventional diagram -->
+      <svg class="floor-svg" viewBox="50 10 400 280" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-top:12px; display:block; margin-left:auto; margin-right:auto;">
+        <!-- Vega unit 10.5' × 2.6' = 185 × 46 px, centered vertically -->
+        <g transform="translate(0,-37)">
+        <!-- Component labels (teal) — smaller to fit 46px compartments -->
+        <text x="181" y="148" text-anchor="middle" font-family="Barlow Condensed" font-size="7.5" fill="var(--teal)" letter-spacing="0.5">REFRIG.</text>
+        <text x="227" y="148" text-anchor="middle" font-family="Barlow Condensed" font-size="7.5" fill="var(--teal)" letter-spacing="0.5">BUFFER</text>
+        <text x="273" y="148" text-anchor="middle" font-family="Barlow Condensed" font-size="7.5" fill="var(--teal)" letter-spacing="0.5">PUMPS/FILT.</text>
+        <text x="319" y="148" text-anchor="middle" font-family="Barlow Condensed" font-size="7.5" fill="var(--teal)" letter-spacing="0.5">HYDRAULICS</text>
+        <!-- Outer teal unit -->
+        <rect x="158" y="158" width="185" height="46" fill="rgba(26,138,138,0.06)" stroke="var(--teal)" stroke-width="2.5"/>
+        <!-- Copper fringe on top edge — drawn AFTER rect so it renders on top -->
+        <line x1="158" y1="157" x2="343" y2="157" stroke="var(--copper)" stroke-width="2"/>
+        <!-- Internal dividers -->
+        <line x1="204" y1="158" x2="204" y2="204" stroke="var(--teal)" stroke-width="0.75" opacity="0.4"/>
+        <line x1="250" y1="158" x2="250" y2="204" stroke="var(--teal)" stroke-width="0.75" opacity="0.4"/>
+        <line x1="296" y1="158" x2="296" y2="204" stroke="var(--teal)" stroke-width="0.75" opacity="0.4"/>
+        <!-- Dimension: height (right side, dim) -->
+        <text x="356" y="186" text-anchor="start" font-family="Barlow Condensed" font-size="11" fill="var(--dim)" letter-spacing="1">2.6'</text>
+        <!-- Dimension: width (below, dim) -->
+        <text x="250" y="226" text-anchor="middle" font-family="Barlow Condensed" font-size="11" fill="var(--dim)" letter-spacing="1">10.5'</text>
+        </g>
+      </svg>
     </div>
     </div>
   </div>
