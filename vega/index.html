@@ -182,9 +182,9 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: linear-gradient(to right, var(--bg) 0%, transparent 10%),
-                  linear-gradient(to bottom, var(--bg) 0%, transparent 5%),
-                  linear-gradient(to bottom, transparent 95%, var(--bg) 100%);
+      background: linear-gradient(to right, var(--bg) 0%, transparent 80px),
+                  linear-gradient(to bottom, var(--bg) 0%, transparent 40px),
+                  linear-gradient(to bottom, transparent calc(100% - 40px), var(--bg) 100%);
     }
     .hero-eyebrow {
       font-family: 'Barlow Condensed', sans-serif;
@@ -1448,7 +1448,7 @@
   </div>
   <div class="hero-image-title">
     <span class="hero-image-title-main"><span class="copper">500 kW</span> per node</span>
-    <span class="hero-image-title-sub">7× the cooling capacity in the footprint of a single 70 kW CRAC.</span>
+    <span class="hero-image-title-sub"><span style="color:var(--copper); font-size:larger; font-weight: bold;">7×</span> the cooling capacity in the footprint of a single 70 kW CRAC.</span>
   </div>
   <div class="hero-image">
     <img src="assets/hero.png" alt="Vega Thermal Node — internal schematic">
