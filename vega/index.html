@@ -218,7 +218,7 @@
 
     .hero-desc {
       font-size: 13.5px;
-      font-weight: 300;
+      font-weight: 500;
       color: var(--dim);
       line-height: 1.75;
       max-width: 500px;
@@ -1205,6 +1205,107 @@
     .rn-loop strong { color: var(--teal); font-weight: 400; }
     .rn-loop em { font-style: italic; }
 
+    /* ─── TURNKEY ────────────────────────────────── */
+    #turnkey {
+      padding: 80px 80px;
+      border-bottom: 1px solid var(--rule);
+    }
+    .turnkey-eyebrow {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 300;
+      font-size: 0.7rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--dim);
+      margin-bottom: 1.2rem;
+    }
+    .turnkey-headline {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-size: clamp(1.8rem, 3.2vw, 2.6rem);
+      line-height: 1.25;
+      color: var(--white);
+      margin: 16px 0 18px;
+    }
+    .turnkey-subline {
+      font-size: 1rem;
+      font-weight: 400;
+      color: var(--dim);
+      max-width: 720px;
+      line-height: 1.7;
+      margin-bottom: 1.5rem;
+    }
+    .turnkey-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1px;
+      background: var(--rule);
+      margin-bottom: 2rem;
+    }
+    .turnkey-item {
+      background: var(--bg);
+      padding: 2rem 1.5rem 2.2rem;
+      display: flex;
+      flex-direction: column;
+      border-left: 2px solid transparent;
+      position: relative;
+    }
+    .turnkey-item.vega { border-left-color: var(--teal); }
+    .turnkey-item.borealis { border-left-color: var(--copper); }
+    .turnkey-num {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      color: var(--dim);
+      margin-bottom: 0.8rem;
+    }
+    .turnkey-name {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 600;
+      font-size: 0.95rem;
+      letter-spacing: 0.08em;
+      color: var(--white);
+      margin-bottom: 0.9rem;
+    }
+    .turnkey-desc {
+      font-size: 0.8rem;
+      font-weight: 400;
+      color: var(--dim);
+      line-height: 1.6;
+      flex: 1;
+    }
+    .turnkey-provider {
+      margin-top: 1.5rem;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 500;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--dimmer);
+      padding-top: 1rem;
+      border-top: 1px solid var(--rule);
+    }
+    .turnkey-clarifier {
+      font-size: 0.8rem;
+      color: var(--dim);
+      text-align: center;
+      max-width: 640px;
+      margin: 0 auto 3rem;
+      line-height: 1.7;
+      font-style: italic;
+      font-weight: 400;
+    }
+    .turnkey-footer {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 500;
+      font-style: italic;
+      font-size: 1.35rem;
+      color: var(--dim);
+      text-align: center;
+      letter-spacing: 0.02em;
+    }
+
     /* ─── ARCHITECTURE ───────────────────────────── */
     #architecture {
       padding: 80px 80px;
@@ -1412,6 +1513,12 @@
       .rn-opt { padding: 28px 24px; }
       .rn-band-col { padding: 16px 24px; }
       .rn-loop { padding: 14px 24px; }
+      #turnkey { padding: 48px 24px; }
+      .turnkey-grid { grid-template-columns: 1fr; gap: 0; }
+      .turnkey-item { border-left: none; border-bottom: 1px solid var(--rule); padding: 1.5rem 1.2rem; }
+      .turnkey-item.vega, .turnkey-item.borealis { border-left: 2px solid; }
+      .turnkey-item.vega { border-left-color: var(--teal); }
+      .turnkey-item.borealis { border-left-color: var(--copper); }
       #architecture { padding: 48px 24px; }
       .arch-layer { grid-template-columns: 90px 1fr; }
       .arch-rl { display: none; }
@@ -1979,6 +2086,54 @@
   <div class="rn-loop">
     <strong>Vega™ IT Liquid Loop</strong> — <em>Same governed loop. Any rack.</em>
   </div>
+</section>
+
+<!-- TURNKEY -->
+<section id="turnkey">
+  <p class="label reveal">Complete Rack-Level Package</p>
+  <h2 class="turnkey-headline reveal reveal-d1">
+    Rack enclosure through controls.<br>
+    One thermal domain. One vendor.
+  </h2>
+  <p class="turnkey-subline reveal reveal-d2">
+    AGT can deliver the complete rack-level thermal package — or integrate with existing racks and RDHx infrastructure within the same governed thermal domain.
+  </p>
+  <div class="turnkey-grid reveal reveal-d2">
+    <div class="turnkey-item">
+      <div class="turnkey-num">01</div>
+      <div class="turnkey-name">Rack Enclosure</div>
+      <div class="turnkey-desc">Standard or high-density 19″ GPU rack enclosure, power distribution, cable management. AGT-supplied or existing infrastructure.</div>
+      <div class="turnkey-provider">AGT OR EXISTING</div>
+    </div>
+    <div class="turnkey-item">
+      <div class="turnkey-num">02</div>
+      <div class="turnkey-name">Governed RDHx</div>
+      <div class="turnkey-desc">Rear-door heat exchanger capturing GPU exhaust heat at the rack boundary. AGT-specified or customer-supplied RDHx supported.</div>
+      <div class="turnkey-provider">AGT OR EXISTING</div>
+    </div>
+    <div class="turnkey-item">
+      <div class="turnkey-num">03</div>
+      <div class="turnkey-name">Liquid Plumbing</div>
+      <div class="turnkey-desc">Rack-level liquid distribution loop, isolation valves, quick-connects, and fill/drain infrastructure</div>
+      <div class="turnkey-provider">AGT-ENGINEERED</div>
+    </div>
+    <div class="turnkey-item vega">
+      <div class="turnkey-num">04</div>
+      <div class="turnkey-name">Vega™ Thermal Node</div>
+      <div class="turnkey-desc">Up to 500 kW of governed liquid cooling per node, with CleanCore™ filtration and OceanBuffer™ hydraulic stabilization</div>
+      <div class="turnkey-provider">AGT THERMAL NODE</div>
+    </div>
+    <div class="turnkey-item borealis">
+      <div class="turnkey-num">05</div>
+      <div class="turnkey-name">Borealis™ Control</div>
+      <div class="turnkey-desc">Sole supervisory authority — unified thermal governance across the domain</div>
+      <div class="turnkey-provider">AGT CONTROL</div>
+    </div>
+  </div>
+  <p class="turnkey-clarifier reveal reveal-d3">
+    Vega integrates with existing rack and RDHx infrastructure, or can be delivered as a complete rack-level thermal package.
+  </p>
+  <p class="turnkey-footer reveal reveal-d3">One scope. One commissioning. One thermal guarantee.</p>
 </section>
 
 <!-- ARCHITECTURE -->
