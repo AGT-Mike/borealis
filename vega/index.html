@@ -125,7 +125,7 @@
     }
     .hero-image {
       position: absolute;
-      top: 50%;
+      top: 54%;
       right: 4vw;
       transform: translateY(-50%);
       width: 45%;
@@ -146,6 +146,34 @@
       opacity: 0;
       transform: translateX(40px);
       will-change: opacity, transform;
+    }
+    .hero-image-title {
+      position: absolute;
+      top: 48%;
+      right: 4vw;
+      width: 45%;
+      z-index: 2;
+      text-align: center;
+      transform: translateY(-50%) translateY(calc(-22.5vh - 16px));
+      opacity: 0;
+      will-change: opacity, transform;
+    }
+    .hero-image-title-main {
+      display: block;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.4rem, 2vw, 1.9rem);
+      font-weight: 300;
+      letter-spacing: 0.02em;
+      color: var(--white);
+    }
+    .hero-image-title-main .copper { color: var(--copper); }
+    .hero-image-title-sub {
+      display: block;
+      font-family: 'DM Sans', sans-serif;
+      font-size: clamp(0.95rem, 0.85vw, 0.8rem);
+      font-weight: 300;
+      color: var(--dim);
+      margin-top: 4px;
     }
     .hero-image::after {
       content: '';
@@ -1283,7 +1311,7 @@
     .statement-sub {
       font-family: 'Cormorant Garamond', serif;
       font-style: italic;
-      font-size: 1.05rem;
+      font-size: 1.35rem;
       color: var(--copper);
       opacity: 0.9;
     }
@@ -1338,11 +1366,11 @@
     }
 
     /* ─── RESPONSIVE ─────────────────────────────── */
-    /* @media (max-width: 1400px) {
-      .hero-image { width: 50vw; }
-    } */
+    @media (max-width: 1700px) {
+      .hero-image-title { top: 52% }
+    }
     @media (max-width: 1250px) {
-      .hero-image { display: none; }
+      .hero-image, .hero-image-title { display: none; }
     }
     @media (max-width: 900px) {
       nav { padding: 18px 24px; }
@@ -1353,7 +1381,7 @@
       .hero-situation { margin-bottom: 14px; font-size: 16px; letter-spacing: 0.08em; word-break: break-word; }
       .hero-h1 { margin-bottom: 20px; max-width: 100%; font-size: clamp(2rem, 7vw, 4rem); line-height: 1.1; }
       .hero-desc { margin-bottom: 10px; }
-      .hero-image { display: none; }
+      .hero-image, .hero-image-title { display: none; }
       .scroll-hint { position: static; margin-top: 20px; }
       .scroll-hint { left: 24px; }
       .stats-row { grid-template-columns: 1fr; }
@@ -1418,6 +1446,10 @@
     </p>
     <p class="hero-cta">Deploy liquid cooling at the rack level without expanding the central plant.</p>
   </div>
+  <div class="hero-image-title">
+    <span class="hero-image-title-main"><span class="copper">500 kW</span> per node</span>
+    <span class="hero-image-title-sub">7× the cooling capacity in the footprint of a single 70 kW CRAC.</span>
+  </div>
   <div class="hero-image">
     <img src="assets/hero.png" alt="Vega Thermal Node — internal schematic">
   </div>
@@ -1477,7 +1509,7 @@
 <!-- ECONOMICS (The Compute Unlock) -->
 <section id="economics">
   <div class="econ-header reveal">
-    <p class="label">The Compute Unlock</p>
+    <p class="label">Cooling Unlocks the Revenue</p>
     <h2 class="econ-headline">Cooling isn't the cost.<br>It's the key to the revenue.</h2>
   </div>
 
@@ -1837,9 +1869,9 @@
       <p class="ct-row-note">Construction &nbsp;·&nbsp; permitting &nbsp;·&nbsp; plant expansion</p>
     </div>
     <div class="ct-row">
-      <p class="ct-row-label">PLAN VIEW — Installed Footprint</p>
+      <p class="ct-row-label reveal">PLAN VIEW — Installed Footprint</p>
       <!-- Scale: 17.6 px/ft — shared with Vega diagram -->
-      <svg class="floor-svg" viewBox="50 10 400 280" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-top:12px">
+      <svg class="floor-svg reveal reveal-d3" viewBox="50 10 400 280" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-top:12px">
         <!-- Service clearance zone (dashed) — tight around components -->
         <rect x="111" y="32" width="278" height="220" fill="none" stroke="#3A4048" stroke-width="1.5" stroke-dasharray="8 4"/>
         <text x="125" y="244" font-family="Barlow Condensed" font-size="9" fill="#6B7280" letter-spacing="2">SERVICE CLEARANCE ZONE</text>
@@ -1883,9 +1915,9 @@
       <p class="ct-row-note">Site-ready to IT liquid loop</p>
     </div>
     <div class="ct-row" style="display:flex; flex-direction:column; align-items:center;">
-      <p class="ct-row-label" style="align-self:stretch;">PLAN VIEW — Installed Footprint</p>
+      <p class="ct-row-label reveal" style="align-self:stretch;">PLAN VIEW — Installed Footprint</p>
       <!-- Scale: 17.6 px/ft — shared with Conventional diagram -->
-      <svg class="floor-svg" viewBox="50 10 400 280" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-top:12px; display:block; margin-left:auto; margin-right:auto;">
+      <svg class="floor-svg reveal reveal-d3" viewBox="50 10 400 280" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-top:12px; display:block; margin-left:auto; margin-right:auto;">
         <!-- Vega unit 10.5' × 2.6' = 185 × 46 px, centered vertically -->
         <g transform="translate(0,-37)">
         <!-- Component labels (teal) — smaller to fit 46px compartments -->
@@ -1989,7 +2021,7 @@
       </div>
       <div class="arch-content">
         <p class="arch-title">Adiabatic Fluid Cooler &nbsp;·&nbsp; Roof Rejection</p>
-        <p class="arch-desc">No plant tie-in &nbsp;·&nbsp; No plant expansion &nbsp;·&nbsp; Existing tenants unaffected &nbsp;·&nbsp; Central plant unchanged</p>
+        <p class="arch-desc">No plant expansion &nbsp;·&nbsp; No central plant dependency &nbsp;·&nbsp; Existing tenants unaffected &nbsp;</p>
       </div>
       <div class="arch-rl">
         <span class="arch-rl-text">Plant-Independent</span>
@@ -2044,6 +2076,7 @@
   (function() {
     const spacer = document.querySelector('.hero-scroll-spacer');
     const img    = document.querySelector('.hero-image img');
+    const title  = document.querySelector('.hero-image-title');
     if (!spacer || !img) return;
 
     const SCROLL_BUDGET = 400;
@@ -2056,6 +2089,10 @@
       const eased = 1 - Math.pow(1 - t, 3); // ease-out cubic
       img.style.opacity   = eased;
       img.style.transform = 'translateX(' + (MAX_TX * (1 - eased)) + 'px)';
+      if (title) {
+        title.style.opacity   = eased;
+        title.style.transform = 'translateY(-50%) translateY(calc(-22.5vh - 16px)) translateX(' + (MAX_TX * (1 - eased)) + 'px)';
+      }
     }
 
     update();
