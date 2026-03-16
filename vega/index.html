@@ -123,14 +123,23 @@
       position: relative;
       z-index: 2;
     }
-    .hero-image {
+    .hero-images-wrap {
       position: absolute;
       top: 54%;
       right: 4vw;
       transform: translateY(-50%);
-      width: 45%;
-      height: 45%;
+      width: 40%;
       z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+      opacity: 1;
+      will-change: opacity, transform;
+    }
+    .hero-image {
+      position: relative;
+      width: 100%;
       overflow: hidden;
       display: flex;
       align-items: center;
@@ -143,20 +152,20 @@
       object-position: center;
       filter: invert(.6) sepia(.15) saturate(1.8) hue-rotate(180deg) grayscale(0.5) brightness(1);
       mix-blend-mode: screen;
-      opacity: 0;
-      transform: translateX(40px);
-      will-change: opacity, transform;
+    }
+    .hero-image-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--dim);
+      margin-bottom: 6px;
     }
     .hero-image-title {
-      position: absolute;
-      top: 48%;
-      right: 4vw;
-      width: 45%;
-      z-index: 2;
       text-align: center;
-      transform: translateY(-50%) translateY(calc(-22.5vh - 16px));
-      opacity: 0;
-      will-change: opacity, transform;
+      align-self: center;
+      margin-bottom: 8px;
     }
     .hero-image-title-main {
       display: block;
@@ -182,9 +191,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: linear-gradient(to right, var(--bg) 0%, transparent 80px),
-                  linear-gradient(to bottom, var(--bg) 0%, transparent 40px),
-                  linear-gradient(to bottom, transparent calc(100% - 40px), var(--bg) 100%);
+      background: linear-gradient(to right, var(--bg) 0%, transparent 80px);
     }
     .hero-eyebrow {
       font-family: 'Barlow Condensed', sans-serif;
@@ -1467,11 +1474,11 @@
     }
 
     /* ─── RESPONSIVE ─────────────────────────────── */
-    @media (max-width: 1700px) {
-      .hero-image-title { top: 52% }
+    @media (max-width: 1400px) {
+      .hero-images-wrap { top: 47%;}
     }
     @media (max-width: 1250px) {
-      .hero-image, .hero-image-title { display: none; }
+      .hero-images-wrap { display: none; }
     }
     @media (max-width: 900px) {
       nav { padding: 18px 24px; }
@@ -1482,7 +1489,7 @@
       .hero-situation { margin-bottom: 14px; font-size: 16px; letter-spacing: 0.08em; word-break: break-word; }
       .hero-h1 { margin-bottom: 20px; max-width: 100%; font-size: clamp(2rem, 7vw, 4rem); line-height: 1.1; }
       .hero-desc { margin-bottom: 10px; }
-      .hero-image, .hero-image-title { display: none; }
+      .hero-images-wrap { display: none; }
       .scroll-hint { position: static; margin-top: 20px; }
       .scroll-hint { left: 24px; }
       .stats-row { grid-template-columns: 1fr; }
@@ -1553,12 +1560,23 @@
     </p>
     <p class="hero-cta">Deploy liquid cooling at the rack level without expanding the central plant.</p>
   </div>
-  <div class="hero-image-title">
-    <span class="hero-image-title-main"><span class="copper">500 kW</span> per node</span>
-    <span class="hero-image-title-sub"><span style="color:var(--copper); font-size:larger; font-weight: bold;">7×</span> the cooling capacity in the footprint of a single 70 kW CRAC.</span>
-  </div>
-  <div class="hero-image">
-    <img src="assets/hero.png" alt="Vega Thermal Node — internal schematic">
+  <div class="hero-images-wrap">
+    <div class="hero-image-title">
+      <span class="hero-image-title-main"><span class="copper">500 kW</span> per node</span>
+      <span class="hero-image-title-sub"><span style="color:var(--copper); font-size:larger; font-weight: bold;">7×</span> the cooling capacity in the footprint of a single 70 kW CRAC.</span>
+    </div>
+    <div class="hero-image-group">
+      <p class="hero-image-label">Front Elevation</p>
+      <div class="hero-image">
+        <img src="assets/hero.png" alt="Vega Thermal Node — front elevation schematic">
+      </div>
+    </div>
+    <div class="hero-image-group">
+      <p class="hero-image-label">Plan View</p>
+      <div class="hero-image">
+        <img src="assets/hero2.png" alt="Vega Thermal Node — top view schematic">
+      </div>
+    </div>
   </div>
   <div class="scroll-hint">Scroll to explore</div>
 </section>
@@ -2233,9 +2251,8 @@
   /* ── Hero image: scroll-driven reveal (pinned 0–400px) ── */
   (function() {
     const spacer = document.querySelector('.hero-scroll-spacer');
-    const img    = document.querySelector('.hero-image img');
-    const title  = document.querySelector('.hero-image-title');
-    if (!spacer || !img) return;
+    const wrap   = document.querySelector('.hero-images-wrap');
+    if (!spacer || !wrap) return;
 
     const SCROLL_BUDGET = 400;
     const MAX_TX        = 40;
@@ -2245,12 +2262,8 @@
       const scrolled = -spacer.getBoundingClientRect().top;
       const t = Math.min(Math.max(scrolled, 0), SCROLL_BUDGET) / SCROLL_BUDGET;
       const eased = 1 - Math.pow(1 - t, 3); // ease-out cubic
-      img.style.opacity   = eased;
-      img.style.transform = 'translateX(' + (MAX_TX * (1 - eased)) + 'px)';
-      if (title) {
-        title.style.opacity   = eased;
-        title.style.transform = 'translateY(-50%) translateY(calc(-22.5vh - 16px)) translateX(' + (MAX_TX * (1 - eased)) + 'px)';
-      }
+      wrap.style.opacity   = eased;
+      wrap.style.transform = 'translateY(-50%) translateX(' + (MAX_TX * (1 - eased)) + 'px)';
     }
 
     update();
