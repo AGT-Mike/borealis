@@ -11,6 +11,7 @@ export default defineConfig({
         main:  resolve(__dirname, 'index.html'),
         vega:  resolve(__dirname, 'vega/index.html'),
         vega2: resolve(__dirname, 'vega2/index.html'),
+        v2:    resolve(__dirname, 'v2/index.html'),
       }
     }
   }
