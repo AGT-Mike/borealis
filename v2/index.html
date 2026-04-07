@@ -413,14 +413,13 @@
         <!-- 2 -->
         <div class="reveal-up feature-card overflow-hidden group">
           <div class="aspect-[16/9] overflow-hidden">
-            <img src="/img/redesign/dualLoop.webp" alt="Dual-loop CDU architecture"
+            <img src="/img/redesign/telemetryAndControl.webp" alt="Dual-loop CDU architecture"
               class="w-full h-full object-cover opacity-80 transition-transform duration-500 group-hover:scale-[1.04]" />
           </div>
           <div class="p-6">
-            <h3 class="text-lg font-bold mb-2">Dual-Loop Flexibility</h3>
+            <h3 class="text-lg font-bold mb-2">Telemetry &amp; Control</h3>
             <p class="text-sm text-[#94a3b8] leading-relaxed">
-              Supports both single-phase glycol and two-phase dielectric refrigerant loops in the same chassis. Switching
-              modes requires only a heat exchanger swap&nbsp;&mdash;&nbsp;not a full hardware replacement.
+            Advanced telemetry and intelligent control at row scale, delivering fast transient stability during workload spikes and real-time observability across both facility and IT cooling loops.
             </p>
           </div>
         </div>
@@ -450,10 +449,9 @@
                 d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
             </svg>
           </div>
-          <h3 class="text-lg font-bold mb-2">Telemetry &amp; Control</h3>
+          <h3 class="text-lg font-bold mb-2">Dual-Loop Flexibility</h3>
           <p class="text-sm text-[#94a3b8] leading-relaxed">
-            Advanced telemetry and intelligent control at row scale, delivering fast transient stability during workload
-            spikes and real-time observability across both facility and IT cooling loops.
+            Supports both single-phase glycol and two-phase dielectric refrigerant loops in the same chassis. Switching modes requires only a heat exchanger swap&nbsp;&mdash;&nbsp;not a full hardware replacement.
           </p>
         </div>
 
@@ -521,9 +519,15 @@
         <!-- AI/ML -->
         <div class="reveal-up group">
           <div class="product-card">
-            <div class="aspect-[4/3] overflow-hidden">
-              <img src="/img/redesign/ai.webp" alt="AI training server racks"
-                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.04]" />
+            <!-- Icon header -->
+            <div class="relative h-44 flex items-center justify-center overflow-hidden bg-gradient-to-b from-[#0d1525] to-[#080c18]">
+              <div class="absolute inset-0" style="background-image: radial-gradient(circle, rgba(96,165,250,0.10) 1px, transparent 1px); background-size: 22px 22px;"></div>
+              <div class="absolute w-36 h-36 rounded-full bg-[#2563eb]/15 blur-3xl"></div>
+              <div class="relative z-10 w-16 h-16 rounded-2xl bg-[#2563eb]/10 border border-[#2563eb]/25 flex items-center justify-center transition-all duration-500 group-hover:bg-[#2563eb]/18 group-hover:border-[#2563eb]/45 group-hover:shadow-[0_0_24px_rgba(37,99,235,0.18)]">
+                <svg class="w-8 h-8 text-[#60a5fa]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 0 0 1.5-.189m-1.5.189a6.01 6.01 0 0 1-1.5-.189m3.75 7.478a12.06 12.06 0 0 1-4.5 0m3.75 2.383a14.406 14.406 0 0 1-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 1 0-7.517 0c.85.493 1.509 1.333 1.509 2.316V18" />
+                </svg>
+              </div>
             </div>
             <div class="p-6">
               <h3 class="text-lg font-bold mb-2">AI &amp; Machine Learning</h3>
@@ -531,6 +535,24 @@
                 Optimize AI and machine learning workloads with superior cooling capabilities, preventing thermal
                 throttling and ensuring peak performance for training and inference.
               </p>
+              <!-- <ul class="mt-4 space-y-2">
+                <li class="flex items-center gap-2.5 text-sm text-[#94a3b8]">
+                  <span class="w-1.5 h-1.5 rounded-full bg-[#2563eb] shrink-0"></span>
+                  GPU clusters up to 200 kW/rack
+                </li>
+                <li class="flex items-center gap-2.5 text-sm text-[#94a3b8]">
+                  <span class="w-1.5 h-1.5 rounded-full bg-[#2563eb] shrink-0"></span>
+                  H100, MI300X &amp; next-gen accelerators
+                </li>
+                <li class="flex items-center gap-2.5 text-sm text-[#94a3b8]">
+                  <span class="w-1.5 h-1.5 rounded-full bg-[#2563eb] shrink-0"></span>
+                  Single-phase &amp; two-phase coolant modes
+                </li>
+                <li class="flex items-center gap-2.5 text-sm text-[#94a3b8]">
+                  <span class="w-1.5 h-1.5 rounded-full bg-[#2563eb] shrink-0"></span>
+                  Zero thermal throttling under full load
+                </li>
+              </ul> -->
             </div>
           </div>
         </div>
@@ -538,9 +560,15 @@
         <!-- HPC -->
         <div class="reveal-up group">
           <div class="product-card">
-            <div class="aspect-[4/3] overflow-hidden">
-              <img src="/img/redesign/highPerformanceComputing.png" alt="High-performance computing facility"
-                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.04]" />
+            <!-- Icon header -->
+            <div class="relative h-44 flex items-center justify-center overflow-hidden bg-gradient-to-b from-[#0d1525] to-[#080c18]">
+              <div class="absolute inset-0" style="background-image: radial-gradient(circle, rgba(96,165,250,0.10) 1px, transparent 1px); background-size: 22px 22px;"></div>
+              <div class="absolute w-36 h-36 rounded-full bg-[#2563eb]/15 blur-3xl"></div>
+              <div class="relative z-10 w-16 h-16 rounded-2xl bg-[#2563eb]/10 border border-[#2563eb]/25 flex items-center justify-center transition-all duration-500 group-hover:bg-[#2563eb]/18 group-hover:border-[#2563eb]/45 group-hover:shadow-[0_0_24px_rgba(37,99,235,0.18)]">
+                <svg class="w-8 h-8 text-[#60a5fa]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125" />
+                </svg>
+              </div>
             </div>
             <div class="p-6">
               <h3 class="text-lg font-bold mb-2">High-Performance Computing</h3>
@@ -548,6 +576,24 @@
                 Handle the most demanding computational tasks with ThermaPod™ rack-level cooling. Reduced energy
                 consumption and increased processing power for scientific and research workloads.
               </p>
+              <!-- <ul class="mt-4 space-y-2">
+                <li class="flex items-center gap-2.5 text-sm text-[#94a3b8]">
+                  <span class="w-1.5 h-1.5 rounded-full bg-[#2563eb] shrink-0"></span>
+                  Scientific simulation &amp; CFD modeling
+                </li>
+                <li class="flex items-center gap-2.5 text-sm text-[#94a3b8]">
+                  <span class="w-1.5 h-1.5 rounded-full bg-[#2563eb] shrink-0"></span>
+                  Genomics, climate &amp; research clusters
+                </li>
+                <li class="flex items-center gap-2.5 text-sm text-[#94a3b8]">
+                  <span class="w-1.5 h-1.5 rounded-full bg-[#2563eb] shrink-0"></span>
+                  Sustained TDP without clock derating
+                </li>
+                <li class="flex items-center gap-2.5 text-sm text-[#94a3b8]">
+                  <span class="w-1.5 h-1.5 rounded-full bg-[#2563eb] shrink-0"></span>
+                  Low-latency fabric compatibility
+                </li>
+              </ul> -->
             </div>
           </div>
         </div>
@@ -555,9 +601,15 @@
         <!-- Hyperscale -->
         <div class="reveal-up group">
           <div class="product-card">
-            <div class="aspect-[4/3] overflow-hidden bg-gradient-to-b from-[#0c1220] to-[#0a0f1a]">
-              <img src="/img/redesign/hyperScaleDataCenter.webp" alt="Modular CDU array for hyperscale"
-                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.04]" />
+            <!-- Icon header -->
+            <div class="relative h-44 flex items-center justify-center overflow-hidden bg-gradient-to-b from-[#0d1525] to-[#080c18]">
+              <div class="absolute inset-0" style="background-image: radial-gradient(circle, rgba(96,165,250,0.10) 1px, transparent 1px); background-size: 22px 22px;"></div>
+              <div class="absolute w-36 h-36 rounded-full bg-[#2563eb]/15 blur-3xl"></div>
+              <div class="relative z-10 w-16 h-16 rounded-2xl bg-[#2563eb]/10 border border-[#2563eb]/25 flex items-center justify-center transition-all duration-500 group-hover:bg-[#2563eb]/18 group-hover:border-[#2563eb]/45 group-hover:shadow-[0_0_24px_rgba(37,99,235,0.18)]">
+                <svg class="w-8 h-8 text-[#60a5fa]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 21 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0 1 12 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 0 1 3 12c0-1.605.42-3.113 1.157-4.418" />
+                </svg>
+              </div>
             </div>
             <div class="p-6">
               <h3 class="text-lg font-bold mb-2">Hyperscale Data Centers</h3>
@@ -565,6 +617,24 @@
                 Scale with confidence using modular CDU arrays. Efficient thermal management for hyperscale environments
                 ensures maximum uptime, linear scaling, and predictable cost per kW.
               </p>
+              <!-- <ul class="mt-4 space-y-2">
+                <li class="flex items-center gap-2.5 text-sm text-[#94a3b8]">
+                  <span class="w-1.5 h-1.5 rounded-full bg-[#2563eb] shrink-0"></span>
+                  Linear scaling from single CDU to full row
+                </li>
+                <li class="flex items-center gap-2.5 text-sm text-[#94a3b8]">
+                  <span class="w-1.5 h-1.5 rounded-full bg-[#2563eb] shrink-0"></span>
+                  Predictable cost-per-kW at any scale
+                </li>
+                <li class="flex items-center gap-2.5 text-sm text-[#94a3b8]">
+                  <span class="w-1.5 h-1.5 rounded-full bg-[#2563eb] shrink-0"></span>
+                  Remote monitoring &amp; control via REST API
+                </li>
+                <li class="flex items-center gap-2.5 text-sm text-[#94a3b8]">
+                  <span class="w-1.5 h-1.5 rounded-full bg-[#2563eb] shrink-0"></span>
+                  99.99% uptime SLA ready
+                </li>
+              </ul> -->
             </div>
           </div>
         </div>
