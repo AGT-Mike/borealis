@@ -8,11 +8,13 @@ export default defineConfig({
   build: {
     rollupOptions: {
       input: {
-        main:  resolve(__dirname, 'index.html'),
-        vega:  resolve(__dirname, 'vega/index.html'),
-        vega2: resolve(__dirname, 'vega2/index.html'),
-        v2:    resolve(__dirname, 'v2/index.html'),
-        v3:    resolve(__dirname, 'v3/index.html'),
+        main:         resolve(__dirname, 'index.html'),
+        vega:         resolve(__dirname, 'vega/index.html'),
+        vega2:        resolve(__dirname, 'vega2/index.html'),
+        v2:           resolve(__dirname, 'v2/index.html'),
+        v3:           resolve(__dirname, 'v3/index.html'),
+        brochure:     resolve(__dirname, 'brochure/index.html'),
+        rep:          resolve(__dirname, 'rep/index.html'),
       }
     }
   }
