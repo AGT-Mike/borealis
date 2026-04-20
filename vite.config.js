@@ -15,6 +15,7 @@ export default defineConfig({
         v3:           resolve(__dirname, 'v3/index.html'),
         brochure:     resolve(__dirname, 'brochure/index.html'),
         rep:          resolve(__dirname, 'rep/index.html'),
+        b:            resolve(__dirname, 'b/index.html'),
       }
     }
   }
